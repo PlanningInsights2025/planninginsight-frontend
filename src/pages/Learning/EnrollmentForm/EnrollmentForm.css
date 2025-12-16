@@ -1,0 +1,255 @@
+/* EnrollmentForm.css - Professional Checkout Layout (Theme-aware) */
+.enrollment-form {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 2rem;
+  /* This is the key fix: force a light background inside the modal */
+  background-color: #ffffff !important; 
+  color: #111827; /* Set a default dark text color for all children */
+  border-radius: 12px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 2rem;
+  align-items: start;
+}
+
+.form-main {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-section {
+  background-color: #ffffff;
+  padding: 1.5rem;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+}
+
+.form-section h3,
+.enrollment-form h2 /* Target main title if any */ {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #111827 !important;
+  margin: 0 0 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #374151 !important;
+  font-size: 0.9rem;
+  background-color: transparent !important; /* Fix for blue background */
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: #ffffff !important;
+  color: #111827 !important;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+/* Payment & Coupon Section */
+.payment-section {
+  margin-top: 1.5rem;
+}
+
+.payment-methods h4,
+.coupon-section h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #111827 !important;
+  margin-bottom: 1rem;
+}
+
+.payment-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.payment-option {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.payment-option:hover {
+  background-color: #f9fafb;
+}
+
+.payment-option input[type="radio"] {
+  margin-right: 1rem;
+  width: 18px;
+  height: 18px;
+  accent-color: #3b82f6;
+}
+
+.payment-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.payment-icon {
+  font-size: 1.5rem;
+  color: #374151;
+}
+
+.payment-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.payment-details .payment-label {
+  font-weight: 600;
+  color: #111827 !important;
+}
+
+.payment-details .payment-desc {
+  font-size: 0.85rem;
+  color: #6b7280 !important;
+}
+
+.coupon-section {
+  margin-top: 1.5rem;
+}
+
+.coupon-input-group {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.coupon-input-group input {
+  flex-grow: 1;
+}
+
+.coupon-input-group .btn-apply {
+  padding: 0.75rem 1.5rem;
+  background-color: #10b981;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.coupon-input-group .btn-apply:hover {
+  background-color: #059669;
+}
+
+/* Sidebar / Pricing Summary */
+.pricing-summary {
+  position: sticky;
+  top: 2rem;
+  padding: 1.5rem;
+  background-color: #f9fafb;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+}
+
+.pricing-summary h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #111827 !important;
+  margin: 0 0 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.summary-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  color: #4b5563 !important;
+}
+
+.summary-row.total {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #111827 !important;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.form-actions {
+  margin-top: 1.5rem;
+}
+
+.btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 100%;
+  text-align: center;
+  display: inline-block;
+}
+
+.btn-outline {
+  background-color: transparent;
+  border: 1px solid #d1d5db;
+  color: #374151 !important;
+  margin-top: 0.5rem;
+}
+
+.btn-outline:hover {
+  background-color: #f3f4f6;
+}
+
+.btn-primary {
+  background-color: #3b82f6;
+  color: white !important;
+  border: 1px solid #3b82f6;
+}
+
+.btn-primary:hover {
+  background-color: #2563eb;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .enrollment-form {
+    grid-template-columns: 1fr;
+  }
+  .pricing-summary {
+    position: static;
+    grid-row: 1;
+  }
+  .form-main {
+    grid-row: 2;
+  }
+}

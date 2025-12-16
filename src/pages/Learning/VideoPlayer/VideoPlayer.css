@@ -1,0 +1,565 @@
+/* Video Player Component Styles */
+
+.video-player-container {
+    position: relative;
+    width: 100%;
+    background: #000;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+}
+
+.video-wrapper {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+}
+
+.video-element {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+}
+
+/* Video Overlays */
+.video-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.5);
+    transition: opacity 0.3s ease;
+}
+
+.loading-overlay,
+.buffering-overlay {
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 10;
+}
+
+.buffering-overlay {
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.controls-overlay {
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.7) 0%,
+        transparent 20%,
+        transparent 80%,
+        rgba(0, 0, 0, 0.7) 100%
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 5;
+}
+
+.video-player-container:hover .controls-overlay,
+.controls-overlay.visible {
+    opacity: 1;
+}
+
+.play-overlay {
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 4;
+}
+
+/* Top Controls */
+.controls-top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 1.5rem;
+    color: white;
+}
+
+.video-info h3 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: white;
+}
+
+.video-info p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.top-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.completion-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(16, 185, 129, 0.2);
+    color: #10b981;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+/* Control Buttons */
+.control-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    border: none;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(10px);
+}
+
+.control-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+}
+
+.control-button.large {
+    padding: 0.75rem;
+}
+
+.control-button.large:hover {
+    transform: scale(1.1);
+}
+
+.play-button {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.play-button:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Center Controls */
+.controls-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.playback-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.play-button-large {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+    border: none;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.play-button-large:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+/* Bottom Controls */
+.controls-bottom {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1.5rem;
+    color: white;
+}
+
+/* Progress Controls */
+.progress-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.time-current,
+.time-duration {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.8);
+    min-width: 40px;
+}
+
+.time-current {
+    text-align: right;
+}
+
+.time-duration {
+    text-align: left;
+}
+
+.progress-bar {
+    flex: 1;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.progress-bar::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.progress-bar::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.progress-bar::-webkit-slider-runnable-track {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+}
+
+.progress-bar::-moz-range-track {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+    border: none;
+}
+
+/* Bottom Actions */
+.bottom-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.left-actions,
+.right-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.volume-slider {
+    width: 80px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: white;
+    cursor: pointer;
+}
+
+.volume-slider::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: white;
+    cursor: pointer;
+    border: none;
+}
+
+/* Playback Rate */
+.playback-rate {
+    position: relative;
+}
+
+.playback-rate-display {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.8);
+    padding: 0.25rem 0.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 0.25rem;
+}
+
+.settings-menu {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    background: rgba(0, 0, 0, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    min-width: 150px;
+    backdrop-filter: blur(10px);
+    z-index: 20;
+}
+
+.menu-section {
+    margin-bottom: 0.5rem;
+}
+
+.menu-section:last-child {
+    margin-bottom: 0;
+}
+
+.menu-section label {
+    display: block;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.menu-item {
+    display: block;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: none;
+    background: none;
+    color: rgba(255, 255, 255, 0.8);
+    text-align: left;
+    cursor: pointer;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+}
+
+.menu-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.menu-item.active {
+    background: var(--primary-color);
+    color: white;
+}
+
+/* Video Chapters */
+.video-chapters {
+    background: var(--surface-color);
+    border-top: 1px solid var(--border-color);
+    padding: 1rem 1.5rem;
+}
+
+.chapter-progress {
+    height: 4px;
+    background: var(--border-color);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 0.75rem;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--primary-color);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+}
+
+.chapter-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.completed-text {
+    color: var(--success-color);
+    font-weight: 500;
+}
+
+/* Fullscreen Styles */
+.video-player-container:fullscreen {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+}
+
+.video-player-container:fullscreen .video-wrapper {
+    height: 100%;
+    padding-bottom: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .controls-top {
+        padding: 1rem;
+    }
+
+    .video-info h3 {
+        font-size: 1rem;
+    }
+
+    .video-info p {
+        font-size: 0.75rem;
+    }
+
+    .controls-bottom {
+        padding: 1rem;
+    }
+
+    .playback-controls {
+        gap: 0.5rem;
+    }
+
+    .control-button.large {
+        padding: 0.5rem;
+    }
+
+    .play-button-large {
+        width: 60px;
+        height: 60px;
+    }
+
+    .play-button-large svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    .progress-controls {
+        gap: 0.5rem;
+    }
+
+    .time-current,
+    .time-duration {
+        font-size: 0.75rem;
+        min-width: 35px;
+    }
+
+    .volume-slider {
+        width: 60px;
+    }
+
+    .video-chapters {
+        padding: 0.75rem 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .controls-top {
+        flex-direction: column;
+        gap: 0.75rem;
+        align-items: flex-start;
+    }
+
+    .top-actions {
+        align-self: flex-end;
+    }
+
+    .completion-badge {
+        font-size: 0.75rem;
+        padding: 0.375rem 0.5rem;
+    }
+
+    .playback-controls {
+        gap: 0.25rem;
+    }
+
+    .control-button.large {
+        padding: 0.375rem;
+    }
+
+    .control-button.large svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    .play-button svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    .bottom-actions {
+        flex-direction: column;
+        gap: 0.75rem;
+        align-items: stretch;
+    }
+
+    .left-actions,
+    .right-actions {
+        justify-content: center;
+    }
+
+    .settings-menu {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+}
+
+/* Keyboard Navigation */
+.video-player-container:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+    .control-button {
+        border: 1px solid white;
+    }
+
+    .progress-bar {
+        background: rgba(255, 255, 255, 0.6);
+    }
+
+    .volume-slider {
+        background: rgba(255, 255, 255, 0.6);
+    }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+    .control-button,
+    .play-button-large,
+    .progress-fill {
+        transition: none;
+    }
+
+    .control-button:hover,
+    .control-button.large:hover,
+    .play-button-large:hover {
+        transform: none;
+    }
+}

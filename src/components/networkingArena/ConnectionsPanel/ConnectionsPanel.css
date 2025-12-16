@@ -1,0 +1,364 @@
+/* ConnectionsPanel.css - Professional Connections Design */
+
+.connections-panel {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.connections-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.connections-header h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+
+/* Connections Search */
+.connections-search {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: #f8f9fa;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  transition: all 0.2s ease;
+}
+
+.connections-search:focus-within {
+  border-color: #2563eb;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.connections-search svg {
+  color: #64748b;
+  flex-shrink: 0;
+}
+
+.connections-search input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 0.9375rem;
+  color: #1e293b;
+}
+
+.connections-search input::placeholder {
+  color: #94a3b8;
+}
+
+/* Connections Tabs */
+.connections-tabs {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 1.5rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.connections-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.connections-tabs button {
+  padding: 0.75rem 1rem;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.9375rem;
+  color: #64748b;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.connections-tabs button:hover {
+  color: #2563eb;
+}
+
+.connections-tabs button.active {
+  color: #2563eb;
+  border-bottom-color: #2563eb;
+}
+
+/* Connections Grid */
+.connections-grid,
+.requests-list,
+.suggestions-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+/* Connection Card */
+.connection-card,
+.request-card,
+.suggestion-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.25rem;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.connection-card:hover,
+.request-card:hover,
+.suggestion-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.connection-avatar,
+.request-avatar,
+.suggestion-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 auto 1rem;
+  border: 3px solid #e2e8f0;
+}
+
+.connection-info h3,
+.request-info h3,
+.suggestion-info h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 0.25rem;
+}
+
+.connection-title,
+.request-title,
+.suggestion-title {
+  color: #64748b;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+.mutual-connections,
+.request-time {
+  font-size: 0.8125rem;
+  color: #94a3b8;
+  margin-bottom: 1rem;
+}
+
+/* Action Buttons */
+.connection-actions,
+.request-actions,
+.suggestion-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.btn-message,
+.btn-remove,
+.btn-accept,
+.btn-ignore,
+.btn-connect {
+  flex: 1;
+  padding: 0.625rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-message,
+.btn-connect {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.btn-message:hover,
+.btn-connect:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.btn-remove,
+.btn-ignore {
+  background: transparent;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+}
+
+.btn-remove:hover,
+.btn-ignore:hover {
+  border-color: #cbd5e1;
+  background: #f8f9fa;
+}
+
+.btn-accept {
+  background: #10b981;
+  color: #ffffff;
+}
+
+.btn-accept:hover {
+  background: #059669;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+/* Empty State */
+.connections-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 3rem 1.5rem;
+  text-align: center;
+  color: #94a3b8;
+}
+
+.connections-empty-state svg {
+  width: 64px;
+  height: 64px;
+  color: #cbd5e1;
+}
+
+.connections-empty-state h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #64748b;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .connections-grid,
+  .requests-list,
+  .suggestions-list {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .connections-panel {
+    padding: 1rem;
+  }
+  
+  .connections-grid,
+  .requests-list,
+  .suggestions-list {
+    grid-template-columns: 1fr;
+  }
+  
+  .connection-card,
+  .request-card,
+  .suggestion-card {
+    padding: 1rem;
+  }
+  
+  .connection-avatar,
+  .request-avatar,
+  .suggestion-avatar {
+    width: 70px;
+    height: 70px;
+  }
+}
+
+/* Enhanced Responsive Design */
+@media (max-width: 992px) {
+  .connections-grid,
+  .requests-list,
+  .suggestions-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .connections-panel {
+    padding: 1rem;
+  }
+
+  .connections-header h2 {
+    font-size: 1.1rem;
+  }
+
+  .connections-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .connections-tab {
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+    white-space: nowrap;
+  }
+
+  .connections-grid,
+  .requests-list,
+  .suggestions-list {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .mutual-connections {
+    font-size: 0.75rem;
+  }
+
+  .btn-accept,
+  .btn-decline,
+  .btn-connect {
+    padding: 0.5rem 0.85rem;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .connections-search {
+    padding: 0.6rem 0.85rem;
+  }
+
+  .connections-header h2 {
+    font-size: 1rem;
+  }
+
+  .connection-name,
+  .request-name,
+  .suggestion-name {
+    font-size: 0.95rem;
+  }
+
+  .connection-title,
+  .request-title,
+  .suggestion-title {
+    font-size: 0.8rem;
+  }
+
+  .connection-avatar,
+  .request-avatar,
+  .suggestion-avatar {
+    width: 60px;
+    height: 60px;
+  }
+
+  .btn-accept,
+  .btn-decline,
+  .btn-connect {
+    padding: 0.45rem 0.75rem;
+    font-size: 0.75rem;
+  }
+}

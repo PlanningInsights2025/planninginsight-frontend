@@ -1,0 +1,225 @@
+/* Global Job Portal styles - light, minimal, soft card shadows, rounded corners */
+:root{
+  --bg:#f8fafc;
+  --card:#ffffff;
+  --muted:#6b7280;
+  --accent:#6d28d9;
+  --chip-bg:#f1f5f9;
+  --chip-text:#334155;
+  --border:#e6eef2;
+  --container-pad:24px;
+}
+
+html, body { height:100%; }
+body { background: var(--bg); -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
+
+.jp-card { background: var(--card); border-radius:12px; box-shadow: 0 8px 26px rgba(15,23,42,0.06); border:1px solid rgba(15,23,42,0.04); overflow:hidden; transition:transform .18s ease, box-shadow .18s ease; position:relative; }
+.jp-card:hover{ transform:translateY(-6px); box-shadow: 0 18px 40px rgba(15,23,42,0.09); }
+.jp-card + .jp-card { margin-top:18px; }
+  .jp-card-inner { padding:18px; display:flex; flex-direction:column; gap:12px; }
+
+/* Horizontal card layout */
+.jp-card-inner.horizontal { flex-direction:row; align-items:flex-start; }
+.jp-card-main { flex:1; min-width:0; padding-right:12px; }
+.jp-card-side { width:240px; display:flex; flex-direction:column; align-items:flex-end; gap:12px; }
+.jp-side-actions { display:flex; gap:10px; flex-direction:column; width:100%; align-items:flex-end; }
+  .jp-side-actions { display:flex; gap:10px; flex-direction:column; width:100%; align-items:flex-end; }
+  .jp-side-actions .btn { width:140px; border-radius:8px; }
+  .jp-side-actions .btn.outline { background:#f8fafc; }
+
+  /* Make side actions vertically centered */
+  .jp-card-inner.horizontal { align-items:flex-start; }
+  .jp-card-side { display:flex; flex-direction:column; justify-content:center; }
+.side-badges { justify-content:flex-end; }
+.left-meta { margin-top:8px; }
+
+.jp-card-header { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
+.jp-title { margin:0; font-size:20px; color:#0f172a; font-weight:700; letter-spacing:0.1px; }
+.jp-sub { font-size:13px; color:var(--muted); margin-top:6px; }
+.dot { margin:0 6px; color:var(--muted); }
+
+.jp-badges { display:flex; gap:8px; align-items:center; }
+.jp-chip { background:var(--chip-bg); color:var(--chip-text); font-size:12px; padding:6px 8px; border-radius:999px; font-weight:600; }
+.jp-chip.light { background:#fff7ed; color:#b45309; }
+
+.jp-body { display:flex; flex-direction:column; gap:8px; }
+.jp-desc { margin:0; color:#334155; line-height:1.45; font-size:14px; }
+
+.jp-login-bar { margin-top:8px; padding:12px 14px; border-radius:10px; background:#f3eefb; color:#5b21b6; font-size:14px; text-align:center; border:1px solid rgba(107,33,168,0.06); }
+
+.jp-footer { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:6px; }
+.jp-left { color:var(--muted); font-size:13px; display:flex; align-items:center; gap:8px; }
+.jp-right { display:flex; align-items:center; gap:12px; }
+.jp-applicants { color:var(--muted); font-size:13px; display:flex; align-items:center; gap:6px; }
+
+.jp-actions { display:flex; gap:10px; align-items:center; }
+.jp-btn { padding:8px 12px; border-radius:8px; font-size:14px; cursor:pointer; }
+.jp-btn.outline { background:transparent; border:1px solid var(--border); color:#334155; }
+.jp-btn.primary { background:var(--accent); color:#fff; border:none; box-shadow:0 8px 20px rgba(109,40,217,0.12); }
+
+/* Filter bar and header styles */
+.jobs-header { margin-bottom:18px; }
+.search-section { display:flex; gap:12px; align-items:center; }
+.search-bar { flex:1; display:flex; align-items:center; gap:12px; background:#fff; padding:12px 16px; border-radius:12px; border:1px solid var(--border); }
+.search-input { border:0; outline:0; width:100%; font-size:15px; color:#0f172a; }
+.filter-toggle { background:#fff; border:1px solid var(--border); padding:10px 14px; border-radius:10px; display:flex; gap:10px; align-items:center; cursor:pointer; }
+.sort-select { border:1px solid var(--border); padding:10px 12px; border-radius:10px; background:#fff; }
+
+.filters-panel { margin-top:12px; background:#fff; border-radius:12px; padding:18px; border:1px solid var(--border); box-shadow:0 10px 24px rgba(16,24,40,0.04); }
+.filters-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:12px; }
+.filter-group label { display:block; font-size:13px; color:var(--muted); margin-bottom:6px; }
+.filter-group select { width:100%; padding:8px; border-radius:8px; border:1px solid var(--border); background:#fff; }
+
+.jobs-loading { padding:48px 0; text-align:center; }
+.no-jobs-found { padding:48px 0; text-align:center; color:var(--muted); }
+
+/* Limited view purple banner */
+.login-promotion { margin-top:28px; border-radius:10px; overflow:hidden; }
+.promotion-content { background:linear-gradient(90deg,#f5f3ff,#fdf2f8); padding:20px; border-radius:12px; display:flex; justify-content:space-between; align-items:center; gap:12px; border:1px solid rgba(109,40,217,0.06); }
+.promotion-content h3 { margin:0; color:#4c1d95; }
+.promotion-content p { margin:0; color:var(--muted); }
+.promotion-actions button { margin-left:8px; }
+
+/* Responsive */
+@media (max-width: 920px) {
+  .filters-grid { grid-template-columns: repeat(2,1fr); }
+  .promotion-content { flex-direction:column; align-items:flex-start; }
+  .jp-card-inner { padding:14px; }
+}
+/* Basic CSS for JobPortal component (no Tailwind) */
+.jp-page { font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; color: #0f172a; background: #f7fafc; min-height: 100vh; }
+.jp-container { width: calc(100% - 48px); max-width: 1200px; margin: 0 auto; padding: var(--container-pad) 0; }
+.jp-header { background: #fff; box-shadow: 0 2px 8px rgba(2,6,23,0.06); position:relative; z-index:10; }
+.jp-header-inner { display:flex; justify-content:space-between; align-items:center; padding:18px 0; }
+.jp-title { margin:0; font-size:30px; color:#4c1d95; }
+.jp-sub { margin:6px 0 0; color:#475569; }
+.jp-actions .btn { margin-left:10px; }
+
+.btn { padding:8px 12px; border-radius:8px; border:1px solid transparent; cursor:pointer; background:#eef2ff; }
+  .btn { padding:8px 12px; border-radius:10px; border:1px solid transparent; cursor:pointer; font-weight:600; }
+  .btn.primary { background: linear-gradient(90deg,#7c3aed,#6d28d9); color:#fff; border:none; box-shadow: 0 8px 20px rgba(124,58,237,0.14); }
+  .btn.primary:hover { transform: translateY(-2px); box-shadow: 0 18px 30px rgba(124,58,237,0.18); }
+  .btn.outline, .btn.secondary { background:#fff; border:1px solid #eef2ff; color:#374151; }
+  .btn.recruiter { background:#10b981; color:#fff; border:none; }
+  .btn.upgrade { background:#f59e0b; color:#fff; border:none; }
+  .btn.white { background:#fff; border:1px solid #e6eef2; }
+  .btn.full { width:100%; padding:10px; }
+  .btn-icon { background:transparent; border:none; font-size:16px; cursor:pointer; }
+.avatar { width:36px; height:36px; border-radius:50%; background:#ede9fe; display:inline-flex; align-items:center; justify-content:center; color:#6d28d9; font-weight:700; }
+.avatar-sm { width:40px; height:40px; border-radius:50%; background:#efe9ff; display:inline-flex; align-items:center; justify-content:center; color:#6d28d9; font-weight:700; }
+.avatar-lg { width:72px; height:72px; border-radius:50%; background:#efe9ff; display:inline-flex; align-items:center; justify-content:center; color:#6d28d9; font-weight:700; font-size:22px; }
+
+.jp-premium-banner { background: linear-gradient(90deg,#f59e0b,#f97316); color:#fff; padding:14px 0; }
+.jp-premium-inner { display:flex; justify-content:space-between; align-items:center; }
+
+.jp-main { padding:28px 0 80px; }
+.jp-search { background:#fff; padding:18px; border-radius:12px; box-shadow:0 10px 28px rgba(2,6,23,0.04); margin-bottom:18px; }
+.search-box input { width:100%; padding:12px 14px; border-radius:10px; border:1px solid #e6eef2; }
+.filters { display:flex; gap:12px; margin-top:14px; align-items:center; }
+.filters select { padding:10px; border-radius:10px; border:1px solid #e6eef2; }
+
+.jp-info { background:#f8fafc; border:1px solid #e6eef2; padding:14px; border-radius:8px; color:#475569; margin:12px 0; }
+.jp-loading { text-align:center; padding:40px 0; }
+
+.jp-grid { display:grid; grid-template-columns: 1fr; gap:18px; }
+.jp-card { background:#fff; border-radius:12px; box-shadow: 0 6px 18px rgba(2,6,23,0.04); position:relative; overflow:hidden; }
+  /* left accent removed per UX request */
+  .jp-card::before{ display:none !important; }
+  /* ensure card content is above the accent bar */
+  .jp-card > .jp-card-inner { position:relative; z-index:1; }
+
+  .jp-card.featured { position:relative; }
+  .jp-card.featured::before{ display:none !important; }
+.jp-card-inner { padding:18px; }
+.jp-card-top { display:flex; justify-content:space-between; align-items:flex-start; }
+.jp-card-title { margin:0; font-size:18px; }
+.jp-card-sub { color:#6b7280; margin-top:6px; }
+.jp-badges .badge { display:inline-block; padding:6px 8px; border-radius:999px; font-size:11px; margin-left:6px; }
+.badge.premium { background:#fff7ed; color:#b45309; }
+.badge.featured { background:#f3e8ff; color:#6d28d9; }
+  .jp-tags { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; align-items:center; }
+  /* Scoped tag styles for job cards to avoid being overridden by other global .tag rules */
+  .jp-tags .tag, .jp-card .tag { background:#eef2ff; color:#0f172a; padding:6px 10px; border-radius:999px; font-size:12px; font-weight:600; display:inline-flex; align-items:center; white-space:nowrap; }
+  .jp-tags .tag.small { padding:4px 8px; font-size:11px; font-weight:600; }
+.jp-desc { color:#374151; margin-top:12px; }
+  .jp-card-bottom { display:flex; justify-content:space-between; align-items:center; margin-top:16px; gap:12px; }
+  .jp-deadline { color:#6b7280; }
+.jp-days { margin-left:8px; padding:4px 8px; border-radius:999px; font-size:12px; }
+.jp-days.urgent { background:#fee2e2; color:#b91c1c; }
+.jp-days.soon { background:#fff7ed; color:#92400e; }
+  .jp-actions { display:flex; gap:10px; margin-left:auto; align-items:center; }
+.jp-login-note { margin-top:12px; padding:10px; background:#fbfafb; border-radius:8px; color:#6b7280; text-align:center; }
+
+/* Modal and details */
+.jp-modal-overlay { position:fixed; inset:0; background:rgba(2,6,23,0.6); display:flex; align-items:center; justify-content:center; z-index:60; padding:20px; }
+.jp-modal { background:#fff; border-radius:12px; width:100%; max-width:1000px; max-height:90vh; box-shadow:0 30px 60px rgba(2,6,23,0.3); -webkit-overflow-scrolling:touch; display:flex; flex-direction:column; overflow:hidden; }
+.jp-modal.small { max-width:720px; }
+.jp-modal.large { max-width:1100px; }
+.jp-modal-header { display:flex; justify-content:space-between; align-items:center; padding:16px; border-bottom:1px solid #eef2ff; flex:0 0 auto; }
+.jp-modal-body { padding:18px; display:flex; gap:22px; align-items:flex-start; flex:1 1 auto; overflow:auto; min-height:0; }
+.jp-main-col { flex:1; min-width:0; }
+.jp-side-col { width:320px; }
+/* Make side column visually distinct and sticky on tall modals */
+.jp-side-col { display:flex; flex-direction:column; gap:12px; }
+.jp-side-col .card { background:#ffffff; padding:16px; border-radius:12px; box-shadow:0 8px 22px rgba(15,23,42,0.06); border:1px solid rgba(15,23,42,0.04); }
+.recruiter-card { display:flex; gap:12px; align-items:center; }
+.recruiter-avatar { width:56px; height:56px; border-radius:50%; background:linear-gradient(180deg,#efe9ff,#f3e8ff); display:flex; align-items:center; justify-content:center; color:#6d28d9; font-weight:700; font-size:18px; }
+.recruiter-info { display:flex; flex-direction:column; }
+.recruiter-info .org { font-weight:700; color:#0f172a; }
+.recruiter-info .role { font-size:13px; color:var(--muted); margin-top:4px; }
+.recruiter-actions { margin-top:10px; display:flex; gap:8px; }
+.recruiter-actions .btn { width:100%; }
+.stats-card { background:linear-gradient(180deg,#0f172a,#0b1220); color:#dbeafe; padding:16px; border-radius:12px; }
+.stats-card .label { color:rgba(219,234,254,0.8); font-size:13px; }
+.stats-card .value { font-weight:700; font-size:18px; margin-top:6px; }
+
+/* Sections inside main column */
+.detail-section { margin-bottom:18px; }
+.detail-section h4 { margin:0 0 8px 0; font-size:16px; color:#0f172a; font-weight:700; }
+.detail-section .text { color:#334155; line-height:1.6; font-size:14px; }
+.two-col { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.info-pair { display:flex; flex-direction:column; }
+.info-pair .name { font-size:13px; color:var(--muted); }
+.info-pair .val { font-weight:700; color:#0f172a; margin-top:6px; }
+
+.jp-modal-footer { padding:16px; border-top:1px solid #eef2ff; display:flex; justify-content:space-between; gap:12px; align-items:center; }
+
+/* Close button */
+.modal-close { background:transparent; border:none; font-size:18px; cursor:pointer; color:var(--muted); padding:8px; border-radius:8px; }
+.modal-close:hover { background:#f3f4f6; }
+
+.jp-grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.similar-list { display:flex; gap:8px; flex-wrap:wrap; }
+.similar-item { background:#fff; border:1px solid #eef2ff; padding:8px 12px; border-radius:8px; }
+
+.form-group { margin-bottom:12px; }
+.form-group input, .form-group textarea { width:100%; padding:8px; border-radius:6px; border:1px solid #e6eef2; }
+.modal-actions { display:flex; justify-content:flex-end; gap:8px; padding:12px; }
+
+.tabs { display:flex; gap:8px; margin-bottom:12px; }
+.tabs button { padding:8px 12px; border-radius:8px; border:1px solid #eef2ff; background:#fff; cursor:pointer; }
+.tabs button.active { background:#ecfeff; border-color:#34d399; }
+
+@media (max-width: 900px) {
+  .jp-modal-body { flex-direction:column; }
+  .jp-side-col { width:100%; }
+  .filters { flex-direction:column; }
+  .filters-grid { grid-template-columns: repeat(2,1fr); }
+  .jp-container { width: calc(100% - 24px); padding: 16px 0; }
+  .search-bar { padding:10px 12px; }
+  .jp-card-inner.horizontal { flex-direction:column; }
+  .jp-card-side { width:100%; align-items:flex-start; }
+  .jp-side-actions { flex-direction:row; justify-content:flex-end; width:auto; }
+  .jp-side-actions .btn { width:auto; }
+}
+
+@media (min-width: 1000px) {
+  /* Keep side column visible while scrolling the modal body */
+  .jp-modal-body { align-items:flex-start; }
+  .jp-side-col { position:sticky; top:28px; max-height:calc(90vh - 160px); overflow:auto; }
+}
+
+/* Custom scrollbar for main content and modals */
+.jp-main::-webkit-scrollbar, .jp-modal::-webkit-scrollbar { height:8px; width:8px; }
+.jp-main::-webkit-scrollbar-thumb, .jp-modal::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.25); border-radius:8px; }
+.jp-main, .jp-modal { scrollbar-width: thin; scrollbar-color: rgba(99,102,241,0.25) transparent; }
