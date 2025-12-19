@@ -1,16 +1,16 @@
 /* Header.css - Clean Professional Design */
 
 :root {
-  --primary: #2563eb;
-  --primary-dark: #1e40af;
-  --primary-light: #3b82f6;
-  --accent: #10b981;
-  --accent-dark: #059669;
-  --dark: #0f172a;
-  --dark-lighter: #1e293b;
-  --light: #f8fafc;
+  --primary: #524393;
+  --primary-dark: #3d3270;
+  --primary-light: #6b5ab8;
+  --accent: #BDD337;
+  --accent-dark: #a3b82f;
+  --dark: #1B1528;
+  --dark-lighter: #2d2540;
+  --light: #EEF3CE;
   --gray: #64748b;
-  --gray-light: #cbd5e1;
+  --gray-light: #C0BABC;
   --gray-dark: #475569;
   --white: #ffffff;
   

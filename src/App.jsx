@@ -24,6 +24,7 @@ import Learning from './pages/Learning/Learning';
 import CourseDetail from './components/learningCentre/CourseDetail/CourseDetail';
 import Enrollment from './pages/Learning/Enrollment';
 import Publishing from './pages/Publishing/Publishing';
+import ManuscriptSubmission from './pages/Publishing/ManuscriptSubmission/ManuscriptSubmission';
 import News from './pages/News/News';
 import CollaborateEvent from './pages/News/CollaborateEvent/CollaborateEvent';
 import Forum from './pages/Forum/Forum';
@@ -72,6 +73,7 @@ function App() {
 
                     {/* Publishing House */}
                     <Route path="/publishing" element={<Publishing />} />
+                    <Route path="/publishing/submit" element={<ManuscriptSubmission />} />
 
                     {/* Newsroom */}
                     <Route path="/news" element={<News />} />

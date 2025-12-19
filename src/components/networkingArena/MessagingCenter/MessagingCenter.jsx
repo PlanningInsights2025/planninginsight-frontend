@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { X, Search, Send, Paperclip, Image, Smile, MoreVertical, Check, CheckCheck, Phone, Video, ArrowLeft } from 'lucide-react';
 import './MessagingCenter.css';
 
-const MessagingCenter = ({ onClose, setUnreadCount }) => {
+const MessagingCenter = ({ onClose, setUnreadCount, userId, currentUser = { name: 'You', avatar: '/api/placeholder/40/40' } }) => {
   const [selectedChat, setSelectedChat] = useState(null);
   const [messageText, setMessageText] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -60,12 +60,35 @@ const MessagingCenter = ({ onClose, setUnreadCount }) => {
       { id: 1, sender: 'Michael Chen', text: 'Hi! I saw your profile', timestamp: '9:15 AM', sent: false, read: true },
       { id: 2, sender: 'You', text: 'Hello Michael! Thanks for reaching out', timestamp: '9:20 AM', sent: true, read: true },
       { id: 3, sender: 'Michael Chen', text: 'When can we schedule a call?', timestamp: '9:45 AM', sent: false, read: false }
+    ],
+    3: [
+      { id: 1, sender: 'Emily Rodriguez', text: 'Hi! I loved your latest post', timestamp: '11:00 AM', sent: false, read: true },
+      { id: 2, sender: 'You', text: 'Thank you Emily! Glad you enjoyed it', timestamp: '11:15 AM', sent: true, read: true },
+      { id: 3, sender: 'Emily Rodriguez', text: 'Check out this article', timestamp: '11:30 AM', sent: false, read: true }
+    ],
+    4: [
+      { id: 1, sender: 'You', text: 'Nice meeting you at the conference!', timestamp: '2:00 PM', sent: true, read: true },
+      { id: 2, sender: 'David Kim', text: 'Great meeting you!', timestamp: '2:15 PM', sent: false, read: false }
     ]
   });
 
   useEffect(() => {
     scrollToBottom();
   }, [selectedChat, messages]);
+
+  useEffect(() => {
+    // Auto-select chat if userId is provided
+    console.log('MessagingCenter received userId:', userId);
+    if (userId && chats) {
+      const chatToSelect = chats.find(chat => chat.id === userId);
+      console.log('Found chat to select:', chatToSelect);
+      if (chatToSelect) {
+        setSelectedChat(chatToSelect);
+      } else {
+        console.warn('No chat found for userId:', userId);
+      }
+    }
+  }, [userId, chats]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -74,8 +97,9 @@ const MessagingCenter = ({ onClose, setUnreadCount }) => {
   const handleSendMessage = () => {
     if (!messageText.trim() || !selectedChat) return;
 
+    const currentMessages = messages[selectedChat.id] || [];
     const newMessage = {
-      id: messages[selectedChat.id].length + 1,
+      id: currentMessages.length + 1,
       sender: 'You',
       text: messageText,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
@@ -85,7 +109,7 @@ const MessagingCenter = ({ onClose, setUnreadCount }) => {
 
     setMessages(prev => ({
       ...prev,
-      [selectedChat.id]: [...prev[selectedChat.id], newMessage]
+      [selectedChat.id]: [...(prev[selectedChat.id] || []), newMessage]
     }));
 
     setMessageText('');
@@ -124,8 +148,9 @@ const MessagingCenter = ({ onClose, setUnreadCount }) => {
       responseText = 'That\'s interesting! Tell me more about it.';
     }
 
+    const currentMessages = messages[selectedChat.id] || [];
     const botMessage = {
-      id: messages[selectedChat.id].length + 2,
+      id: currentMessages.length + 2,
       sender: selectedChat.name,
       text: responseText,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
@@ -135,7 +160,7 @@ const MessagingCenter = ({ onClose, setUnreadCount }) => {
 
     setMessages(prev => ({
       ...prev,
-      [selectedChat.id]: [...prev[selectedChat.id], botMessage]
+      [selectedChat.id]: [...(prev[selectedChat.id] || []), botMessage]
     }));
   };
 
@@ -241,19 +266,27 @@ const MessagingCenter = ({ onClose, setUnreadCount }) => {
                       className={`message ${message.sent ? 'sent' : 'received'}`}
                     >
                       {!message.sent && (
-                        <img src={selectedChat.avatar} alt="" className="message-avatar" />
+                        <img src={selectedChat.avatar} alt={selectedChat.name} className="message-avatar" />
                       )}
-                      <div className="message-content">
-                        <p>{message.text}</p>
-                        <div className="message-meta">
-                          <span className="message-time">{message.timestamp}</span>
-                          {message.sent && (
-                            <span className="message-status">
-                              {message.read ? <CheckCheck size={14} /> : <Check size={14} />}
-                            </span>
-                          )}
+                      <div className="message-bubble">
+                        <div className="message-sender-name">
+                          {message.sent ? currentUser.name : selectedChat.name}
+                        </div>
+                        <div className="message-content">
+                          <p>{message.text}</p>
+                          <div className="message-meta">
+                            <span className="message-time">{message.timestamp}</span>
+                            {message.sent && (
+                              <span className="message-status">
+                                {message.read ? <CheckCheck size={14} /> : <Check size={14} />}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
+                      {message.sent && (
+                        <img src={currentUser.avatar} alt={currentUser.name} className="message-avatar" />
+                      )}
                     </div>
                   ))}
                   {isTyping && (

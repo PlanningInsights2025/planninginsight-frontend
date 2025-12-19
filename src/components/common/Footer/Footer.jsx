@@ -63,7 +63,7 @@ const Footer = () => {
             <ul className="footer-contact-list-horizontal">
               <li className="footer-contact-item-horizontal">
                 <MapPin size={16} />
-                <span>Enquiry</span>
+                <span>Nashik</span>
               </li>
               <li className="footer-contact-item-horizontal">
                 <MapPin size={16} />
@@ -77,7 +77,7 @@ const Footer = () => {
               </li>
               <li className="footer-contact-item-horizontal">
                 <Phone size={16} />
-                <a href="tel:+919022311897">+91 9022311897</a>
+                <a href="tel:+919022311897">+91 8600050170</a>
               </li>
             </ul>
 

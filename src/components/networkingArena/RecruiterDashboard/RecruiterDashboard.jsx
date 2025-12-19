@@ -4,9 +4,12 @@ import {
   Calendar, Filter, Search, UserCheck, MessageSquare 
 } from 'lucide-react';
 import './RecruiterDashboard.css';
+import UserProfileModal from '../UserProfileModal/UserProfileModal';
 
-const RecruiterDashboard = () => {
+const RecruiterDashboard = ({ onOpenMessaging }) => {
   const [timeRange, setTimeRange] = useState('30days');
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [showProfileModal, setShowProfileModal] = useState(false);
 
   const stats = {
     activeJobs: 12,
@@ -45,35 +48,92 @@ const RecruiterDashboard = () => {
     }
   ]);
 
-  const [recentApplicants] = useState([
+  const [recentApplicants, setRecentApplicants] = useState([
     {
       id: 1,
       name: 'Alice Johnson',
+      title: 'Senior Software Engineer',
+      company: 'Tech Corp',
       position: 'Senior Software Engineer',
       avatar: '/api/placeholder/40/40',
       appliedDate: '2 hours ago',
       match: 95,
-      status: 'new'
+      status: 'new',
+      isFollowing: false,
+      connected: false,
+      mutualConnections: 15
     },
     {
       id: 2,
       name: 'Bob Smith',
+      title: 'Product Manager',
+      company: 'Innovation Inc',
       position: 'Product Manager',
       avatar: '/api/placeholder/40/40',
       appliedDate: '5 hours ago',
       match: 88,
-      status: 'reviewed'
+      status: 'reviewed',
+      isFollowing: true,
+      connected: true,
+      mutualConnections: 8
     },
     {
       id: 3,
       name: 'Carol Williams',
+      title: 'UX Designer',
+      company: 'Design Studio',
       position: 'UX Designer',
       avatar: '/api/placeholder/40/40',
       appliedDate: '1 day ago',
       match: 92,
-      status: 'shortlisted'
+      status: 'shortlisted',
+      isFollowing: false,
+      connected: false,
+      mutualConnections: 22
     }
   ]);
+
+  const handleViewProfile = (user) => {
+    setSelectedUser(user);
+    setShowProfileModal(true);
+  };
+
+  const handleFollow = (userId) => {
+    console.log('Following user:', userId);
+    setRecentApplicants(prevApplicants => 
+      prevApplicants.map(applicant => 
+        applicant.id === userId ? { ...applicant, isFollowing: true } : applicant
+      )
+    );
+    if (selectedUser && selectedUser.id === userId) {
+      setSelectedUser({ ...selectedUser, isFollowing: true });
+    }
+  };
+
+  const handleUnfollow = (userId) => {
+    console.log('Unfollowing user:', userId);
+    setRecentApplicants(prevApplicants => 
+      prevApplicants.map(applicant => 
+        applicant.id === userId ? { ...applicant, isFollowing: false } : applicant
+      )
+    );
+    if (selectedUser && selectedUser.id === userId) {
+      setSelectedUser({ ...selectedUser, isFollowing: false });
+    }
+  };
+
+  const handleConnect = (userId) => {
+    console.log('Connecting with user:', userId);
+    setShowProfileModal(false);
+  };
+
+  const handleMessage = (userId) => {
+    console.log('Messaging user:', userId);
+    setShowProfileModal(false);
+    if (onOpenMessaging) {
+      onOpenMessaging(userId);
+    }
+  };
 
   return (
     <div className="recruiter-dashboard">
@@ -238,8 +298,18 @@ const RecruiterDashboard = () => {
                   </span>
                 </div>
                 <div className="applicant-actions">
-                  <button className="btn-view-profile">View Profile</button>
-                  <button className="btn-message">Message</button>
+                  <button 
+                    className="btn-view-profile"
+                    onClick={() => handleViewProfile(applicant)}
+                  >
+                    View Profile
+                  </button>
+                  <button 
+                    className="btn-message"
+                    onClick={() => handleMessage(applicant.id)}
+                  >
+                    Message
+                  </button>
                 </div>
               </div>
             ))}
@@ -261,6 +331,18 @@ const RecruiterDashboard = () => {
           </div>
         </div>
       </div>
+
+      {/* User Profile Modal */}
+      {showProfileModal && selectedUser && (
+        <UserProfileModal
+          user={selectedUser}
+          onClose={() => setShowProfileModal(false)}
+          onFollow={handleFollow}
+          onUnfollow={handleUnfollow}
+          onConnect={handleConnect}
+          onMessage={handleMessage}
+        />
+      )}
     </div>
   );
 };

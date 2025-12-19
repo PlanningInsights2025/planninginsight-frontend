@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { X, Search, Filter, MapPin, Briefcase, GraduationCap, Award, Users, Building, ArrowLeft } from 'lucide-react';
 import './AdvancedSearch.css';
+import UserProfileModal from '../UserProfileModal/UserProfileModal';
 
-const AdvancedSearch = ({ onClose, userRole }) => {
+const AdvancedSearch = ({ onClose, userRole, onOpenMessaging }) => {
   const [searchType, setSearchType] = useState('people');
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [showProfileModal, setShowProfileModal] = useState(false);
   const [filters, setFilters] = useState({
     location: '',
     industry: '',
@@ -14,7 +17,7 @@ const AdvancedSearch = ({ onClose, userRole }) => {
     company: ''
   });
 
-  const [searchResults] = useState([
+  const [searchResults, setSearchResults] = useState([
     {
       id: 1,
       name: 'Sarah Johnson',
@@ -24,7 +27,9 @@ const AdvancedSearch = ({ onClose, userRole }) => {
       avatar: '/api/placeholder/60/60',
       mutualConnections: 12,
       skills: ['Product Strategy', 'Agile', 'Analytics'],
-      match: 95
+      match: 95,
+      isFollowing: false,
+      connected: false
     },
     {
       id: 2,
@@ -35,7 +40,9 @@ const AdvancedSearch = ({ onClose, userRole }) => {
       avatar: '/api/placeholder/60/60',
       mutualConnections: 8,
       skills: ['Python', 'Machine Learning', 'SQL'],
-      match: 88
+      match: 88,
+      isFollowing: true,
+      connected: true
     },
     {
       id: 3,
@@ -46,7 +53,9 @@ const AdvancedSearch = ({ onClose, userRole }) => {
       avatar: '/api/placeholder/60/60',
       mutualConnections: 15,
       skills: ['Figma', 'User Research', 'Prototyping'],
-      match: 92
+      match: 92,
+      isFollowing: false,
+      connected: false
     }
   ]);
 
@@ -61,6 +70,53 @@ const AdvancedSearch = ({ onClose, userRole }) => {
     'Senior (6-10 years)',
     'Expert (10+ years)'
   ];
+
+  const handleViewProfile = (user) => {
+    setSelectedUser(user);
+    setShowProfileModal(true);
+  };
+
+  const handleFollow = (userId) => {
+    console.log('Following user:', userId);
+    setSearchResults(prevResults => 
+      prevResults.map(result => 
+        result.id === userId ? { ...result, isFollowing: true } : result
+      )
+    );
+    if (selectedUser && selectedUser.id === userId) {
+      setSelectedUser({ ...selectedUser, isFollowing: true });
+    }
+  };
+
+  const handleUnfollow = (userId) => {
+    console.log('Unfollowing user:', userId);
+    setSearchResults(prevResults => 
+      prevResults.map(result => 
+        result.id === userId ? { ...result, isFollowing: false } : result
+      )
+    );
+    if (selectedUser && selectedUser.id === userId) {
+      setSelectedUser({ ...selectedUser, isFollowing: false });
+    }
+  };
+
+  const handleConnect = (userId) => {
+    console.log('Connecting with user:', userId);
+    setSearchResults(prevResults => 
+      prevResults.map(result => 
+        result.id === userId ? { ...result, connected: true } : result
+      )
+    );
+    setShowProfileModal(false);
+  };
+
+  const handleMessage = (userId) => {
+    console.log('Messaging user:', userId);
+    setShowProfileModal(false);
+    if (onOpenMessaging) {
+      onOpenMessaging(userId);
+    }
+  };
 
   return (
     <div className="advanced-search-overlay">
@@ -272,11 +328,11 @@ const AdvancedSearch = ({ onClose, userRole }) => {
                     </div>
                   </div>
                   <div className="result-actions">
-                    <button className="btn-connect">Connect</button>
+                    <button className="btn-connect" onClick={() => handleConnect(result.id)}>Connect</button>
                     {userRole === 'premium' && (
                       <button className="btn-inmail">Send InMail</button>
                     )}
-                    <button className="btn-view">View Profile</button>
+                    <button className="btn-view" onClick={() => handleViewProfile(result)}>View Profile</button>
                   </div>
                 </div>
               ))}
@@ -284,6 +340,18 @@ const AdvancedSearch = ({ onClose, userRole }) => {
           </div>
         </div>
       </div>
+
+      {/* User Profile Modal */}
+      {showProfileModal && selectedUser && (
+        <UserProfileModal
+          user={selectedUser}
+          onClose={() => setShowProfileModal(false)}
+          onFollow={handleFollow}
+          onUnfollow={handleUnfollow}
+          onConnect={handleConnect}
+          onMessage={handleMessage}
+        />
+      )}
     </div>
   );
 };

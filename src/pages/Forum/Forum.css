@@ -3,17 +3,17 @@
    ========================================== */
 
 .forum-page {
-  --primary-color: #2563eb;
-  --primary-dark: #1e40af;
-  --success-color: #059669;
+  --primary-color: #524393;
+  --primary-dark: #3d3270;
+  --success-color: #BDD337;
   --error-color: #dc2626;
   --warning-color: #f59e0b;
-  --text-primary: #1f2937;
+  --text-primary: #1B1528;
   --text-secondary: #4b5563;
   --text-muted: #6b7280;
   --background-color: #ffffff;
-  --bg-secondary: #f8fafc;
-  --border-color: #e5e7eb;
+  --bg-secondary: #EEF3CE;
+  --border-color: #C0BABC;
   --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);

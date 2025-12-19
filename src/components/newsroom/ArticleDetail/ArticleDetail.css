@@ -814,6 +814,7 @@
   margin-bottom: 1rem;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -996,7 +997,7 @@
 .blurred { filter: blur(3px); }
 
 /* Add consistent line-clamp fallback if needed */
-.related-content p { line-clamp: 2; -webkit-line-clamp: 2; -webkit-box-orient: vertical; display: -webkit-box; overflow: hidden; }
+.related-content p { line-clamp: 2; -webkit-line-clamp: 2; -webkit-box-orient: vertical; display: -webkit-box; overflow: hidden; line-clamp: 2; }
 
 .article-citation a {
   color: var(--news-accent, #06b6d4);

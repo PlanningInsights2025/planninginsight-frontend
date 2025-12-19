@@ -4,40 +4,130 @@ import { useAuth } from '../../hooks/useAuth';
 import { useNotification } from '../../contexts/NotificationContext';
 import { useApi } from '../../hooks/useApi';
 import { newsroomAPI } from '../../services/api/newsroom';
-import { 
-  Search, 
-  Filter, 
-  Calendar, 
-  User, 
-  Eye, 
-  MessageSquare, 
-  ThumbsUp, 
-  Bookmark, 
-  Share2, 
-  Plus, 
-  TrendingUp, 
-  Clock, 
-  FileText, 
-  Video, 
-  Lightbulb, 
-  Users, 
-  Award, 
-  ChevronRight, 
-  Bell, 
-  Star, 
-  ArrowRight, 
-  Sparkles, 
-  Zap, 
-  Heart, 
-  BookOpen, 
-  Edit3, 
-  ArrowUp, 
+import {
+  Search,
+  Filter,
+  Calendar,
+  User,
+  Eye,
+  MessageSquare,
+  ThumbsUp,
+  Bookmark,
+  Share2,
+  Plus,
+  TrendingUp,
+  Clock,
+  FileText,
+  Video,
+  Lightbulb,
+  Users,
+  Award,
+  ChevronRight,
+  Bell,
+  Star,
+  ArrowRight,
+  Sparkles,
+  Zap,
+  Heart,
+  BookOpen,
+  Edit3,
+  ArrowUp,
   ChevronUp,
   X,
-  SlidersHorizontal
+  SlidersHorizontal,
+  MapPin,
+  Building,
+  Truck,
+  Leaf,
+  Map,
+  Briefcase,
+  Home,
+  Trees,
+  Landmark,
+  Scale
 } from 'lucide-react';
 import Loader from '../../components/common/Loader/Loader';
 import './News.css';
+
+// Define the 10 categories from the built environment
+const BUILT_ENVIRONMENT_CATEGORIES = [
+  {
+    id: 'all',
+    name: 'All Categories',
+    icon: null,
+    color: null
+  },
+  {
+    id: 'urban-regional-planning',
+    name: 'Urban & Regional Planning',
+    icon: MapPin,
+    color: '#dc2626',
+    description: 'Strategic planning of cities, towns, and regions for land use, infrastructure, and sustainable development'
+  },
+  {
+    id: 'architecture-urban-design',
+    name: 'Architecture & Urban Design',
+    icon: Building,
+    color: '#e91e63',
+    description: 'Designing buildings, public spaces, and the urban form to enhance functionality, aesthetics, and livability'
+  },
+  {
+    id: 'civil-transportation-engineering',
+    name: 'Civil & Transportation Engineering',
+    icon: Truck,
+    color: '#f59e0b',
+    description: 'Designing and constructing infrastructure systems like roads, bridges, water supply, drainage, and transit networks'
+  },
+  {
+    id: 'environmental-planning-sustainability',
+    name: 'Environmental Planning & Sustainability',
+    icon: Leaf,
+    color: '#10b981',
+    description: 'Integrating ecological principles into development, managing natural resources, and addressing climate resilience'
+  },
+  {
+    id: 'geoinformatics-remote-sensing',
+    name: 'Geoinformatics & Remote Sensing (GIS)',
+    icon: Map,
+    color: '#059669',
+    description: 'Using geospatial data and satellite imagery for spatial analysis, mapping, urban monitoring, and decision-making'
+  },
+  {
+    id: 'construction-project-management',
+    name: 'Construction & Project Management',
+    icon: Briefcase,
+    color: '#3b82f6',
+    description: 'Overseeing construction processes, procurement processes, project monitoring, cost control and site operations to deliver built infrastructure'
+  },
+  {
+    id: 'real-estate-housing',
+    name: 'Real Estate & Housing',
+    icon: Home,
+    color: '#1e40af',
+    description: 'Development, valuation, and management of residential, commercial, and industrial property markets'
+  },
+  {
+    id: 'landscape-architecture',
+    name: 'Landscape Architecture',
+    icon: Trees,
+    color: '#7c3aed',
+    description: 'Designing open spaces, parks, waterfronts, and ecological zones to support biodiversity and community well-being'
+  },
+  {
+    id: 'heritage-conservation-cultural-planning',
+    name: 'Heritage Conservation & Cultural Planning',
+    icon: Landmark,
+    color: '#ca8a04',
+    description: 'Preserving historic buildings, urban memory, and identity while integrating them into modern development'
+  },
+  {
+    id: 'public-policy-governance-urban-finance',
+    name: 'Public Policy, Governance & Urban Finance',
+    icon: Scale,
+    color: '#b91c1c',
+    description: 'Framing the institutional, regulatory, and financial frameworks that enable inclusive and efficient urban development'
+  }
+];
 
 const News = () => {
   const { user, isAuthenticated } = useAuth();
@@ -107,11 +197,14 @@ const News = () => {
     let filtered = [...articles];
 
     if (searchTerm) {
-      filtered = filtered.filter(article =>
-        article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        article.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        article.author?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        article.tags?.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+      filtered = filtered.filter(
+        article =>
+          article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          article.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          article.author?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          article.tags?.some(tag =>
+            tag.toLowerCase().includes(searchTerm.toLowerCase())
+          )
       );
     }
 
@@ -141,12 +234,11 @@ const News = () => {
     return filtered;
   };
 
-  const getCategories = () => {
-    const categories = [...new Set(articles.map(article => article.category))];
-    return ['all', ...categories.filter(Boolean)];
+  const getCategoryInfo = (categoryId) => {
+    return BUILT_ENVIRONMENT_CATEGORIES.find(cat => cat.id === categoryId) || BUILT_ENVIRONMENT_CATEGORIES[0];
   };
 
-  const formatDate = (dateString) => {
+  const formatDate = dateString => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
@@ -154,7 +246,7 @@ const News = () => {
     });
   };
 
-  const formatRelativeTime = (dateString) => {
+  const formatRelativeTime = dateString => {
     const date = new Date(dateString);
     const now = new Date();
     const diffTime = Math.abs(now - date);
@@ -167,7 +259,7 @@ const News = () => {
     return formatDate(dateString);
   };
 
-  const handleLike = (articleId) => {
+  const handleLike = articleId => {
     const newLiked = new Set(likedArticles);
     if (newLiked.has(articleId)) {
       newLiked.delete(articleId);
@@ -177,7 +269,7 @@ const News = () => {
     setLikedArticles(newLiked);
   };
 
-  const handleBookmark = (articleId) => {
+  const handleBookmark = articleId => {
     const newBookmarked = new Set(bookmarkedArticles);
     if (newBookmarked.has(articleId)) {
       newBookmarked.delete(articleId);
@@ -189,24 +281,25 @@ const News = () => {
     setBookmarkedArticles(newBookmarked);
   };
 
-  const handleShare = async (article) => {
+  const handleShare = async article => {
     if (navigator.share) {
       try {
         await navigator.share({
           title: article.title,
           text: article.excerpt,
-          url: `/news/articles/${article.id}`,
+          url: `/news/articles/${article.id}`
         });
       } catch (error) {
         console.log('Error sharing:', error);
       }
     } else {
-      navigator.clipboard.writeText(`${window.location.origin}/news/articles/${article.id}`)
+      navigator.clipboard
+        .writeText(`${window.location.origin}/news/articles/${article.id}`)
         .then(() => showNotification('Link copied to clipboard!', 'success'));
     }
   };
 
-  const handleNewsletterSubscribe = (e) => {
+  const handleNewsletterSubscribe = e => {
     e.preventDefault();
     if (newsletterEmail && /\S+@\S+\.\S+/.test(newsletterEmail)) {
       setNewsletterSubscribed(true);
@@ -230,12 +323,11 @@ const News = () => {
   };
 
   const filteredArticles = getFilteredArticles();
-  const categories = getCategories();
   const featuredArticle = filteredArticles[0];
 
   if (loading) {
     return (
-      <div className="loading-state">
+      <div className="news-page">
         <Loader />
       </div>
     );
@@ -244,26 +336,30 @@ const News = () => {
   return (
     <div className="news-page">
       <div className="container">
-        {/* Hero Section */}
+        {/* ==================== HERO SECTION ==================== */}
         <section className="news-hero">
           <div className="news-hero-content">
-            <div className="hero-badge">
-              <TrendingUp size={16} />
-              <span>Latest Updates</span>
-            </div>
+            <span className="hero-badge">
+              <Sparkles size={16} />
+              Built Environment Newsroom
+            </span>
+
             <h1 className="news-hero-title">
-              Newsroom & <span className="text-gradient">Insights</span>
+              Discover Insights in the{' '}
+              <span className="text-gradient">Built Environment</span>
             </h1>
+
             <p className="news-hero-description">
-              Stay updated with cutting-edge insights, research, and discussions shaping the built environment sector
+              Stay updated with cutting-edge insights, research, and discussions
+              shaping the built environment sector
             </p>
 
             {/* Hero Actions */}
             {isAuthenticated && (
               <div className="hero-actions">
                 <button
+                  className="btn-primary btn-large pulse"
                   onClick={() => setShowCollabModal(true)}
-                  className="btn-primary btn-large"
                 >
                   <Plus size={20} />
                   Write Article
@@ -275,12 +371,33 @@ const News = () => {
               </div>
             )}
 
+            {!isAuthenticated && (
+              <div className="guest-banner">
+                <div className="guest-banner-content">
+                  <div className="guest-icon">
+                    <Bell size={32} />
+                  </div>
+                  <div className="guest-text">
+                    <h3>Join Our Community</h3>
+                    <p>
+                      Sign in to contribute articles, engage with content, and
+                      connect with professionals
+                    </p>
+                  </div>
+                  <Link to="/login" className="btn-primary">
+                    <Sparkles size={18} />
+                    Get Started Free
+                  </Link>
+                </div>
+              </div>
+            )}
+
             {/* News Stats */}
             <div className="news-stats">
               <div className="stat-item">
                 <FileText size={24} />
                 <div>
-                  <strong>{articles.length}+</strong>
+                  <strong>{articles.length}</strong>
                   <span>Articles</span>
                 </div>
               </div>
@@ -294,7 +411,7 @@ const News = () => {
               <div className="stat-item">
                 <Award size={24} />
                 <div>
-                  <strong>50+</strong>
+                  <strong>10</strong>
                   <span>Categories</span>
                 </div>
               </div>
@@ -302,36 +419,24 @@ const News = () => {
           </div>
         </section>
 
-        {/* Guest Banner */}
-        {!isAuthenticated && (
-          <div className="guest-banner">
-            <div className="guest-banner-content">
-              <div className="guest-icon">
-                <Bell size={32} />
-              </div>
-              <div className="guest-text">
-                <h3>Join Our Community</h3>
-                <p>Sign in to contribute articles, engage with content, and connect with professionals</p>
-              </div>
-              <Link to="/login" className="btn-primary">
-                <Sparkles size={18} />
-                Get Started Free
-              </Link>
-            </div>
-          </div>
-        )}
-
-        {/* Featured Article */}
+        {/* ==================== FEATURED ARTICLE ==================== */}
         {featuredArticle && (
           <section className="featured-section">
-            <div className="section-label">
+            <span className="section-label">
               <Star size={16} />
-              <span>Featured Article</span>
-            </div>
-            <Link to={`/news/articles/${featuredArticle.id}`} className="featured-article-card">
+              Featured Article
+            </span>
+
+            <Link
+              to={`/news/articles/${featuredArticle.id}`}
+              className="featured-article-card"
+            >
               <div className="featured-image-wrapper">
                 <img
-                  src={featuredArticle.image || '/api/placeholder/800/400'}
+                  src={
+                    featuredArticle.image ||
+                    'https://via.placeholder.com/800x400'
+                  }
                   alt={featuredArticle.title}
                   className="featured-image"
                 />
@@ -339,24 +444,35 @@ const News = () => {
                   <span className="featured-badge">Featured</span>
                 </div>
               </div>
+
               <div className="featured-content">
                 <div className="featured-meta">
-                  <span className="category-badge">{featuredArticle.category}</span>
+                  <span className="category-badge">
+                    {getCategoryInfo(featuredArticle.category).name}
+                  </span>
                   <span className="read-time">
                     <Clock size={14} />
-                    {featuredArticle.readTime || '5 min'} read
+                    {featuredArticle.readTime || '5'} min read
                   </span>
                 </div>
+
                 <h2>{featuredArticle.title}</h2>
                 <p>{featuredArticle.excerpt}</p>
+
                 <div className="featured-footer">
                   <div className="author-info-small">
                     <User size={16} />
                     <span>{featuredArticle.author?.name || 'Anonymous'}</span>
                   </div>
                   <div className="featured-stats">
-                    <span><Eye size={14} /> {featuredArticle.views || 0}</span>
-                    <span><MessageSquare size={14} /> {featuredArticle.commentCount || 0}</span>
+                    <span>
+                      <Eye size={14} />
+                      {featuredArticle.views || 0}
+                    </span>
+                    <span>
+                      <MessageSquare size={14} />
+                      {featuredArticle.commentCount || 0}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -364,37 +480,50 @@ const News = () => {
           </section>
         )}
 
-        {/* Enhanced Filters Section */}
+        {/* ==================== FILTERS SECTION ==================== */}
         <section className="filters-section">
           {/* Categories */}
           <div className="categories-wrapper">
             <h3 className="filter-label">Browse by Category</h3>
             <div className="categories-scroll">
-              {categories.map((category) => (
-                <button
-                  key={category}
-                  className={`category-pill ${activeCategory === category ? 'active' : ''}`}
-                  onClick={() => setActiveCategory(category)}
-                >
-                  {category.charAt(0).toUpperCase() + category.slice(1)}
-                </button>
-              ))}
+              {BUILT_ENVIRONMENT_CATEGORIES.map(category => {
+                const IconComponent = category.icon;
+                return (
+                  <button
+                    key={category.id}
+                    className={`category-pill ${
+                      activeCategory === category.id ? 'active' : ''
+                    }`}
+                    onClick={() => setActiveCategory(category.id)}
+                    title={category.description}
+                  >
+                    {IconComponent && <IconComponent size={16} />}
+                    {category.name}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
           {/* Enhanced Search & Sort Row */}
           <div className="search-sort-row">
             {/* Enhanced Search Box */}
-            <div className={`search-box-enhanced ${isSearchFocused ? 'focused' : ''}`}>
+            <div
+              className={`search-box-enhanced ${
+                isSearchFocused ? 'focused' : ''
+              }`}
+            >
               <div className="search-input-wrapper">
                 <Search className="search-icon-left" size={20} />
                 <input
                   type="text"
                   placeholder="Search articles, authors, topics..."
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={e => setSearchTerm(e.target.value)}
                   onFocus={() => setIsSearchFocused(true)}
-                  onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
+                  onBlur={() => {
+                    setTimeout(() => setIsSearchFocused(false), 200);
+                  }}
                   className="search-input-enhanced"
                 />
                 {searchTerm && (
@@ -413,22 +542,31 @@ const News = () => {
                   <ArrowRight size={18} />
                 </button>
               </div>
-              
+
               {/* Search Suggestions */}
               {isSearchFocused && searchTerm && (
                 <div className="search-suggestions-dropdown">
                   <div className="suggestions-header">
                     <span className="suggestions-title">Quick suggestions</span>
                   </div>
-                  <div className="suggestion-item" onClick={() => setSearchTerm('Urban Planning')}>
+                  <div
+                    className="suggestion-item"
+                    onClick={() => setSearchTerm('Urban Planning')}
+                  >
                     <Search size={14} />
                     <span>Urban Planning</span>
                   </div>
-                  <div className="suggestion-item" onClick={() => setSearchTerm('Sustainable Development')}>
+                  <div
+                    className="suggestion-item"
+                    onClick={() => setSearchTerm('Sustainable Development')}
+                  >
                     <Search size={14} />
                     <span>Sustainable Development</span>
                   </div>
-                  <div className="suggestion-item" onClick={() => setSearchTerm('Smart Cities')}>
+                  <div
+                    className="suggestion-item"
+                    onClick={() => setSearchTerm('Smart Cities')}
+                  >
                     <Search size={14} />
                     <span>Smart Cities</span>
                   </div>
@@ -442,7 +580,7 @@ const News = () => {
                 <SlidersHorizontal size={18} className="filter-icon" />
                 <select
                   value={filter}
-                  onChange={(e) => setFilter(e.target.value)}
+                  onChange={e => setFilter(e.target.value)}
                   className="filter-select-modern"
                 >
                   <option value="all">All Types</option>
@@ -457,7 +595,7 @@ const News = () => {
                 <TrendingUp size={18} className="filter-icon" />
                 <select
                   value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
+                  onChange={e => setSortBy(e.target.value)}
                   className="filter-select-modern"
                 >
                   <option value="latest">Latest First</option>
@@ -468,7 +606,9 @@ const News = () => {
               </div>
 
               <button
-                className={`advanced-filter-btn ${showAdvancedFilters ? 'active' : ''}`}
+                className={`advanced-filter-btn ${
+                  showAdvancedFilters ? 'active' : ''
+                }`}
                 onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
               >
                 <Filter size={18} />
@@ -510,98 +650,33 @@ const News = () => {
                     <option>Community</option>
                   </select>
                 </div>
-                <div className="filter-actions">
-                  <button className="btn-ghost" onClick={handleResetFilters}>
-                    Reset All
-                  </button>
-                  <button className="btn-primary" onClick={() => setShowAdvancedFilters(false)}>
-                    Apply Filters
-                  </button>
-                </div>
+              </div>
+              <div className="filter-actions">
+                <button className="btn-ghost" onClick={handleResetFilters}>
+                  Reset All
+                </button>
+                <button
+                  className="btn-primary"
+                  onClick={() => setShowAdvancedFilters(false)}
+                >
+                  Apply Filters
+                </button>
               </div>
             </div>
           )}
         </section>
 
-        {/* Articles Section */}
+        {/* ==================== ARTICLES GRID ==================== */}
         <section className="articles-section">
           <div className="section-header-inline">
             <h2>Latest Articles</h2>
-            <span className="article-count">{filteredArticles.length} articles found</span>
+            <span className="article-count">
+              {filteredArticles.length} articles found
+            </span>
           </div>
 
           {/* Articles Grid */}
-          {filteredArticles.length > 0 ? (
-            <div className="articles-grid-modern">
-              {filteredArticles.map((article) => (
-                <article key={article.id} className="article-card-modern">
-                  <Link to={`/news/articles/${article.id}`} className="article-image-link">
-                    <div className="article-image-modern">
-                      <img
-                        src={article.image || '/api/placeholder/400/250'}
-                        alt={article.title}
-                      />
-                      <span className="article-type-badge">{article.type || 'Article'}</span>
-                    </div>
-                  </Link>
-
-                  <div className="article-body">
-                    <div className="article-header-modern">
-                      <span className="category-tag">{article.category}</span>
-                      <div className="article-quick-actions">
-                        <button
-                          className={`action-icon ${bookmarkedArticles.has(article.id) ? 'active' : ''}`}
-                          onClick={() => handleBookmark(article.id)}
-                          title="Bookmark"
-                        >
-                          <Bookmark size={14} />
-                        </button>
-                        <button
-                          className="action-icon"
-                          onClick={() => handleShare(article)}
-                          title="Share"
-                        >
-                          <Share2 size={14} />
-                        </button>
-                      </div>
-                    </div>
-
-                    <Link to={`/news/articles/${article.id}`} className="article-title-modern">
-                      {article.title}
-                    </Link>
-
-                    <p className="article-excerpt-modern">{article.excerpt}</p>
-
-                    <div className="article-footer-modern">
-                      <div className="author-meta">
-                        <div className="author-avatar-small">
-                          <User size={16} />
-                        </div>
-                        <div className="author-details-small">
-                          <span className="author-name">{article.author?.name || 'Anonymous'}</span>
-                          <span className="publish-date-small">{formatRelativeTime(article.publishedAt)}</span>
-                        </div>
-                      </div>
-
-                      <div className="engagement-row">
-                        <button
-                          className={`like-btn ${likedArticles.has(article.id) ? 'liked' : ''}`}
-                          onClick={() => handleLike(article.id)}
-                        >
-                          <Heart size={14} fill={likedArticles.has(article.id) ? 'currentColor' : 'none'} />
-                          {article.likes || 0}
-                        </button>
-                        <span className="engagement-item">
-                          <MessageSquare size={14} />
-                          {article.commentCount || 0}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </article>
-              ))}
-            </div>
-          ) : (
+          {filteredArticles.length === 0 ? (
             <div className="empty-state-modern">
               <FileText size={64} />
               <h3>No articles found</h3>
@@ -610,44 +685,174 @@ const News = () => {
                 Clear Filters
               </button>
             </div>
+          ) : (
+            <div className="articles-grid-modern">
+              {filteredArticles.map(article => {
+                const categoryInfo = getCategoryInfo(article.category);
+                const CategoryIcon = categoryInfo.icon;
+
+                return (
+                  <article key={article.id} className="article-card-modern">
+                    <Link
+                      to={`/news/articles/${article.id}`}
+                      className="article-image-link"
+                    >
+                      <div className="article-image-modern">
+                        <img
+                          src={
+                            article.image ||
+                            'https://via.placeholder.com/400x250'
+                          }
+                          alt={article.title}
+                        />
+                        <span className="article-type-badge">
+                          {article.type || 'Article'}
+                        </span>
+                      </div>
+                    </Link>
+
+                    <div className="article-body">
+                      <div className="article-header-modern">
+                        <span
+                          className="category-tag"
+                          style={{
+                            background: categoryInfo.color
+                              ? `${categoryInfo.color}15`
+                              : undefined,
+                            color: categoryInfo.color || undefined
+                          }}
+                        >
+                          {CategoryIcon && <CategoryIcon size={12} />}
+                          {categoryInfo.name}
+                        </span>
+                        <div className="article-quick-actions">
+                          <button
+                            className={`action-icon ${
+                              bookmarkedArticles.has(article.id) ? 'active' : ''
+                            }`}
+                            onClick={() => handleBookmark(article.id)}
+                            title="Bookmark"
+                          >
+                            <Bookmark size={14} />
+                          </button>
+                          <button
+                            className="action-icon"
+                            onClick={() => handleShare(article)}
+                            title="Share"
+                          >
+                            <Share2 size={14} />
+                          </button>
+                        </div>
+                      </div>
+
+                      <Link
+                        to={`/news/articles/${article.id}`}
+                        className="article-title-modern"
+                      >
+                        {article.title}
+                      </Link>
+
+                      <p className="article-excerpt-modern">{article.excerpt}</p>
+
+                      <div className="article-footer-modern">
+                        <div className="author-meta">
+                          <div className="author-avatar-small">
+                            <User size={16} />
+                          </div>
+                          <div className="author-details-small">
+                            <span className="author-name">
+                              {article.author?.name || 'Anonymous'}
+                            </span>
+                            <span className="publish-date-small">
+                              {formatRelativeTime(article.publishedAt)}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="engagement-row">
+                          <button
+                            className={`like-btn ${
+                              likedArticles.has(article.id) ? 'liked' : ''
+                            }`}
+                            onClick={() => handleLike(article.id)}
+                          >
+                            <Heart
+                              size={14}
+                              fill={
+                                likedArticles.has(article.id)
+                                  ? 'currentColor'
+                                  : 'none'
+                              }
+                            />
+                            {article.likes || 0}
+                          </button>
+                          <span className="engagement-item">
+                            <MessageSquare size={14} />
+                            {article.commentCount || 0}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
           )}
         </section>
 
-        {/* Newsletter Section */}
-        <section className={`newsletter-section ${newsletterSubscribed ? 'success' : ''}`}>
+        {/* ==================== NEWSLETTER SECTION ==================== */}
+        <section
+          className={`newsletter-section ${
+            newsletterSubscribed ? 'success' : ''
+          }`}
+        >
           <div className="newsletter-content-modern">
-            <div className="newsletter-icon">
+            <div className={`newsletter-icon ${newsletterSubscribed ? '' : ''}`}>
               {newsletterSubscribed ? <Bell size={40} /> : <Zap size={40} />}
             </div>
+
             {newsletterSubscribed ? (
               <>
                 <h3>You're All Set!</h3>
-                <p>Thank you for subscribing. You'll receive our latest updates directly in your inbox.</p>
+                <p>
+                  Thank you for subscribing. You'll receive our latest updates
+                  directly in your inbox.
+                </p>
               </>
             ) : (
               <>
                 <h3>Stay in the Loop</h3>
-                <p>Get the latest articles, research updates, and industry insights delivered to your inbox</p>
-                <form className="newsletter-form-modern" onSubmit={handleNewsletterSubscribe}>
+                <p>
+                  Get the latest articles, research updates, and industry
+                  insights delivered to your inbox
+                </p>
+
+                <form
+                  className="newsletter-form-modern"
+                  onSubmit={handleNewsletterSubscribe}
+                >
                   <input
                     type="email"
                     placeholder="Enter your email"
                     value={newsletterEmail}
-                    onChange={(e) => setNewsletterEmail(e.target.value)}
+                    onChange={e => setNewsletterEmail(e.target.value)}
                     className="newsletter-input-modern"
                   />
                   <button type="submit" className="btn-primary">
                     Subscribe
                   </button>
                 </form>
-                <p className="newsletter-note">We respect your privacy. Unsubscribe anytime.</p>
+
+                <p className="newsletter-note">
+                  We respect your privacy. Unsubscribe anytime.
+                </p>
               </>
             )}
           </div>
         </section>
       </div>
 
-      {/* Scroll to Top Button */}
+      {/* ==================== SCROLL TO TOP BUTTON ==================== */}
       <button
         className={`scroll-to-top ${showScrollTop ? 'visible' : ''}`}
         onClick={scrollToTop}
@@ -656,44 +861,78 @@ const News = () => {
         <ChevronUp size={24} />
       </button>
 
-      {/* Collaboration Modal */}
+      {/* ==================== COLLABORATION MODAL ==================== */}
       {showCollabModal && (
-        <div className="modal-overlay" onClick={() => setShowCollabModal(false)}>
-          <div className="modal-container" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="modal-overlay"
+          onClick={() => setShowCollabModal(false)}
+        >
+          <div className="modal-container" onClick={e => e.stopPropagation()}>
             <div className="modal-header-modern">
               <h3>Write New Article</h3>
-              <button className="modal-close-btn" onClick={() => setShowCollabModal(false)}>
-                ×
+              <button
+                className="modal-close-btn"
+                onClick={() => setShowCollabModal(false)}
+              >
+                &times;
               </button>
             </div>
-            <form className="modal-form-modern" onSubmit={(e) => {
-              e.preventDefault();
-              showNotification('Article submitted for review!', 'success');
-              setShowCollabModal(false);
-            }}>
+
+            <form
+              className="modal-form-modern"
+              onSubmit={e => {
+                e.preventDefault();
+                showNotification('Article submitted for review!', 'success');
+                setShowCollabModal(false);
+              }}
+            >
               <div className="form-group-modern">
                 <label>Article Title</label>
-                <input type="text" className="form-input-modern" placeholder="Enter article title" required />
+                <input
+                  type="text"
+                  className="form-input-modern"
+                  placeholder="Enter article title"
+                  required
+                />
               </div>
+
               <div className="form-group-modern">
                 <label>Category</label>
                 <select className="form-input-modern" required>
                   <option value="">Select category</option>
-                  {categories.filter(c => c !== 'all').map(cat => (
-                    <option key={cat} value={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</option>
-                  ))}
+                  {BUILT_ENVIRONMENT_CATEGORIES.filter(c => c.id !== 'all').map(
+                    cat => (
+                      <option key={cat.id} value={cat.id}>
+                        {cat.name}
+                      </option>
+                    )
+                  )}
                 </select>
               </div>
+
               <div className="form-group-modern">
                 <label>Article Content</label>
-                <textarea className="form-input-modern" rows="6" placeholder="Write your article..." required></textarea>
+                <textarea
+                  className="form-input-modern"
+                  rows="6"
+                  placeholder="Write your article..."
+                  required
+                ></textarea>
               </div>
+
               <div className="checkbox-group-modern">
                 <input type="checkbox" id="terms" required />
-                <label htmlFor="terms">I agree to the content guidelines and terms</label>
+                <label htmlFor="terms">
+                  I agree to the content guidelines and terms
+                </label>
               </div>
+
               <div className="modal-footer-modern">
-                <button type="button" className="btn-ghost" onClick={() => setShowCollabModal(false)}>
+                <button
+                  type="button"
+                  className="btn-ghost"
+                  onClick={() => setShowCollabModal(false)}
+                >
                   Cancel
                 </button>
                 <button type="submit" className="btn-primary">

@@ -1,12 +1,17 @@
 import React, { useState } from 'react';
 import { Calendar, MapPin, Users, Clock, Video, Plus, Search, Filter, ExternalLink } from 'lucide-react';
 import './EventsSection.css';
+import CreateEventModal from './CreateEventModal';
+import EventDetailsModal from './EventDetailsModal';
 
 const EventsSection = () => {
   const [activeTab, setActiveTab] = useState('upcoming');
   const [searchQuery, setSearchQuery] = useState('');
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null);
 
-  const [events] = useState([
+  const [events, setEvents] = useState([
     {
       id: 1,
       title: 'Tech Conference 2024',
@@ -59,6 +64,24 @@ const EventsSection = () => {
     }
   ]);
 
+  const handleCreateEvent = (newEvent) => {
+    setEvents(prevEvents => [newEvent, ...prevEvents]);
+  };
+
+  const handleViewDetails = (event) => {
+    setSelectedEvent(event);
+    setShowDetailsModal(true);
+  };
+
+  const handleRSVP = (eventId, status) => {
+    setEvents(prevEvents =>
+      prevEvents.map(event =>
+        event.id === eventId ? { ...event, rsvp: status } : event
+      )
+    );
+    setSelectedEvent(prev => prev ? { ...prev, rsvp: status } : null);
+  };
+
   return (
     <div className="events-section">
       {/* Header */}
@@ -67,7 +90,7 @@ const EventsSection = () => {
           <Calendar size={24} />
           Events
         </h2>
-        <button className="create-event-btn">
+        <button className="create-event-btn" onClick={() => setShowCreateModal(true)}>
           <Plus size={20} />
           Create Event
         </button>
@@ -187,7 +210,7 @@ const EventsSection = () => {
                       </button>
                     </div>
                   )}
-                  <button className="btn-view-event">
+                  <button className="btn-view-event" onClick={() => handleViewDetails(event)}>
                     <ExternalLink size={16} />
                     View Details
                   </button>
@@ -238,6 +261,20 @@ const EventsSection = () => {
           </div>
         )}
       </div>
+
+      {/* Modals */}
+      <CreateEventModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onCreateEvent={handleCreateEvent}
+      />
+
+      <EventDetailsModal
+        isOpen={showDetailsModal}
+        onClose={() => setShowDetailsModal(false)}
+        event={selectedEvent}
+        onRSVP={handleRSVP}
+      />
     </div>
   );
 };

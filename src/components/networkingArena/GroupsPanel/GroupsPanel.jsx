@@ -1,12 +1,17 @@
 import React, { useState } from 'react';
 import { Users, Plus, Search, TrendingUp, Lock, Globe, MessageCircle, Crown, Settings } from 'lucide-react';
 import './GroupsPanel.css';
+import CreateGroupModal from './CreateGroupModal';
+import GroupDetailsModal from './GroupDetailsModal';
 
 const GroupsPanel = () => {
   const [activeTab, setActiveTab] = useState('myGroups');
   const [searchQuery, setSearchQuery] = useState('');
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [selectedGroup, setSelectedGroup] = useState(null);
 
-  const [myGroups] = useState([
+  const [myGroups, setMyGroups] = useState([
     {
       id: 1,
       name: 'React Developers Community',
@@ -39,7 +44,7 @@ const GroupsPanel = () => {
     }
   ]);
 
-  const [discoverGroups] = useState([
+  const [discoverGroups, setDiscoverGroups] = useState([
     {
       id: 4,
       name: 'Startup Founders Hub',
@@ -69,6 +74,28 @@ const GroupsPanel = () => {
     }
   ]);
 
+  const handleCreateGroup = (newGroup) => {
+    setMyGroups(prevGroups => [newGroup, ...prevGroups]);
+  };
+
+  const handleViewGroup = (group) => {
+    setSelectedGroup(group);
+    setShowDetailsModal(true);
+  };
+
+  const handleJoinGroup = (groupId) => {
+    const groupToJoin = discoverGroups.find(g => g.id === groupId);
+    if (groupToJoin) {
+      const joinedGroup = {
+        ...groupToJoin,
+        role: 'member',
+        unreadPosts: 0
+      };
+      setMyGroups(prevGroups => [joinedGroup, ...prevGroups]);
+      setDiscoverGroups(prevGroups => prevGroups.filter(g => g.id !== groupId));
+    }
+  };
+
   return (
     <div className="groups-panel">
       {/* Header */}
@@ -77,7 +104,7 @@ const GroupsPanel = () => {
           <Users size={24} />
           Groups
         </h2>
-        <button className="create-group-btn">
+        <button className="create-group-btn" onClick={() => setShowCreateModal(true)}>
           <Plus size={20} />
           Create Group
         </button>
@@ -143,7 +170,7 @@ const GroupsPanel = () => {
                   </div>
                 </div>
                 <div className="group-actions">
-                  <button className="btn-view-group">View Group</button>
+                  <button className="btn-view-group" onClick={() => handleViewGroup(group)}>View Group</button>
                   {group.role === 'admin' && (
                     <button className="btn-icon">
                       <Settings size={18} />
@@ -188,7 +215,7 @@ const GroupsPanel = () => {
                       )}
                     </div>
                   </div>
-                  <button className="btn-join-group">
+                  <button className="btn-join-group" onClick={() => handleJoinGroup(group.id)}>
                     <Plus size={16} />
                     Join Group
                   </button>
@@ -198,6 +225,20 @@ const GroupsPanel = () => {
           </div>
         )}
       </div>
+
+      {/* Modals */}
+      <CreateGroupModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onCreateGroup={handleCreateGroup}
+      />
+
+      <GroupDetailsModal
+        isOpen={showDetailsModal}
+        onClose={() => setShowDetailsModal(false)}
+        group={selectedGroup}
+        isJoined={selectedGroup && myGroups.some(g => g.id === selectedGroup.id)}
+      />
     </div>
   );
 };

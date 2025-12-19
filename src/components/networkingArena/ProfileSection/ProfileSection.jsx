@@ -1,10 +1,24 @@
-import React, { useState } from 'react';
-import { User, Award, Eye, TrendingUp, Link2, Edit, Check, Star, Shield } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { User, Award, Eye, TrendingUp, Link2, Edit, Check, Star, Shield, X } from 'lucide-react';
 import './ProfileSection.css';
+import { useAuth } from '../../../contexts/AuthContext';
 
 const ProfileSection = ({ userRole, setUserRole }) => {
-  const [profileData] = useState({
-    name: 'John Smith',
+  const { user } = useAuth();
+  
+  // Fix undefined name issue
+  let userName = 'User';
+  if (user?.displayName) {
+    userName = user.displayName;
+  } else if (user?.firstName) {
+    userName = user.firstName + (user.lastName ? ' ' + user.lastName : '');
+  }
+  
+  const userPhoto = user?.photoURL || '/api/placeholder/80/80';
+  const [showEditModal, setShowEditModal] = useState(false);
+  
+  const [profileData, setProfileData] = useState({
+    name: userName,
     title: 'Senior Software Engineer',
     company: 'Tech Innovations Inc.',
     location: 'San Francisco, CA',
@@ -12,7 +26,7 @@ const ProfileSection = ({ userRole, setUserRole }) => {
     connections: 234,
     postImpressions: 5432,
     profileStrength: 85,
-    customUrl: 'johnsmith-tech',
+    customUrl: (userName.toLowerCase().replace(/\s+/g, '') || 'user') + '-tech',
     verified: userRole === 'premium' || userRole === 'recruiter',
     skills: [
       { name: 'React', endorsements: 45 },
@@ -23,12 +37,28 @@ const ProfileSection = ({ userRole, setUserRole }) => {
     badges: []
   });
 
-  // Set badges based on user role
-  if (userRole === 'premium') {
-    profileData.badges = ['Premium Member', 'Industry Expert'];
-  } else if (userRole === 'recruiter') {
-    profileData.badges = ['Verified Recruiter', 'Top Hiring Manager'];
-  }
+  // Update profile data when user role changes
+  useEffect(() => {
+    let newBadges = [];
+    let isVerified = false;
+    
+    if (userRole === 'premium') {
+      newBadges = ['Premium Member', 'Industry Expert'];
+      isVerified = true;
+    } else if (userRole === 'recruiter') {
+      newBadges = ['Verified Recruiter', 'Top Hiring Manager'];
+      isVerified = true;
+    } else {
+      newBadges = [];
+      isVerified = false;
+    }
+    
+    setProfileData(prev => ({
+      ...prev,
+      badges: newBadges,
+      verified: isVerified
+    }));
+  }, [userRole]);
 
   const getStrengthColor = (strength) => {
     if (strength >= 80) return '#10b981';
@@ -37,12 +67,18 @@ const ProfileSection = ({ userRole, setUserRole }) => {
     return '#ef4444';
   };
 
+  const handleSaveProfile = () => {
+    // Save profile data
+    alert('Profile updated successfully!');
+    setShowEditModal(false);
+  };
+
   return (
     <div className="profile-section">
       {/* Profile Header */}
       <div className="profile-header">
         <div className="profile-avatar">
-          <img src="/api/placeholder/80/80" alt={profileData.name} />
+          <img src={userPhoto} alt={profileData.name} />
           {profileData.verified && (
             <div className="verified-badge">
               <Check size={16} />
@@ -60,7 +96,7 @@ const ProfileSection = ({ userRole, setUserRole }) => {
           <p className="profile-location">{profileData.location}</p>
         </div>
 
-        <button className="edit-profile-btn">
+        <button className="edit-profile-btn" onClick={() => setShowEditModal(true)}>
           <Edit size={16} />
         </button>
       </div>
@@ -181,6 +217,84 @@ const ProfileSection = ({ userRole, setUserRole }) => {
           </button>
         </div>
       </div>
+
+      {/* Edit Profile Modal */}
+      {showEditModal && (
+        <div className="edit-modal-overlay" onClick={() => setShowEditModal(false)}>
+          <div className="edit-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="edit-modal-header">
+              <h3>Edit Profile</h3>
+              <button onClick={() => setShowEditModal(false)}>
+                <X size={24} />
+              </button>
+            </div>
+            
+            <div className="edit-modal-body">
+              <div className="edit-field">
+                <label>Name</label>
+                <input
+                  type="text"
+                  value={profileData.name}
+                  onChange={(e) => setProfileData({...profileData, name: e.target.value})}
+                  placeholder="Your full name"
+                />
+              </div>
+
+              <div className="edit-field">
+                <label>Title</label>
+                <input
+                  type="text"
+                  value={profileData.title}
+                  onChange={(e) => setProfileData({...profileData, title: e.target.value})}
+                  placeholder="Your professional title"
+                />
+              </div>
+
+              <div className="edit-field">
+                <label>Company</label>
+                <input
+                  type="text"
+                  value={profileData.company}
+                  onChange={(e) => setProfileData({...profileData, company: e.target.value})}
+                  placeholder="Your company"
+                />
+              </div>
+
+              <div className="edit-field">
+                <label>Location</label>
+                <input
+                  type="text"
+                  value={profileData.location}
+                  onChange={(e) => setProfileData({...profileData, location: e.target.value})}
+                  placeholder="Your location"
+                />
+              </div>
+
+              <div className="edit-field">
+                <label>Custom URL</label>
+                <div className="url-input-wrapper">
+                  <span className="url-prefix">linkedin.com/in/</span>
+                  <input
+                    type="text"
+                    value={profileData.customUrl}
+                    onChange={(e) => setProfileData({...profileData, customUrl: e.target.value})}
+                    placeholder="your-custom-url"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="edit-modal-footer">
+              <button className="cancel-btn" onClick={() => setShowEditModal(false)}>
+                Cancel
+              </button>
+              <button className="save-btn" onClick={handleSaveProfile}>
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Users, MessageCircle, Video, Calendar, Briefcase, Award, TrendingUp, Search, Bell, Settings, ChevronUp } from 'lucide-react';
 import './NetworkingArena.css';
+import { useAuth } from '../../contexts/AuthContext';
 
 // Import Components
 import ProfileSection from '../../components/networkingArena/ProfileSection/ProfileSection';
@@ -17,6 +18,7 @@ import VideoCallModal from '../../components/networkingArena/VideoCallModal/Vide
 import AdvancedSearch from '../../components/networkingArena/AdvancedSearch/AdvancedSearch';
 
 const NetworkingArena = () => {
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('feed');
   const [showMessaging, setShowMessaging] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -26,6 +28,13 @@ const NetworkingArena = () => {
   const [unreadMessages, setUnreadMessages] = useState(5);
   const [unreadNotifications, setUnreadNotifications] = useState(12);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [messageUserId, setMessageUserId] = useState(null);
+  
+  // Current logged-in user data from auth context
+  const currentUser = {
+    name: user?.displayName || user?.firstName + ' ' + (user?.lastName || '') || 'User',
+    avatar: user?.photoURL || '/api/placeholder/40/40'
+  };
 
   useEffect(() => {
     // Initialize user data and settings
@@ -49,6 +58,13 @@ const NetworkingArena = () => {
     });
   };
 
+  const handleOpenMessaging = (userId = null) => {
+    console.log('Opening messaging center for user:', userId);
+    setMessageUserId(userId);
+    setShowMessaging(true);
+    console.log('showMessaging state set to true');
+  };
+
   const navigationTabs = [
     { id: 'feed', label: 'Feed', icon: TrendingUp },
     { id: 'connections', label: 'My Network', icon: Users },
@@ -68,9 +84,9 @@ const NetworkingArena = () => {
   const renderContent = () => {
     switch (activeTab) {
       case 'feed':
-        return <FeedSection userRole={userRole} />;
+        return <FeedSection userRole={userRole} currentUser={currentUser} />;
       case 'connections':
-        return <ConnectionsPanel />;
+        return <ConnectionsPanel onOpenMessaging={handleOpenMessaging} />;
       case 'groups':
         return <GroupsPanel />;
       case 'events':
@@ -78,7 +94,7 @@ const NetworkingArena = () => {
       case 'jobs':
         return <JobPostings userRole={userRole} />;
       case 'recruiter':
-        return <RecruiterDashboard />;
+        return <RecruiterDashboard onOpenMessaging={handleOpenMessaging} />;
       case 'premium':
         return <PremiumFeatures />;
       default:
@@ -109,33 +125,6 @@ const NetworkingArena = () => {
           </div>
 
           <div className="navbar-right">
-            <button 
-              className="nav-icon-btn"
-              onClick={() => setShowNotifications(!showNotifications)}
-            >
-              <Bell size={20} />
-              {unreadNotifications > 0 && (
-                <span className="notification-badge">{unreadNotifications}</span>
-              )}
-            </button>
-
-            <button 
-              className="nav-icon-btn"
-              onClick={() => setShowMessaging(!showMessaging)}
-            >
-              <MessageCircle size={20} />
-              {unreadMessages > 0 && (
-                <span className="notification-badge">{unreadMessages}</span>
-              )}
-            </button>
-
-            <button 
-              className="nav-icon-btn"
-              onClick={() => setShowVideoCall(true)}
-            >
-              <Video size={20} />
-            </button>
-
             <button className="nav-icon-btn">
               <Settings size={20} />
             </button>
@@ -219,8 +208,13 @@ const NetworkingArena = () => {
       {/* Modals and Overlays */}
       {showMessaging && (
         <MessagingCenter 
-          onClose={() => setShowMessaging(false)}
+          onClose={() => {
+            setShowMessaging(false);
+            setMessageUserId(null);
+          }}
           setUnreadCount={setUnreadMessages}
+          userId={messageUserId}
+          currentUser={currentUser}
         />
       )}
 
@@ -241,6 +235,7 @@ const NetworkingArena = () => {
         <AdvancedSearch 
           onClose={() => setShowSearch(false)}
           userRole={userRole}
+          onOpenMessaging={handleOpenMessaging}
         />
       )}
 

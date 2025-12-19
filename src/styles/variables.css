@@ -1,16 +1,16 @@
 /* Design tokens / CSS variables used across the app */
 :root {
-	--primary-color: #2563eb; /* blue */
-	--secondary-color: #059669; /* green */
+	--primary-color: #524393; /* Planning Insights purple */
+	--secondary-color: #BDD337; /* lime green */
 	--danger-color: #ef4444;
-	--background-color: #f8fafc; /* light gray */
+	--background-color: #EEF3CE; /* light cream */
 	--surface-color: #ffffff; /* card background */
-	--border-color: #e6edf3;
-	--text-primary: #0f172a;
+	--border-color: #C0BABC;
+	--text-primary: #1B1528;
 	--text-secondary: #4b5563;
 	--muted-color: #6b7280;
-	--shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
-	--shadow-md: 0 6px 18px rgba(15, 23, 42, 0.08);
+	--shadow: 0 1px 3px rgba(27, 21, 40, 0.06);
+	--shadow-md: 0 6px 18px rgba(27, 21, 40, 0.08);
 	--radius-sm: 6px;
 	--radius-md: 12px;
 	--max-width: 1200px;

@@ -5,23 +5,15 @@ import { useNotification } from '../../../contexts/NotificationContext';
 import { useApi } from '../../../hooks/useApi';
 import { publishingAPI } from '../../../services/api/publishing';
 import { 
-  Upload, 
-  FileText, 
-  User, 
-  Users, 
-  Calendar,
-  AlertTriangle,
-  CheckCircle,
-  X,
-  Plus,
-  Download
+  Upload, FileText, User, Users, Calendar, AlertTriangle, 
+  CheckCircle, X, Plus, Download, Mail, Building, Award 
 } from 'lucide-react';
-import Loader from '../../common/Loader/Loader';
+import Loader from '../../../components/common/Loader/Loader';
+import './ManuscriptSubmission.css';
 
 /**
  * Manuscript Submission Component
- * Handles manuscript submission with author management and file upload
- * Enforces anonymity policy and validates submission requirements
+ * Modern, interactive UI with animations and enhanced user experience
  */
 const ManuscriptSubmission = () => {
   const { journalId } = useParams();
@@ -55,6 +47,8 @@ const ManuscriptSubmission = () => {
   const [loading, setLoading] = useState(false);
   const [fileUploading, setFileUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
+  const [currentStep, setCurrentStep] = useState(1);
+  const [expandedAuthor, setExpandedAuthor] = useState(0);
 
   // Refs
   const fileInputRef = useRef(null);
@@ -66,17 +60,9 @@ const ManuscriptSubmission = () => {
    * Handle form input changes
    */
   const handleInputChange = (field, value) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-
-    // Clear error when user starts typing
+    setFormData(prev => ({ ...prev, [field]: value }));
     if (errors[field]) {
-      setErrors(prev => ({
-        ...prev,
-        [field]: ''
-      }));
+      setErrors(prev => ({ ...prev, [field]: '' }));
     }
   };
 
@@ -85,15 +71,8 @@ const ManuscriptSubmission = () => {
    */
   const handleAuthorChange = (index, field, value) => {
     const updatedAuthors = [...formData.authors];
-    updatedAuthors[index] = {
-      ...updatedAuthors[index],
-      [field]: value
-    };
-    
-    setFormData(prev => ({
-      ...prev,
-      authors: updatedAuthors
-    }));
+    updatedAuthors[index] = { ...updatedAuthors[index], [field]: value };
+    setFormData(prev => ({ ...prev, authors: updatedAuthors }));
   };
 
   /**
@@ -109,11 +88,8 @@ const ManuscriptSubmission = () => {
       isCorresponding: false,
       order: formData.authors.length + 1
     };
-
-    setFormData(prev => ({
-      ...prev,
-      authors: [...prev.authors, newAuthor]
-    }));
+    setFormData(prev => ({ ...prev, authors: [...prev.authors, newAuthor] }));
+    setExpandedAuthor(formData.authors.length);
   };
 
   /**
@@ -124,17 +100,10 @@ const ManuscriptSubmission = () => {
       showNotification('At least one author is required', 'error');
       return;
     }
-
-    const updatedAuthors = formData.authors.filter((_, i) => i !== index)
-      .map((author, i) => ({
-        ...author,
-        order: i + 1
-      }));
-
-    setFormData(prev => ({
-      ...prev,
-      authors: updatedAuthors
-    }));
+    const updatedAuthors = formData.authors
+      .filter((_, i) => i !== index)
+      .map((author, i) => ({ ...author, order: i + 1 }));
+    setFormData(prev => ({ ...prev, authors: updatedAuthors }));
   };
 
   /**
@@ -145,11 +114,7 @@ const ManuscriptSubmission = () => {
       ...author,
       isCorresponding: i === index
     }));
-
-    setFormData(prev => ({
-      ...prev,
-      authors: updatedAuthors
-    }));
+    setFormData(prev => ({ ...prev, authors: updatedAuthors }));
   };
 
   /**
@@ -178,7 +143,6 @@ const ManuscriptSubmission = () => {
   const handleDrop = (event) => {
     event.preventDefault();
     setDragOver(false);
-    
     const files = event.dataTransfer.files;
     if (files.length > 0) {
       validateAndSetFile(files[0]);
@@ -189,7 +153,6 @@ const ManuscriptSubmission = () => {
    * Validate and set manuscript file
    */
   const validateAndSetFile = (file) => {
-    // Check file type
     const allowedTypes = [
       'application/pdf',
       'application/msword',
@@ -201,24 +164,15 @@ const ManuscriptSubmission = () => {
       return;
     }
 
-    // Check file size (10MB limit)
     const maxSize = 10 * 1024 * 1024;
     if (file.size > maxSize) {
       showNotification('File size must be less than 10MB', 'error');
       return;
     }
 
-    setFormData(prev => ({
-      ...prev,
-      file
-    }));
-
-    // Clear file error
+    setFormData(prev => ({ ...prev, file }));
     if (errors.file) {
-      setErrors(prev => ({
-        ...prev,
-        file: ''
-      }));
+      setErrors(prev => ({ ...prev, file: '' }));
     }
   };
 
@@ -226,10 +180,7 @@ const ManuscriptSubmission = () => {
    * Remove selected file
    */
   const removeFile = () => {
-    setFormData(prev => ({
-      ...prev,
-      file: null
-    }));
+    setFormData(prev => ({ ...prev, file: null }));
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -241,26 +192,21 @@ const ManuscriptSubmission = () => {
   const validateForm = () => {
     const newErrors = {};
 
-    // Required fields
     if (!formData.title.trim()) {
       newErrors.title = 'Title is required';
     }
-
     if (!formData.abstract.trim()) {
       newErrors.abstract = 'Abstract is required';
     } else if (formData.abstract.length < 100) {
       newErrors.abstract = 'Abstract must be at least 100 characters';
     }
-
     if (!formData.keywords.trim()) {
       newErrors.keywords = 'Keywords are required';
     }
-
     if (!formData.manuscriptType) {
       newErrors.manuscriptType = 'Manuscript type is required';
     }
 
-    // Validate authors
     formData.authors.forEach((author, index) => {
       if (!author.firstName.trim()) {
         newErrors[`author_${index}_firstName`] = 'First name is required';
@@ -275,18 +221,15 @@ const ManuscriptSubmission = () => {
       }
     });
 
-    // Check for corresponding author
     const hasCorrespondingAuthor = formData.authors.some(author => author.isCorresponding);
     if (!hasCorrespondingAuthor) {
       newErrors.authors = 'Please designate a corresponding author';
     }
 
-    // File validation
     if (!formData.file) {
       newErrors.file = 'Manuscript file is required';
     }
 
-    // Terms agreement
     if (!formData.agreeToTerms) {
       newErrors.agreeToTerms = 'You must agree to the terms and conditions';
     }
@@ -300,14 +243,13 @@ const ManuscriptSubmission = () => {
    */
   const handleSubmit = async (event) => {
     event.preventDefault();
-
+    
     if (!validateForm()) {
       showNotification('Please fix the errors before submitting', 'error');
       return;
     }
 
     setLoading(true);
-
     try {
       const submissionData = {
         journalId,
@@ -325,12 +267,8 @@ const ManuscriptSubmission = () => {
       });
 
       if (result) {
-        // Redirect to submission tracking page
         navigate('/publishing/submissions', {
-          state: { 
-            submitted: true,
-            submissionId: result.submissionId 
-          }
+          state: { submitted: true, submissionId: result.submissionId }
         });
       }
     } catch (error) {
@@ -353,427 +291,413 @@ const ManuscriptSubmission = () => {
 
   if (!isAuthenticated) {
     return (
-      <div className="auth-required">
-        <div className="auth-message">
+      <div className="manuscript-auth-required">
+        <div className="auth-card">
+          <AlertTriangle className="auth-icon" />
           <h2>Authentication Required</h2>
           <p>Please sign in to submit a manuscript.</p>
+          <button 
+            className="btn-primary"
+            onClick={() => navigate('/login', { state: { from: `/publishing/submit/${journalId}` } })}
+          >
+            Sign In
+          </button>
         </div>
       </div>
     );
   }
 
+  if (loading || submitLoading) {
+    return <Loader message="Submitting your manuscript..." />;
+  }
+
   return (
-    <div className="manuscript-submission-page">
-      <div className="container">
-        <div className="submission-header">
-          <h1>Submit Manuscript</h1>
-          <p>Submit your research for publication consideration</p>
+    <div className="manuscript-submission-container">
+      {/* Header Section */}
+      <div className="submission-header">
+        <div className="header-content">
+          <div className="header-icon">
+            <FileText />
+          </div>
+          <div className="header-text">
+            <h1>Submit Your Research</h1>
+            <p>Share your work with the academic community</p>
+          </div>
         </div>
 
-        <div className="submission-layout">
-          {/* Main Form */}
-          <div className="submission-form">
-            <form onSubmit={handleSubmit}>
-              {/* Manuscript Details */}
-              <div className="form-section">
-                <h3>Manuscript Details</h3>
-                
-                <div className="form-grid">
-                  <div className="form-group full-width">
-                    <label className="form-label required">Title</label>
-                    <input
-                      type="text"
-                      value={formData.title}
-                      onChange={(e) => handleInputChange('title', e.target.value)}
-                      className={`form-input ${errors.title ? 'error' : ''}`}
-                      placeholder="Enter manuscript title"
-                    />
-                    {errors.title && <span className="error-message">{errors.title}</span>}
-                  </div>
+        {/* Progress Indicator */}
+        <div className="progress-steps">
+          <div className={`step ${currentStep >= 1 ? 'active' : ''} ${currentStep > 1 ? 'completed' : ''}`}>
+            <div className="step-circle">1</div>
+            <span>Manuscript Details</span>
+          </div>
+          <div className="step-line"></div>
+          <div className={`step ${currentStep >= 2 ? 'active' : ''} ${currentStep > 2 ? 'completed' : ''}`}>
+            <div className="step-circle">2</div>
+            <span>Authors</span>
+          </div>
+          <div className="step-line"></div>
+          <div className={`step ${currentStep >= 3 ? 'active' : ''}`}>
+            <div className="step-circle">3</div>
+            <span>Upload & Review</span>
+          </div>
+        </div>
+      </div>
 
-                  <div className="form-group full-width">
-                    <label className="form-label required">Abstract</label>
-                    <textarea
-                      value={formData.abstract}
-                      onChange={(e) => handleInputChange('abstract', e.target.value)}
-                      className={`form-textarea ${errors.abstract ? 'error' : ''}`}
-                      placeholder="Provide a comprehensive abstract of your manuscript..."
-                      rows="6"
-                    />
-                    {errors.abstract && <span className="error-message">{errors.abstract}</span>}
-                    <div className="field-note">
-                      {formData.abstract.length}/100 characters minimum
+      {/* Main Form */}
+      <form onSubmit={handleSubmit} className="submission-form">
+        {/* Manuscript Details Section */}
+        <div className="form-section animate-slide-up">
+          <div className="section-header">
+            <FileText className="section-icon" />
+            <h2>Manuscript Information</h2>
+          </div>
+
+          <div className="form-grid">
+            {/* Title */}
+            <div className="form-group full-width">
+              <label htmlFor="title" className="form-label">
+                Manuscript Title <span className="required">*</span>
+              </label>
+              <input
+                type="text"
+                id="title"
+                className={`form-input ${errors.title ? 'error' : ''}`}
+                placeholder="Enter your manuscript title"
+                value={formData.title}
+                onChange={(e) => handleInputChange('title', e.target.value)}
+              />
+              {errors.title && <span className="error-message">{errors.title}</span>}
+            </div>
+
+            {/* Manuscript Type */}
+            <div className="form-group">
+              <label htmlFor="manuscriptType" className="form-label">
+                Manuscript Type <span className="required">*</span>
+              </label>
+              <select
+                id="manuscriptType"
+                className={`form-select ${errors.manuscriptType ? 'error' : ''}`}
+                value={formData.manuscriptType}
+                onChange={(e) => handleInputChange('manuscriptType', e.target.value)}
+              >
+                <option value="research">Research Article</option>
+                <option value="review">Review Article</option>
+                <option value="case-study">Case Study</option>
+                <option value="short-communication">Short Communication</option>
+                <option value="letter">Letter to Editor</option>
+              </select>
+              {errors.manuscriptType && <span className="error-message">{errors.manuscriptType}</span>}
+            </div>
+
+            {/* Version */}
+            <div className="form-group">
+              <label htmlFor="version" className="form-label">
+                Version (Optional)
+              </label>
+              <input
+                type="text"
+                id="version"
+                className="form-input"
+                placeholder="e.g., 1.0, Revised"
+                value={formData.version}
+                onChange={(e) => handleInputChange('version', e.target.value)}
+              />
+            </div>
+
+            {/* Abstract */}
+            <div className="form-group full-width">
+              <label htmlFor="abstract" className="form-label">
+                Abstract <span className="required">*</span>
+                <span className="char-count">{formData.abstract.length} / 100 min</span>
+              </label>
+              <textarea
+                id="abstract"
+                className={`form-textarea ${errors.abstract ? 'error' : ''}`}
+                placeholder="Provide a concise summary of your research (minimum 100 characters)"
+                rows="6"
+                value={formData.abstract}
+                onChange={(e) => handleInputChange('abstract', e.target.value)}
+              />
+              {errors.abstract && <span className="error-message">{errors.abstract}</span>}
+            </div>
+
+            {/* Keywords */}
+            <div className="form-group full-width">
+              <label htmlFor="keywords" className="form-label">
+                Keywords <span className="required">*</span>
+              </label>
+              <input
+                type="text"
+                id="keywords"
+                className={`form-input ${errors.keywords ? 'error' : ''}`}
+                placeholder="Separate keywords with commas (e.g., machine learning, AI, neural networks)"
+                value={formData.keywords}
+                onChange={(e) => handleInputChange('keywords', e.target.value)}
+              />
+              {errors.keywords && <span className="error-message">{errors.keywords}</span>}
+            </div>
+          </div>
+        </div>
+
+        {/* Authors Section */}
+        <div className="form-section animate-slide-up" style={{ animationDelay: '0.1s' }}>
+          <div className="section-header">
+            <Users className="section-icon" />
+            <h2>Author Information</h2>
+          </div>
+
+          <div className="authors-list">
+            {formData.authors.map((author, index) => (
+              <div 
+                key={index} 
+                className={`author-card ${expandedAuthor === index ? 'expanded' : ''}`}
+              >
+                <div className="author-card-header" onClick={() => setExpandedAuthor(expandedAuthor === index ? -1 : index)}>
+                  <div className="author-info">
+                    <div className="author-avatar">
+                      {author.firstName?.[0] || '?'}{author.lastName?.[0] || ''}
+                    </div>
+                    <div>
+                      <h3>
+                        {author.firstName && author.lastName 
+                          ? `${author.firstName} ${author.lastName}` 
+                          : `Author ${index + 1}`}
+                      </h3>
+                      {author.isCorresponding && (
+                        <span className="badge badge-primary">Corresponding Author</span>
+                      )}
                     </div>
                   </div>
-
-                  <div className="form-group full-width">
-                    <label className="form-label required">Keywords</label>
-                    <input
-                      type="text"
-                      value={formData.keywords}
-                      onChange={(e) => handleInputChange('keywords', e.target.value)}
-                      className={`form-input ${errors.keywords ? 'error' : ''}`}
-                      placeholder="Enter comma-separated keywords"
-                    />
-                    {errors.keywords && <span className="error-message">{errors.keywords}</span>}
-                    <div className="field-note">
-                      Separate keywords with commas (e.g., urban planning, sustainability, GIS)
-                    </div>
-                  </div>
-
-                  <div className="form-group">
-                    <label className="form-label required">Manuscript Type</label>
-                    <select
-                      value={formData.manuscriptType}
-                      onChange={(e) => handleInputChange('manuscriptType', e.target.value)}
-                      className={`form-select ${errors.manuscriptType ? 'error' : ''}`}
-                    >
-                      <option value="research">Research Article</option>
-                      <option value="review">Review Article</option>
-                      <option value="case_study">Case Study</option>
-                      <option value="short_communication">Short Communication</option>
-                      <option value="book_review">Book Review</option>
-                    </select>
-                    {errors.manuscriptType && <span className="error-message">{errors.manuscriptType}</span>}
-                  </div>
-
-                  <div className="form-group">
-                    <label className="form-label">Version</label>
-                    <input
-                      type="text"
-                      value={formData.version}
-                      onChange={(e) => handleInputChange('version', e.target.value)}
-                      className="form-input"
-                      placeholder="e.g., 1.0, Initial Submission"
-                    />
-                    <div className="field-note">
-                      Optional version identifier
-                    </div>
+                  <div className="author-actions">
+                    {formData.authors.length > 1 && (
+                      <button
+                        type="button"
+                        className="btn-icon btn-danger"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeAuthor(index);
+                        }}
+                        title="Remove Author"
+                      >
+                        <X size={18} />
+                      </button>
+                    )}
                   </div>
                 </div>
-              </div>
 
-              {/* Authors Section */}
-              <div className="form-section">
-                <div className="authors-section">
-                  <h3>Authors</h3>
-                  
-                  {formData.authors.map((author, index) => (
-                    <div key={index} className="author-item">
-                      <div className="author-header">
-                        <span className="author-type">
-                          {author.isCorresponding ? 'Corresponding Author' : `Author ${author.order}`}
-                        </span>
-                        {formData.authors.length > 1 && (
-                          <button
-                            type="button"
-                            onClick={() => removeAuthor(index)}
-                            className="remove-author"
-                            aria-label="Remove author"
-                          >
-                            <X size={16} />
-                          </button>
+                {expandedAuthor === index && (
+                  <div className="author-card-body">
+                    <div className="form-grid">
+                      <div className="form-group">
+                        <label className="form-label">
+                          First Name <span className="required">*</span>
+                        </label>
+                        <div className="input-with-icon">
+                          <User size={18} />
+                          <input
+                            type="text"
+                            className={`form-input ${errors[`author_${index}_firstName`] ? 'error' : ''}`}
+                            placeholder="First name"
+                            value={author.firstName}
+                            onChange={(e) => handleAuthorChange(index, 'firstName', e.target.value)}
+                          />
+                        </div>
+                        {errors[`author_${index}_firstName`] && (
+                          <span className="error-message">{errors[`author_${index}_firstName`]}</span>
                         )}
                       </div>
 
-                      <div className="form-grid">
-                        <div className="form-group">
-                          <label className="form-label required">First Name</label>
+                      <div className="form-group">
+                        <label className="form-label">
+                          Last Name <span className="required">*</span>
+                        </label>
+                        <div className="input-with-icon">
+                          <User size={18} />
                           <input
                             type="text"
-                            value={author.firstName}
-                            onChange={(e) => handleAuthorChange(index, 'firstName', e.target.value)}
-                            className={`form-input ${errors[`author_${index}_firstName`] ? 'error' : ''}`}
-                            placeholder="First name"
-                            disabled={author.id === user?.id}
-                          />
-                          {errors[`author_${index}_firstName`] && (
-                            <span className="error-message">{errors[`author_${index}_firstName`]}</span>
-                          )}
-                        </div>
-
-                        <div className="form-group">
-                          <label className="form-label required">Last Name</label>
-                          <input
-                            type="text"
-                            value={author.lastName}
-                            onChange={(e) => handleAuthorChange(index, 'lastName', e.target.value)}
                             className={`form-input ${errors[`author_${index}_lastName`] ? 'error' : ''}`}
                             placeholder="Last name"
-                            disabled={author.id === user?.id}
+                            value={author.lastName}
+                            onChange={(e) => handleAuthorChange(index, 'lastName', e.target.value)}
                           />
-                          {errors[`author_${index}_lastName`] && (
-                            <span className="error-message">{errors[`author_${index}_lastName`]}</span>
-                          )}
                         </div>
+                        {errors[`author_${index}_lastName`] && (
+                          <span className="error-message">{errors[`author_${index}_lastName`]}</span>
+                        )}
+                      </div>
 
-                        <div className="form-group">
-                          <label className="form-label required">Email</label>
+                      <div className="form-group full-width">
+                        <label className="form-label">
+                          Email <span className="required">*</span>
+                        </label>
+                        <div className="input-with-icon">
+                          <Mail size={18} />
                           <input
                             type="email"
-                            value={author.email}
-                            onChange={(e) => handleAuthorChange(index, 'email', e.target.value)}
                             className={`form-input ${errors[`author_${index}_email`] ? 'error' : ''}`}
                             placeholder="Email address"
-                            disabled={author.id === user?.id}
+                            value={author.email}
+                            onChange={(e) => handleAuthorChange(index, 'email', e.target.value)}
                           />
-                          {errors[`author_${index}_email`] && (
-                            <span className="error-message">{errors[`author_${index}_email`]}</span>
-                          )}
                         </div>
+                        {errors[`author_${index}_email`] && (
+                          <span className="error-message">{errors[`author_${index}_email`]}</span>
+                        )}
+                      </div>
 
-                        <div className="form-group">
-                          <label className="form-label">Affiliation</label>
+                      <div className="form-group full-width">
+                        <label className="form-label">Affiliation</label>
+                        <div className="input-with-icon">
+                          <Building size={18} />
                           <input
                             type="text"
+                            className="form-input"
+                            placeholder="University or organization"
                             value={author.affiliation}
                             onChange={(e) => handleAuthorChange(index, 'affiliation', e.target.value)}
-                            className="form-input"
-                            placeholder="Institution or organization"
                           />
                         </div>
                       </div>
 
-                      <div className="author-actions">
+                      <div className="form-group full-width">
                         <label className="checkbox-label">
                           <input
                             type="checkbox"
                             checked={author.isCorresponding}
                             onChange={() => setCorrespondingAuthor(index)}
-                            className="checkbox-input"
                           />
-                          <span className="checkbox-text">Corresponding Author</span>
+                          <span>Set as Corresponding Author</span>
                         </label>
                       </div>
                     </div>
-                  ))}
-
-                  {errors.authors && (
-                    <span className="error-message">{errors.authors}</span>
-                  )}
-
-                  <button
-                    type="button"
-                    onClick={addAuthor}
-                    className="btn btn-outline"
-                  >
-                    <Plus size={16} />
-                    Add Co-author
-                  </button>
-                </div>
-              </div>
-
-              {/* File Upload */}
-              <div className="form-section">
-                <h3>Manuscript File</h3>
-
-                <div
-                  className={`file-upload-area ${dragOver ? 'drag-over' : ''} ${formData.file ? 'has-file' : ''}`}
-                  onDragOver={handleDragOver}
-                  onDragLeave={handleDragLeave}
-                  onDrop={handleDrop}
-                  onClick={() => fileInputRef.current?.click()}
-                >
-                  {!formData.file ? (
-                    <>
-                      <div className="file-upload-icon">
-                        <Upload size={48} />
-                      </div>
-                      <div className="file-upload-text">
-                        <h4>Upload Manuscript</h4>
-                        <p>Click to browse or drag and drop your file here</p>
-                      </div>
-                    </>
-                  ) : (
-                    <div className="uploaded-file">
-                      <FileText size={24} />
-                      <div className="file-info">
-                        <div className="file-name">{formData.file.name}</div>
-                        <div className="file-size">{formatFileSize(formData.file.size)}</div>
-                      </div>
-                      <div className="file-status success">
-                        <CheckCircle size={16} />
-                      </div>
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          removeFile();
-                        }}
-                        className="remove-file"
-                        aria-label="Remove file"
-                      >
-                        <X size={16} />
-                      </button>
-                    </div>
-                  )}
-                </div>
-
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleFileSelect}
-                  accept=".pdf,.doc,.docx"
-                  className="file-input"
-                />
-
-                <div className="file-requirements">
-                  <p>
-                    <strong>Supported formats:</strong> PDF, DOC, DOCX<br />
-                    <strong>Maximum file size:</strong> 10MB
-                  </p>
-                </div>
-
-                {errors.file && <span className="error-message">{errors.file}</span>}
-              </div>
-
-              {/* Anonymity Warning */}
-              <div className="anonymity-warning">
-                <div className="warning-header">
-                  <AlertTriangle size={20} />
-                  <h4>Anonymity Policy</h4>
-                </div>
-                <div className="warning-content">
-                  <p>
-                    To ensure blind peer review, please ensure your manuscript file does not contain:
-                  </p>
-                  <ul>
-                    <li>Author names or affiliations</li>
-                    <li>Personal identifiers in the text</li>
-                    <li>Acknowledgements that reveal identity</li>
-                    <li>Funding information that reveals identity</li>
-                  </ul>
-                  <p>
-                    Manuscripts violating the anonymity policy will be automatically rejected.
-                  </p>
-                </div>
-              </div>
-
-              {/* Terms Agreement */}
-              <div className="terms-agreement">
-                <div className="agreement-text">
-                  <p>
-                    By submitting this manuscript, you agree to the following terms and conditions:
-                  </p>
-                  <ul>
-                    <li>The manuscript is your original work and has not been published elsewhere</li>
-                    <li>All authors have approved the submission</li>
-                    <li>The research complies with ethical standards</li>
-                    <li>You agree to the peer review process</li>
-                    <li>You understand that submission fees may apply for accepted manuscripts</li>
-                  </ul>
-                </div>
-
-                <label className="checkbox-label">
-                  <input
-                    type="checkbox"
-                    checked={formData.agreeToTerms}
-                    onChange={(e) => handleInputChange('agreeToTerms', e.target.checked)}
-                    className="checkbox-input"
-                  />
-                  <span className="checkbox-text">
-                    I have read and agree to the terms and conditions, and confirm that 
-                    the manuscript adheres to the anonymity policy.
-                  </span>
-                </label>
-                {errors.agreeToTerms && (
-                  <span className="error-message">{errors.agreeToTerms}</span>
+                  </div>
                 )}
               </div>
-
-              {/* Form Actions */}
-              <div className="form-actions">
-                <button
-                  type="button"
-                  onClick={() => navigate(-1)}
-                  className="btn btn-outline btn-large"
-                  disabled={loading || submitLoading}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={loading || submitLoading || !formData.agreeToTerms}
-                  className="btn btn-primary btn-large"
-                >
-                  {(loading || submitLoading) ? (
-                    <Loader size="sm" />
-                  ) : (
-                    'Submit Manuscript'
-                  )}
-                </button>
-              </div>
-            </form>
+            ))}
           </div>
 
-          {/* Sidebar */}
-          <div className="submission-sidebar">
-            <div className="journal-info-card">
-              <h3>Journal Information</h3>
-              <div className="journal-details">
-                <div className="detail-row">
-                  <span className="detail-label">Journal:</span>
-                  <span className="detail-value">Urban Planning Review</span>
-                </div>
-                <div className="detail-row">
-                  <span className="detail-label">Impact Factor:</span>
-                  <span className="detail-value">3.2</span>
-                </div>
-                <div className="detail-row">
-                  <span className="detail-label">Submission Fee:</span>
-                  <span className="detail-value">$50 USD</span>
-                </div>
-                <div className="detail-row">
-                  <span className="detail-label">Review Time:</span>
-                  <span className="detail-value">4-6 weeks</span>
-                </div>
-              </div>
-            </div>
+          <button
+            type="button"
+            className="btn-secondary btn-add-author"
+            onClick={addAuthor}
+          >
+            <Plus size={20} />
+            Add Co-Author
+          </button>
 
-            <div className="timeline-card">
-              <h3>Submission Timeline</h3>
-              <div className="timeline">
-                <div className="timeline-item">
-                  <div className="timeline-marker"></div>
-                  <div className="timeline-content">
-                    <div className="timeline-date">Initial Review</div>
-                    <div className="timeline-description">
-                      Editorial check for completeness and anonymity
-                    </div>
-                  </div>
-                </div>
-                <div className="timeline-item">
-                  <div className="timeline-marker"></div>
-                  <div className="timeline-content">
-                    <div className="timeline-date">Peer Review</div>
-                    <div className="timeline-description">
-                      Assessment by 2-3 expert reviewers
-                    </div>
-                  </div>
-                </div>
-                <div className="timeline-item">
-                  <div className="timeline-marker"></div>
-                  <div className="timeline-content">
-                    <div className="timeline-date">Decision</div>
-                    <div className="timeline-description">
-                      Accept, revise, or reject decision
-                    </div>
-                  </div>
-                </div>
-                <div className="timeline-item">
-                  <div className="timeline-marker"></div>
-                  <div className="timeline-content">
-                    <div className="timeline-date">Publication</div>
-                    <div className="timeline-description">
-                      Online publication upon acceptance
-                    </div>
-                  </div>
-                </div>
+          {errors.authors && <span className="error-message">{errors.authors}</span>}
+        </div>
+
+        {/* File Upload Section */}
+        <div className="form-section animate-slide-up" style={{ animationDelay: '0.2s' }}>
+          <div className="section-header">
+            <Upload className="section-icon" />
+            <h2>Upload Manuscript</h2>
+          </div>
+
+          <div
+            className={`file-upload-area ${dragOver ? 'drag-over' : ''} ${formData.file ? 'has-file' : ''} ${errors.file ? 'error' : ''}`}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            onClick={() => !formData.file && fileInputRef.current?.click()}
+          >
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".pdf,.doc,.docx"
+              onChange={handleFileSelect}
+              style={{ display: 'none' }}
+            />
+
+            {!formData.file ? (
+              <div className="upload-placeholder">
+                <Upload className="upload-icon" />
+                <h3>Drop your manuscript here</h3>
+                <p>or click to browse files</p>
+                <span className="file-types">Supported: PDF, DOC, DOCX (Max 10MB)</span>
               </div>
+            ) : (
+              <div className="uploaded-file">
+                <FileText className="file-icon" />
+                <div className="file-details">
+                  <h4>{formData.file.name}</h4>
+                  <p>{formatFileSize(formData.file.size)}</p>
+                </div>
+                <button
+                  type="button"
+                  className="btn-icon btn-danger"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    removeFile();
+                  }}
+                >
+                  <X size={20} />
+                </button>
+              </div>
+            )}
+          </div>
+          {errors.file && <span className="error-message">{errors.file}</span>}
+
+          {/* Anonymity Notice */}
+          <div className="info-box">
+            <AlertTriangle className="info-icon" />
+            <div>
+              <h4>Anonymity Policy</h4>
+              <p>
+                Please ensure your manuscript does not contain any author-identifying information
+                to maintain the integrity of the peer review process.
+              </p>
             </div>
           </div>
         </div>
-      </div>
+
+        {/* Terms and Submit */}
+        <div className="form-section animate-slide-up" style={{ animationDelay: '0.3s' }}>
+          <div className="terms-section">
+            <label className="checkbox-label large">
+              <input
+                type="checkbox"
+                checked={formData.agreeToTerms}
+                onChange={(e) => handleInputChange('agreeToTerms', e.target.checked)}
+              />
+              <span>
+                I confirm that this manuscript is original, has not been published elsewhere, 
+                and complies with all submission guidelines and ethical standards.
+              </span>
+            </label>
+            {errors.agreeToTerms && <span className="error-message">{errors.agreeToTerms}</span>}
+          </div>
+
+          <div className="form-actions">
+            <button
+              type="button"
+              className="btn-secondary"
+              onClick={() => navigate(-1)}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="btn-primary"
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <Loader size="small" />
+                  Submitting...
+                </>
+              ) : (
+                <>
+                  <CheckCircle size={20} />
+                  Submit Manuscript
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      </form>
     </div>
   );
 };
