@@ -1,0 +1,662 @@
+/* Job Opportunities Section - Planning Insights Design with Material Design Multiselect */
+
+.job-opportunities {
+  background: linear-gradient(135deg, #FFFFFF 0%, #EEF3CE 100%);
+  border: 2px solid #BDD337;
+  border-radius: 24px;
+  padding: 2.5rem;
+  box-shadow:
+    0 12px 40px rgba(189, 211, 55, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+/* Header */
+.job-opportunities-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid rgba(189, 211, 55, 0.3);
+}
+
+.job-opportunities-header h2 {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #1B1528;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.job-opportunities-header svg {
+  color: #BDD337;
+  width: 32px;
+  height: 32px;
+  filter: drop-shadow(0 4px 12px rgba(189, 211, 55, 0.4));
+}
+
+/* Search Section */
+.job-search-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.job-search-input-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  background: #FFFFFF;
+  border: 2px solid #A4A2CD;
+  border-radius: 16px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(164, 162, 205, 0.1);
+}
+
+.job-search-input-group:focus-within {
+  border-color: #BDD337;
+  box-shadow: 0 0 0 4px rgba(189, 211, 55, 0.15);
+  transform: translateY(-2px);
+}
+
+.job-search-input-group svg {
+  color: #A4A2CD;
+  flex-shrink: 0;
+  transition: color 0.3s ease;
+}
+
+.job-search-input-group:focus-within svg {
+  color: #BDD337;
+}
+
+.job-search-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 0.95rem;
+  color: #1B1528;
+  font-weight: 500;
+}
+
+.job-search-input::placeholder {
+  color: #A4A2CD;
+  font-weight: 400;
+}
+
+.search-button {
+  padding: 0.6rem 1.5rem;
+  background: linear-gradient(135deg, #BDD337 0%, #A4A2CD 100%);
+  color: #1B1528;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(189, 211, 55, 0.3);
+}
+
+.search-button:hover {
+  background: linear-gradient(135deg, #524393 0%, #A4A2CD 100%);
+  color: #EEF3CE;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(82, 67, 147, 0.4);
+}
+
+/* Material Design Multiselect Dropdown - Clean Flat UI */
+.material-multiselect-wrapper {
+  position: relative;
+  margin-bottom: 2rem;
+}
+
+.multiselect-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  background: #FFFFFF;
+  border: 2px solid #A4A2CD;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  min-height: 56px;
+}
+
+.multiselect-trigger:hover {
+  border-color: #BDD337;
+  box-shadow: 0 4px 8px rgba(189, 211, 55, 0.15);
+}
+
+.multiselect-trigger.active {
+  border-color: #BDD337;
+  box-shadow: 0 0 0 3px rgba(189, 211, 55, 0.12);
+}
+
+.multiselect-label {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #524393;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.multiselect-label svg {
+  color: #BDD337;
+  width: 20px;
+  height: 20px;
+}
+
+.multiselect-arrow {
+  color: #A4A2CD;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 20px;
+  height: 20px;
+}
+
+.multiselect-arrow.open {
+  transform: rotate(180deg);
+  color: #BDD337;
+}
+
+/* Material Design Dropdown Panel - Flat & Clean */
+.multiselect-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background: #FFFFFF;
+  border: 2px solid #BDD337;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  z-index: 1000;
+  overflow: hidden;
+  animation: dropdownSlideIn 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes dropdownSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Control Buttons Section - Material Design */
+.multiselect-controls {
+  display: flex;
+  gap: 0.5rem;
+  padding: 12px;
+  background: #F5F5F5;
+  border-bottom: 1px solid #E0E0E0;
+}
+
+.control-btn {
+  flex: 1;
+  padding: 8px 12px;
+  background: #FFFFFF;
+  border: 1px solid #E0E0E0;
+  border-radius: 4px;
+  color: #524393;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: capitalize;
+  letter-spacing: 0.5px;
+}
+
+.control-btn:hover {
+  background: #F5F5F5;
+  border-color: #BDD337;
+  color: #1B1528;
+}
+
+.control-btn:active {
+  transform: scale(0.98);
+}
+
+/* Options List - Clean Material Design */
+.multiselect-options {
+  max-height: 280px;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.multiselect-options::-webkit-scrollbar {
+  width: 8px;
+}
+
+.multiselect-options::-webkit-scrollbar-track {
+  background: #F5F5F5;
+  border-radius: 4px;
+}
+
+.multiselect-options::-webkit-scrollbar-thumb {
+  background: #BDD337;
+  border-radius: 4px;
+}
+
+.multiselect-options::-webkit-scrollbar-thumb:hover {
+  background: #524393;
+}
+
+/* Option Item - Material Design Checkbox */
+.multiselect-option {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  position: relative;
+  gap: 12px;
+}
+
+.multiselect-option:hover {
+  background: rgba(189, 211, 55, 0.08);
+}
+
+.multiselect-option.selected {
+  background: rgba(189, 211, 55, 0.12);
+}
+
+/* Material Design Checkbox */
+.material-checkbox {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.material-checkbox input[type="checkbox"] {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #757575;
+  border-radius: 2px;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  background: #FFFFFF;
+  margin: 0;
+}
+
+.material-checkbox input[type="checkbox"]:hover {
+  border-color: #BDD337;
+}
+
+.material-checkbox input[type="checkbox"]:checked {
+  background: #BDD337;
+  border-color: #BDD337;
+}
+
+.material-checkbox input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 1px;
+  width: 6px;
+  height: 11px;
+  border: solid #FFFFFF;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.option-label {
+  font-size: 0.95rem;
+  color: #1B1528;
+  font-weight: 500;
+  flex: 1;
+}
+
+.option-plus-icon {
+  color: #A4A2CD;
+  width: 18px;
+  height: 18px;
+  opacity: 0.6;
+  transition: all 0.2s ease;
+}
+
+.multiselect-option:hover .option-plus-icon {
+  color: #BDD337;
+  opacity: 1;
+}
+
+/* Action Buttons - Material Design */
+.multiselect-actions {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  background: #F5F5F5;
+  border-top: 1px solid #E0E0E0;
+}
+
+.action-btn {
+  flex: 1;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn-confirm {
+  background: #BDD337;
+  color: #1B1528;
+  box-shadow: 0 2px 4px rgba(189, 211, 55, 0.25);
+}
+
+.btn-confirm:hover {
+  background: #A8C130;
+  box-shadow: 0 4px 8px rgba(189, 211, 55, 0.35);
+  transform: translateY(-1px);
+}
+
+.btn-reset {
+  background: #FFFFFF;
+  color: #757575;
+  border: 1px solid #E0E0E0;
+}
+
+.btn-reset:hover {
+  background: #F5F5F5;
+  color: #524393;
+  border-color: #A4A2CD;
+}
+
+.action-btn:active {
+  transform: scale(0.98);
+}
+
+/* Selected Count Badge */
+.selected-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 8px;
+  background: #BDD337;
+  color: #1B1528;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-left: 8px;
+}
+
+/* Filter Toggle */
+.filter-toggle-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: #FFFFFF;
+  border: 2px solid #A4A2CD;
+  border-radius: 12px;
+  color: #524393;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.filter-toggle-button:hover {
+  background: rgba(189, 211, 55, 0.1);
+  border-color: #BDD337;
+  color: #1B1528;
+}
+
+.filter-toggle-button.active {
+  background: linear-gradient(135deg, #BDD337 0%, #A4A2CD 100%);
+  border-color: #BDD337;
+  color: #1B1528;
+}
+
+/* Action Buttons Section */
+.job-action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.browse-jobs-button {
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #BDD337 0%, #524393 100%);
+  color: #1B1528;
+  border: 3px solid rgba(255, 255, 255, 0.4);
+  border-radius: 16px;
+  font-weight: 800;
+  font-size: 1.1rem;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 28px rgba(189, 211, 55, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.browse-jobs-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+.browse-jobs-button:hover::before {
+  left: 100%;
+}
+
+.browse-jobs-button:hover {
+  background: linear-gradient(135deg, #524393 0%, #A4A2CD 100%);
+  color: #EEF3CE;
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 12px 40px rgba(82, 67, 147, 0.5);
+}
+
+.browse-jobs-button:active {
+  transform: translateY(-1px) scale(0.98);
+}
+
+.applications-button,
+.saved-jobs-button {
+  padding: 0.875rem 1.5rem;
+  background: rgba(255, 255, 255, 0.8);
+  border: 2px solid #A4A2CD;
+  border-radius: 12px;
+  color: #524393;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.applications-button:hover,
+.saved-jobs-button:hover {
+  background: #FFFFFF;
+  border-color: #BDD337;
+  color: #1B1528;
+  transform: translateX(5px);
+  box-shadow: 0 4px 16px rgba(189, 211, 55, 0.2);
+}
+
+.applications-count,
+.saved-jobs-count {
+  background: linear-gradient(135deg, #524393, #A4A2CD);
+  color: #FFFFFF;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+/* Filters Section */
+.job-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.filter-group-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1B1528;
+  margin: 0;
+}
+
+/* Checkboxes */
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #524393;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.checkbox-label:hover {
+  color: #BDD337;
+}
+
+.checkbox-input {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #A4A2CD;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s ease;
+  background: #FFFFFF;
+}
+
+.checkbox-input:hover {
+  border-color: #BDD337;
+  box-shadow: 0 0 0 3px rgba(189, 211, 55, 0.1);
+}
+
+.checkbox-input:checked {
+  background: linear-gradient(135deg, #BDD337 0%, #524393 100%);
+  border-color: #BDD337;
+}
+
+.checkbox-input:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #FFFFFF;
+  font-weight: 900;
+  font-size: 14px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .job-opportunities {
+    padding: 1.5rem;
+  }
+
+  .job-opportunities-header h2 {
+    font-size: 1.4rem;
+  }
+
+  .job-search-section {
+    flex-direction: column;
+  }
+
+  .browse-jobs-button {
+    font-size: 1rem;
+    padding: 0.875rem 1.5rem;
+  }
+
+  .multiselect-dropdown {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-height: 70vh;
+    border-radius: 12px 12px 0 0;
+    animation: dropdownSlideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes dropdownSlideUp {
+    from {
+      opacity: 0;
+      transform: translateY(100%);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .multiselect-options {
+    max-height: calc(70vh - 140px);
+  }
+}
+
+@media (max-width: 480px) {
+  .job-opportunities {
+    padding: 1.25rem;
+  }
+
+  .job-opportunities-header h2 {
+    font-size: 1.25rem;
+  }
+
+  .multiselect-controls {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .control-btn {
+    width: 100%;
+  }
+
+  .multiselect-actions {
+    flex-direction: column-reverse;
+    gap: 8px;
+  }
+
+  .action-btn {
+    width: 100%;
+  }
+}

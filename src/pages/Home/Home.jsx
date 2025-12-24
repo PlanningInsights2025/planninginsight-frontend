@@ -517,22 +517,22 @@ const Home = () => {
     {
       icon: CheckCircle,
       title: 'Verified Opportunities',
-      description: 'All job postings are verified for authenticity',
+      description: 'Authentic opportunities you can trust',
     },
     {
       icon: Award,
       title: 'Certified Courses',
-      description: 'Industry-recognized certifications',
+      description: ' Courses recognized by industry leaders',
     },
     {
       icon: Globe,
       title: 'Global Network',
-      description: 'Connect with professionals worldwide',
+      description: ' Collaborate with professionals around the world',
     },
     {
       icon: BarChart,
       title: 'Career Growth',
-      description: 'Track your professional development',
+      description: ' Unlock your full professional potential',
     },
   ];
 
@@ -564,22 +564,15 @@ const Home = () => {
             <div className="hero-text-enhanced">
               <div className="hero-badge-enhanced">
                 <Sparkles size={16} />
-                <span>India's Premier Urban Planning Platform</span>
+              <span>The Next-Gen Urban Planning Starts Here.</span>
               </div>
 
               <h1 className="hero-title-enhanced">
-                Empowering Urban
-                <br />
-                Professionals to
-                <br />
-                <span className="text-gradient-enhanced">Shape Tomorrow</span>
+               Welcome to a digital workspace built for urban planners, architects, and city innovators
               </h1>
 
               <p className="hero-description-enhanced">
-                Join India's premier platform connecting urban planning
-                professionals with opportunities, knowledge, and a thriving
-                community. Access 2,500+ jobs, 450+ courses, and network with
-                15,000+ experts.
+               Sign in to access powerful planning tools, collaborative design environments, and datadriven insights that shape sustainable and future-ready urban spaces
               </p>
 
               {/* Enhanced Search Bar */}
@@ -793,12 +786,13 @@ const Home = () => {
           <div className="section-header-professional">
             <p className="section-subtitle">EXPLORE OUR PLATFORM</p>
             <h2>
-              Discover All the{' '}
-              <span className="text-gradient-professional">Tools & Resources</span>
+              {/* Tools That Power Your Progress{' '} */}
+              <span className="text-gradient-professional">Tools That Power Your Progress</span>
             </h2>
             <p>
-              Comprehensive tools to advance your career in urban planning and
-              built environment sectors
+              Access powerful tools, curated resources, and opportunities designed for urban planning
+and the built environment.
+
             </p>
           </div>
 
@@ -952,11 +946,11 @@ const Home = () => {
           <div className="section-header-professional">
             <p className="section-subtitle">OPPORTUNITIES</p>
             <h2>
-              Discover Curated{' '}
-              <span className="text-gradient-professional">Job Positions</span>
+              {/* Your Next Career Step{' '} */}
+              <span className="text-gradient-professional">Your Next Career Step</span>
             </h2>
             <p>
-              From leading organizations seeking talented urban planning professionals
+              Connect with organizations offering roles across planning, design, and development sectors
             </p>
           </div>
 
@@ -1033,10 +1027,10 @@ const Home = () => {
           <div className="section-header-professional">
             <p className="section-subtitle">LEARNING</p>
             <h2>
-              Advance Your{' '}
-              <span className="text-gradient-professional">Expertise</span>
+              {/* Advance Your{' '} */}
+              <span className="text-gradient-professional">Strengthen Your Professional Skills</span>
             </h2>
-            <p>With industry-leading courses taught by expert instructors</p>
+            <p>Advance your knowledge through practical, industry-aligned learning.</p>
           </div>
 
           <div
@@ -1105,14 +1099,13 @@ const Home = () => {
           <div className="section-header-professional">
             <p className="section-subtitle">SUCCESS STORIES</p>
             <h2>
-              Join Thousands{' '}
+              {/* Join Thousands{' '} */}
               <span className="text-gradient-professional">
-                Advancing Their Careers
+                Stories That Inspire Urban Change
               </span>
             </h2>
             <p>
-              Hear from professionals who transformed their careers with Planning
-              Insights
+              Highlighting real achievements that shaping better urban environments.
             </p>
           </div>
 
@@ -1193,11 +1186,11 @@ const Home = () => {
       <section className="cta-section-professional animate-on-scroll">
         <div className="container">
           <div className="cta-content-professional">
-            <h2>Ready to Transform Your Career?</h2>
+            <h2>Ready to Shape Your Future in Urban Planning?</h2>
             <p>
-              Join thousands of professionals leveraging Planning Insights to
-              discover opportunities, develop skills, and build meaningful
-              connections.
+             Be part of a growing global community turning ideas into impact. Planning Insights helps
+you unlock new opportunities, sharpen your skills, and connect with professionals shaping
+cities of tomorrow.
             </p>
 
             <div className="cta-actions-professional">
@@ -1233,8 +1226,8 @@ const Home = () => {
             </div>
 
             <p className="cta-note">
-              Sign in to apply for jobs, enroll in courses, participate in
-              discussions, and connect with 15,000+ professionals in your field.
+              Sign in to access verified job opportunities, expert forums, join meaningful discussions, and
+collaborate with 15,000+ professionals across built environment.
             </p>
           </div>
         </div>

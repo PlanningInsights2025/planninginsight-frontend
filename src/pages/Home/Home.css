@@ -752,23 +752,8 @@ body {
 
 .autoscroll-wrapper::before,
 .autoscroll-wrapper::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 150px;
-  z-index: 2;
-  pointer-events: none;
-}
-
-.autoscroll-wrapper::before {
-  left: 0;
-  background: linear-gradient(to right, var(--surface-color) 0%, transparent 100%);
-}
-
-.autoscroll-wrapper::after {
-  right: 0;
-  background: linear-gradient(to left, var(--surface-color) 0%, transparent 100%);
+  /* Remove side fade overlays on autoscroll to avoid blurred/faded edges */
+  display: none;
 }
 
 .autoscroll-track {
@@ -1133,23 +1118,8 @@ body {
 
 .jobs-autoscroll-wrapper::before,
 .jobs-autoscroll-wrapper::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 150px;
-  z-index: 2;
-  pointer-events: none;
-}
-
-.jobs-autoscroll-wrapper::before {
-  left: 0;
-  background: linear-gradient(to right, white 0%, transparent 100%);
-}
-
-.jobs-autoscroll-wrapper::after {
-  right: 0;
-  background: linear-gradient(to left, white 0%, transparent 100%);
+  /* Remove side fade overlays on jobs carousel to show full card edges */
+  display: none;
 }
 
 .jobs-autoscroll-track {
@@ -1294,23 +1264,8 @@ body {
 
 .courses-autoscroll-wrapper::before,
 .courses-autoscroll-wrapper::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 150px;
-  z-index: 2;
-  pointer-events: none;
-}
-
-.courses-autoscroll-wrapper::before {
-  left: 0;
-  background: linear-gradient(to right, var(--surface-color) 0%, transparent 100%);
-}
-
-.courses-autoscroll-wrapper::after {
-  right: 0;
-  background: linear-gradient(to left, var(--surface-color) 0%, transparent 100%);
+  /* Remove side fade overlays on courses carousel to show full card edges */
+  display: none;
 }
 
 .courses-autoscroll-track {

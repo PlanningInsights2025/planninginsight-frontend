@@ -1,480 +1,562 @@
-// Header.jsx - Professional Responsive Company Website Design (No Icons, No Notifications)
-import React, { useState, useEffect, useRef } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { useAuth } from '../../../hooks/useAuth'
-import './Header.css'
+
+// filepath: c:\Users\Lenovo\Downloads\Planning-Insights22\Planning-Insights\frontend\src\components\common\Header\Header.jsx
+import React, { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../../../hooks/useAuth";
+import { assets } from "../../../assets/assets";
+import ProfileMenu from "./ProfileMenu"; // <-- new import
 
 const Header = () => {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [isScrolled, setIsScrolled] = useState(false)
-  const [activeNav, setActiveNav] = useState('/')
-  const [isSearchOpen, setIsSearchOpen] = useState(false)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [showHeader, setShowHeader] = useState(true)
-  const [lastScrollY, setLastScrollY] = useState(0)
-  const [mousePosition, setMousePosition] = useState({ x: 50, y: 50 })
-  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false)
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [showHeader, setShowHeader] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
-  const location = useLocation()
-  const navigate = useNavigate()
-  const { user, isAuthenticated, logout } = useAuth()
-  const headerRef = useRef(null)
-  const searchInputRef = useRef(null)
-  const profileDropdownRef = useRef(null)
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { isAuthenticated, user, logout } = useAuth();
 
-  const logoPath = '/assets/images/logos/planning insight logo-1.png'
-
-  // Navigation items - ROUTES PRESERVED
   const navItems = [
-    { path: '/', label: 'Home' },
-    { path: '/news', label: 'Newsroom'},
-    { path: '/networking-arena', label: 'Networking Arena' },
-    { path: '/jobs', label: 'Job Portal' },
-    { path: '/forum', label: 'Discussion Forum' },
-    { path: '/learning', label: 'Learning Centre' },
-    { path: '/publishing', label: 'Publishing House' }
-  ]
-
-  // Enhanced scroll behavior
-  useEffect(() => {
-    let ticking = false
-    let lastKnownScrollPosition = 0
-
-    const handleScroll = () => {
-      lastKnownScrollPosition = window.scrollY
-
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          const currentScrollY = lastKnownScrollPosition
-          setIsScrolled(currentScrollY > 20)
-
-          // Smart header hide/show
-          if (currentScrollY > lastScrollY && currentScrollY > 150) {
-            setShowHeader(false)
-          } else {
-            setShowHeader(true)
-          }
-
-          setLastScrollY(currentScrollY)
-          ticking = false
-        })
-        ticking = true
-      }
-    }
-
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [lastScrollY])
-
-  // Interactive cursor glow effect
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      if (headerRef.current) {
-        const rect = headerRef.current.getBoundingClientRect()
-        const x = ((e.clientX - rect.left) / rect.width) * 100
-        const y = ((e.clientY - rect.top) / rect.height) * 100
-        setMousePosition({ x, y })
-      }
-    }
-
-    const header = headerRef.current
-    if (header) {
-      header.addEventListener('mousemove', handleMouseMove)
-      return () => header.removeEventListener('mousemove', handleMouseMove)
-    }
-  }, [])
-
-  // Active navigation tracking
-  useEffect(() => {
-    setActiveNav(location.pathname)
-  }, [location.pathname])
-
-  // Click outside handler
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (headerRef.current && !headerRef.current.contains(event.target)) {
-        setIsMobileMenuOpen(false)
-        setIsSearchOpen(false)
-        setIsProfileDropdownOpen(false)
-      }
-    }
-
-    if (isMobileMenuOpen || isSearchOpen || isProfileDropdownOpen) {
-      document.addEventListener('mousedown', handleClickOutside)
-      return () => document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [isMobileMenuOpen, isSearchOpen, isProfileDropdownOpen])
-
-  // Search input focus management
-  useEffect(() => {
-    if (isSearchOpen && searchInputRef.current) {
-      setTimeout(() => searchInputRef.current?.focus(), 150)
-    }
-  }, [isSearchOpen])
-
-  // Body scroll lock for mobile menu
-  useEffect(() => {
-    if (isMobileMenuOpen) {
-      document.body.style.overflow = 'hidden'
-      document.body.style.paddingRight = '0px'
-    } else {
-      document.body.style.overflow = ''
-      document.body.style.paddingRight = ''
-    }
-    return () => {
-      document.body.style.overflow = ''
-      document.body.style.paddingRight = ''
-    }
-  }, [isMobileMenuOpen])
-
-  // Close menus on route change
-  useEffect(() => {
-    setIsMobileMenuOpen(false)
-    setIsSearchOpen(false)
-  }, [location.pathname])
-
-  const handleMobileMenuToggle = () => {
-    setIsMobileMenuOpen(prev => !prev)
-  }
-
-  const handleSearchToggle = () => {
-    setIsSearchOpen(prev => !prev)
-  }
-
-  const handleNavClick = (path) => {
-    setActiveNav(path)
-    setIsMobileMenuOpen(false)
-    // Ensure navigation happens even if Link's default behaviour is blocked
-    try {
-      navigate(path)
-    } catch (e) {
-      // noop - navigation fallback
-    }
-  }
-
-  const handleSearch = (e) => {
-    e.preventDefault()
-    if (searchQuery.trim()) {
-      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`)
-      setSearchQuery('')
-      setIsSearchOpen(false)
-    }
-  }
-
-  const handleLogout = async () => {
-    await logout()
-    setIsProfileDropdownOpen(false)
-    navigate('/')
-  }
+    { path: "/", label: "Home" },
+    { path: "/news", label: "Newsroom" },
+    { path: "/networking-arena", label: "Networking Arena" },
+    { path: "/jobs", label: "Job Portal" },
+    { path: "/forum", label: "Discussion Forum" },
+    { path: "/learning", label: "Learning Centre" },
+    { path: "/publishing", label: "Publishing House" },
+    // { path: "/about", label: "About Us" },
+  ];
 
   const getInitials = () => {
-    if (user?.firstName && user?.lastName) {
-      return `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`.toUpperCase()
+    if (!user) return "U";
+    if (user.firstName && user.lastName) {
+      return `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
     }
-    if (user?.displayName) {
-      const names = user.displayName.split(' ')
-      return names.map(n => n.charAt(0)).join('').toUpperCase().slice(0, 2)
+    if (user.displayName) {
+      const parts = user.displayName.trim().split(" ");
+      return parts
+        .slice(0, 2)
+        .map((p) => p[0].toUpperCase())
+        .join("");
     }
-    return 'U'
-  }
+    if (user.email) return user.email[0].toUpperCase();
+    return "U";
+  };
 
-  const getUserDisplayName = () => {
-    if (user?.firstName && user?.lastName) {
-      return `${user.firstName} ${user.lastName}`
+  const getDisplayName = () => {
+    if (!user) return "";
+    if (user.firstName && user.lastName) {
+      return `${user.firstName} ${user.lastName}`;
     }
-    if (user?.displayName) {
-      return user.displayName
-    }
-    if (user?.email) {
-      return user.email.split('@')[0]
-    }
-    return 'User'
-  }
+    if (user.displayName) return user.displayName;
+    if (user.email) return user.email.split("@")[0];
+    return "User";
+  };
+
+  const initials = getInitials();
+  const displayName = getDisplayName();
+
+  const isActive = (path) => {
+    if (path === "/") return location.pathname === "/";
+    return location.pathname.startsWith(path);
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentY = window.scrollY;
+      setIsScrolled(currentY > 10);
+
+      if (currentY > lastScrollY && currentY > 120) {
+        setShowHeader(false);
+      } else {
+        setShowHeader(true);
+      }
+      setLastScrollY(currentY);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [lastScrollY]);
+
+  useEffect(() => {
+    document.body.style.overflow = isMobileOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMobileOpen]);
+
+  const handleLogout = async () => {
+    await logout();
+    setIsMobileOpen(false);
+    navigate("/login");
+  };
+
+  const styles = {
+    navbar: {
+      position: "fixed",
+      top: 0,
+      left: 0,
+      right: 0,
+      zIndex: 50,
+      transform: `translateY(${showHeader ? "0" : "-100%"})`,
+      transition:
+        "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.25s ease, box-shadow 0.25s ease",
+    },
+    navbarInner: {
+      background: isScrolled
+        ? "rgba(248,250,252,0.98)"
+        : "rgba(248,250,252,0.95)",
+      backdropFilter: "blur(18px)",
+      WebkitBackdropFilter: "blur(18px)",
+      borderBottom: "1px solid rgba(148,163,184,0.28)",
+      boxShadow: isScrolled
+        ? "0 16px 35px rgba(15,23,42,0.18)"
+        : "0 6px 18px rgba(15,23,42,0.1)",
+    },
+    navContainer: {
+      maxWidth: "1280px",
+      margin: "0 auto",
+      padding: "0 1.5rem",
+    },
+    navRow: {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      gap: "1.25rem",
+      height: "72px",
+    },
+    logoLink: {
+      display: "flex",
+      alignItems: "center",
+      gap: "0.75rem",
+      textDecoration: "none",
+      cursor: "pointer",
+    },
+    logoBadge: {
+      width: "80px",
+      height: "60px",
+      borderRadius: "6px",
+      background: "transparent",
+      border: "none",
+      boxShadow: "none",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      overflow: "hidden",
+    },
+    logoImg: {
+      width: "90%",
+      height: "90%",
+      objectFit: "contain",
+    },
+    logoTextGroup: {
+      display: "flex",
+      flexDirection: "column",
+      gap: "2px",
+    },
+    logoTitle: {
+      fontSize: "1.05rem",
+      fontWeight: 700,
+      letterSpacing: "0.01em",
+      background: "linear-gradient(120deg, #4b5563, #111827)",
+      WebkitBackgroundClip: "text",
+      WebkitTextFillColor: "transparent",
+    },
+    logoSubtitle: {
+      fontSize: "0.65rem",
+      fontWeight: 600,
+      letterSpacing: "0.17em",
+      textTransform: "uppercase",
+      color: "#6b7280",
+    },
+    navLinksDesktop: {
+      display: "none",
+    },
+    navList: {
+      display: "flex",
+      alignItems: "center",
+      gap: "0.35rem",
+      padding: "0.25rem",
+      borderRadius: "999px",
+      background: "rgba(255,255,255,0.9)",
+      border: "1px solid rgba(148,163,184,0.3)",
+      listStyle: "none",
+    },
+    navLink: (active) => ({
+      position: "relative",
+      display: "inline-flex",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: "0.55rem 1.1rem",
+      borderRadius: "999px",
+      fontSize: "0.8rem",
+      fontWeight: 600,
+      letterSpacing: "0.01em",
+      color: active ? "#0f172a" : "#4b5563",
+      textDecoration: "none",
+      overflow: "hidden",
+      background: active ? "#ffffff" : "transparent",
+      boxShadow: active
+        ? "0 4px 18px rgba(148,163,184,0.4)"
+        : "none",
+      transition:
+        "color 0.18s ease, transform 0.18s ease, background 0.18s ease, box-shadow 0.18s ease",
+    }),
+    navRight: {
+      display: "flex",
+      alignItems: "center",
+      gap: "0.75rem",
+    },
+    authBtn: {
+      borderRadius: "999px",
+      padding: "0.5rem 1.1rem",
+      fontSize: "0.8rem",
+      fontWeight: 600,
+      border: "1px solid transparent",
+      cursor: "pointer",
+      textDecoration: "none",
+      display: "inline-flex",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: "0.35rem",
+      transition: "all 0.2s ease",
+    },
+    authGhost: {
+      background: "transparent",
+      color: "#4b5563",
+      borderColor: "rgba(148,163,184,0.7)",
+    },
+    authPrimary: {
+      background: "linear-gradient(135deg, #0f172a, #4b5563)",
+      color: "#ffffff",
+      boxShadow: "0 8px 20px rgba(15,23,42,0.55)",
+    },
+    avatar: {
+      width: "32px",
+      height: "32px",
+      borderRadius: "999px",
+      background: "linear-gradient(135deg, #4b5563, #020617)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      color: "#ffffff",
+      fontSize: "0.8rem",
+      fontWeight: 700,
+    },
+    overlay: {
+      position: "fixed",
+      inset: 0,
+      background: "rgba(15,23,42,0.45)",
+      backdropFilter: "blur(3px)",
+      zIndex: 30,
+    },
+    mobileSheet: {
+      position: "fixed",
+      top: "72px",
+      left: 0,
+      right: 0,
+      bottom: 0,
+      background: "linear-gradient(135deg, #eef3ce, #e5e7eb)",
+      transform: `translateX(${isMobileOpen ? "0" : "100%"})`,
+      transition: "transform 0.28s cubic-bezier(0.4, 0, 0.2, 1)",
+      zIndex: 40,
+      overflowY: "auto",
+    },
+    mobileInner: {
+      maxWidth: "420px",
+      width: "100%",
+      height: "100%",
+      background: "rgba(255,255,255,0.97)",
+      boxShadow: "0 0 40px rgba(15,23,42,0.45)",
+      padding: "1.25rem 1.25rem 1.75rem",
+    },
+    mobileNavList: {
+      listStyle: "none",
+      display: "flex",
+      flexDirection: "column",
+      gap: "0.6rem",
+      marginTop: "0.75rem",
+    },
+    mobileNavLink: (active) => ({
+      display: "flex",
+      alignItems: "center",
+      gap: "0.65rem",
+      padding: "0.65rem 0.9rem",
+      borderRadius: "0.85rem",
+      textDecoration: "none",
+      fontSize: "0.86rem",
+      fontWeight: 600,
+      color: active ? "#0f172a" : "#4b5563",
+      background: "rgba(248,250,252,0.97)",
+      border: active
+        ? "1px solid rgba(15,23,42,0.4)"
+        : "1px solid transparent",
+      boxShadow: active
+        ? "0 6px 18px rgba(15,23,42,0.45)"
+        : "none",
+      transition: "all 0.18s ease",
+    }),
+    mobileIconBox: {
+      width: "28px",
+      height: "28px",
+      borderRadius: "0.75rem",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      fontSize: "0.9rem",
+      background: "#ffffff",
+      boxShadow: "0 3px 10px rgba(148,163,184,0.5)",
+    },
+    mobileFooter: {
+      marginTop: "1.4rem",
+      borderTop: "1px solid rgba(226,232,240,0.9)",
+      paddingTop: "1rem",
+      display: "flex",
+      flexDirection: "column",
+      gap: "0.6rem",
+    },
+    mobileAuthBtn: {
+      width: "100%",
+      borderRadius: "0.9rem",
+      padding: "0.65rem 0.9rem",
+      fontSize: "0.86rem",
+      fontWeight: 600,
+      border: "1px solid transparent",
+      textAlign: "center",
+      textDecoration: "none",
+      transition: "all 0.2s ease",
+    },
+  };
 
   return (
     <>
-      {/* Enhanced Overlay */}
-      {isMobileMenuOpen && (
-        <div 
-          className="overlay" 
-          onClick={() => setIsMobileMenuOpen(false)}
-          role="presentation"
-          aria-hidden="true"
+      {isMobileOpen && (
+        <div
+          style={styles.overlay}
+          onClick={() => setIsMobileOpen(false)}
         />
       )}
 
-      {/* Main Header */}
-      <header 
-        ref={headerRef}
-        className={`header ${isScrolled ? 'scrolled' : ''} ${showHeader ? 'visible' : 'hidden'}`}
-        style={{
-          '--mouse-x': `${mousePosition.x}%`,
-          '--mouse-y': `${mousePosition.y}%`
-        }}
-      >
-        {/* Animated Glow */}
-        <div className="header-glow" aria-hidden="true" />
-        <div className="header-glow-cursor" aria-hidden="true" />
-
-        <div className="header-container">
-          <div className="header-main">
-            {/* Logo Section */}
-            <div className="logo-section">
-              <Link to="/" className="logo-link" aria-label="Planning Insights Home">
-                <div className="logo-img-wrapper">
-                  <img 
-                    src={logoPath} 
-                    alt="Planning Insights Logo" 
-                    className="logo-img"
-                    onError={(e) => {
-                      e.target.style.display = 'none'
-                      e.target.nextElementSibling.style.display = 'flex'
-                    }}
+      <header style={styles.navbar}>
+        <div style={styles.navbarInner}>
+          <div style={styles.navContainer}>
+            <div style={styles.navRow}>
+              {/* Logo – on small screens also toggles the mobile menu */}
+              <div
+                style={styles.logoLink}
+                onClick={() => {
+                  if (window.innerWidth < 992) {
+                    setIsMobileOpen((o) => !o);
+                  } else {
+                    navigate("/");
+                  }
+                }}
+              >
+                <div style={styles.logoBadge}>
+                  <img
+                    src={assets.logo}
+                    alt="Planning Insights"
+                    style={styles.logoImg}
                   />
-                  <div className="logo-fallback" style={{ display: 'none' }}>
-                    PI
-                  </div>
                 </div>
-                <div className="logo-text">
-                  <span className="logo-title">Planning Insights</span>
-                  <span className="logo-subtitle">BUILT ENVIRONMENT</span>
-                </div>
-              </Link>
-            </div>
+                {/* <div style={styles.logoTextGroup}>
+                  <span style={styles.logoTitle}>Planning Insights</span>
+                  <span style={styles.logoSubtitle}>BUILT ENVIRONMENT</span>
+                </div> */}
+              </div>
 
-            {/* Desktop Navigation */}
-            <nav className="nav-desktop" aria-label="Main Navigation">
-              <ul className="nav-list">
-                {navItems.map((item, index) => {
-                  const isActive = activeNav === item.path
-                  
-                  return (
-                    <li 
-                      key={item.path} 
-                      className="nav-item"
-                      style={{ '--item-index': index }}
-                    >
+              {/* Desktop nav */}
+              <nav
+                aria-label="Main navigation"
+                style={{
+                  ...styles.navLinksDesktop,
+                  ...(window.innerWidth >= 992
+                    ? { display: "flex", flex: 1, justifyContent: "center" }
+                    : {}),
+                }}
+              >
+                <ul style={styles.navList}>
+                  {navItems.map((item) => (
+                    <li key={item.path}>
                       <Link
                         to={item.path}
-                        className={`nav-link ${isActive ? 'active' : ''}`}
-                        onClick={() => handleNavClick(item.path)}
-                        aria-current={isActive ? 'page' : undefined}
+                        style={styles.navLink(isActive(item.path))}
                       >
-                        <span className="nav-link-glow" aria-hidden="true" />
-                        <span className="nav-label">{item.label}</span>
-                        {item.badge && (
-                          <span className="nav-badge">{item.badge}</span>
-                        )}
+                        <span>{item.label}</span>
                       </Link>
                     </li>
-                  )
-                })}
-              </ul>
-            </nav>
+                  ))}
+                </ul>
+              </nav>
 
-            {/* Header Actions */}
-            <div className="header-actions">
-              {isAuthenticated && user ? (
-                // User Profile Dropdown
-                <div className="user-profile-section" ref={profileDropdownRef}>
-                  <button
-                    className="user-profile-btn"
-                    onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
-                    aria-label="User Profile"
-                    aria-expanded={isProfileDropdownOpen}
-                  >
-                    <div className="user-avatar">
-                      {user?.photoURL ? (
-                        <img src={user.photoURL} alt={getUserDisplayName()} />
-                      ) : (
-                        <span>{getInitials()}</span>
-                      )}
-                    </div>
-                    <span className="user-name">{getUserDisplayName()}</span>
-                  </button>
-
-                  {/* Profile Dropdown Menu */}
-                  {isProfileDropdownOpen && (
-                    <div className="profile-dropdown">
-                      <div className="dropdown-header">
-                        <div className="dropdown-avatar">
-                          {user?.photoURL ? (
-                            <img src={user.photoURL} alt={getUserDisplayName()} />
-                          ) : (
-                            <span>{getInitials()}</span>
-                          )}
-                        </div>
-                        <div className="dropdown-info">
-                          <p className="dropdown-name">{getUserDisplayName()}</p>
-                          <p className="dropdown-email">{user?.email}</p>
-                        </div>
-                      </div>
-
-                      <div className="dropdown-divider" />
-
-                      <div className="dropdown-menu-items">
-                        <Link 
-                          to="/dashboard" 
-                          className="dropdown-item"
-                          onClick={() => setIsProfileDropdownOpen(false)}
-                        >
-                          📊 Dashboard
-                        </Link>
-                        <Link 
-                          to="/profile" 
-                          className="dropdown-item"
-                          onClick={() => setIsProfileDropdownOpen(false)}
-                        >
-                          👤 My Profile
-                        </Link>
-                        <Link 
-                          to="/settings" 
-                          className="dropdown-item"
-                          onClick={() => setIsProfileDropdownOpen(false)}
-                        >
-                          ⚙ Settings
-                        </Link>
-                      </div>
-
-                      <div className="dropdown-divider" />
-
-                      <button
-                        className="dropdown-item logout-btn"
-                        onClick={handleLogout}
-                      >
-                        🚪 Sign Out
-                      </button>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                // Auth Buttons
-                <div className="auth-btns">
-                  <Link to="/login" className="btn btn-ghost btn-sm">
-                    <span className="btn-shine" aria-hidden="true" />
-                    Sign In
-                  </Link>
-                  <Link to="/signup" className="btn btn-primary btn-sm">
-                    <span className="btn-shine" aria-hidden="true" />
-                    Get Started
-                  </Link>
-                </div>
-              )}
-
-              {/* Mobile Menu Toggle */}
-              <button 
-                className={`mobile-btn ${isMobileMenuOpen ? 'active' : ''}`}
-                onClick={handleMobileMenuToggle}
-                aria-label="Toggle Menu"
-                aria-expanded={isMobileMenuOpen}
-              >
-                <span></span>
-                <span></span>
-                <span></span>
-              </button>
+              {/* Right controls – now using ProfileMenu */}
+              <div style={styles.navRight}>
+                {isAuthenticated && user ? (
+                  <ProfileMenu
+                    user={user}
+                    showSwitchAccount={false}
+                    onLogout={handleLogout}
+                    onMyProfile={() => navigate("/profile")}
+                    onEditProfile={() => navigate("/profile/edit")}
+                    onSettings={() => navigate("/settings")}
+                    onNotifications={() => navigate("/settings/notifications")}
+                  />
+                ) : (
+                  <>
+                    <Link
+                      to="/login"
+                      style={{ ...styles.authBtn, ...styles.authGhost }}
+                    >
+                      Sign In
+                    </Link>
+                    <Link
+                      to="/signup"
+                      style={{ ...styles.authBtn, ...styles.authPrimary }}
+                    >
+                      Get Started
+                    </Link>
+                  </>
+                )}
+              </div>
             </div>
           </div>
-
-          {/* Search Bar */}
-          {isSearchOpen && (
-            <div className="search-bar">
-              <form onSubmit={handleSearch} role="search">
-                <input
-                  ref={searchInputRef}
-                  type="search"
-                  className="search-input"
-                  placeholder="Search jobs, courses, publications..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  aria-label="Search"
-                />
-                <button type="submit" className="btn btn-primary btn-sm">
-                  Search
-                </button>
-              </form>
-            </div>
-          )}
         </div>
 
-        {/* Mobile Menu */}
-        <div className={`mobile-menu ${isMobileMenuOpen ? 'open' : ''}`}>
-          <div className="mobile-menu-content">
-            <ul>
-              {navItems.map((item, index) => {
-                const isActive = activeNav === item.path
-                
-                return (
-                  <li 
-                    key={item.path}
-                    style={{ '--item-index': index }}
+        {/* Mobile sheet – opens when logo area is tapped on small screens */}
+        <div style={styles.mobileSheet}>
+          <div style={styles.mobileInner}>
+            <ul style={styles.mobileNavList}>
+              {navItems.map((item) => (
+                <li key={item.path}>
+                  <Link
+                    to={item.path}
+                    style={styles.mobileNavLink(isActive(item.path))}
+                    onClick={() => setIsMobileOpen(false)}
                   >
-                    <Link
-                      to={item.path}
-                      className={isActive ? 'active' : ''}
-                      onClick={() => handleNavClick(item.path)}
-                    >
-                      <span className="mobile-nav-label">{item.label}</span>
-                      {item.badge && (
-                        <span className="nav-badge">{item.badge}</span>
-                      )}
-                    </Link>
-                  </li>
-                )
-              })}
-              
-              <li className="divider">
-                <hr />
-              </li>
+                    <span style={styles.mobileIconBox}>•</span>
+                    <span>{item.label}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
 
+            <div style={styles.mobileFooter}>
               {isAuthenticated && user ? (
                 <>
-                  <li>
-                    <Link to="/dashboard" onClick={() => handleNavClick('/dashboard')}>
-                      <span className="mobile-nav-label">📊 Dashboard</span>
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/profile" onClick={() => handleNavClick('/profile')}>
-                      <span className="mobile-nav-label">👤 My Profile</span>
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/settings" onClick={() => handleNavClick('/settings')}>
-                      <span className="mobile-nav-label">⚙ Settings</span>
-                    </Link>
-                  </li>
-                  <li className="divider">
-                    <hr />
-                  </li>
-                  <li>
-                    <button 
-                      className="mobile-logout-btn"
-                      onClick={handleLogout}
-                    >
-                      <span className="mobile-nav-label">🚪 Sign Out</span>
-                    </button>
-                  </li>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.6rem",
+                    }}
+                  >
+                    <div style={styles.avatar}>{initials}</div>
+                    <div>
+                      <div
+                        style={{
+                          fontSize: "0.86rem",
+                          fontWeight: 600,
+                          color: "#111827",
+                        }}
+                      >
+                        {displayName}
+                      </div>
+                      <div
+                        style={{
+                          fontSize: "0.72rem",
+                          color: "#6b7280",
+                          maxWidth: "13rem",
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        {user.email}
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    style={{
+                      ...styles.mobileAuthBtn,
+                      borderColor: "rgba(148,163,184,0.7)",
+                      background: "#f9fafb",
+                      color: "#111827",
+                    }}
+                    onClick={() => {
+                      setIsMobileOpen(false);
+                      navigate("/dashboard");
+                    }}
+                  >
+                    Go to Dashboard
+                  </button>
+
+                  <button
+                    type="button"
+                    style={{
+                      ...styles.mobileAuthBtn,
+                      borderColor: "rgba(148,163,184,0.7)",
+                      background: "#f9fafb",
+                      color: "#111827",
+                    }}
+                    onClick={() => {
+                      setIsMobileOpen(false);
+                      navigate("/profile");
+                    }}
+                  >
+                    View Profile
+                  </button>
+
+                  <button
+                    type="button"
+                    style={{
+                      ...styles.mobileAuthBtn,
+                      background:
+                        "linear-gradient(135deg, #0f172a, #4b5563)",
+                      color: "#ffffff",
+                      boxShadow: "0 10px 26px rgba(15,23,42,0.65)",
+                    }}
+                    onClick={handleLogout}
+                  >
+                    Sign Out
+                  </button>
                 </>
               ) : (
                 <>
-                  <li>
-                    <Link to="/login" onClick={() => handleNavClick('/login')}>
-                      <span className="mobile-nav-label">Sign In</span>
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/signup" className="primary" onClick={() => handleNavClick('/signup')}>
-                      <span className="mobile-nav-label">Get Started</span>
-                    </Link>
-                  </li>
+                  <Link
+                    to="/login"
+                    onClick={() => setIsMobileOpen(false)}
+                    style={{
+                      ...styles.mobileAuthBtn,
+                      borderColor: "rgba(148,163,184,0.7)",
+                      background: "#f9fafb",
+                      color: "#111827",
+                    }}
+                  >
+                    Sign In
+                  </Link>
+                  <Link
+                    to="/signup"
+                    onClick={() => setIsMobileOpen(false)}
+                    style={{
+                      ...styles.mobileAuthBtn,
+                      background:
+                        "linear-gradient(135deg, #0f172a, #4b5563)",
+                      color: "#ffffff",
+                      boxShadow: "0 10px 26px rgba(15,23,42,0.65)",
+                    }}
+                  >
+                    Get Started
+                  </Link>
                 </>
               )}
-            </ul>
+            </div>
           </div>
         </div>
       </header>
     </>
-  )
-}
+  );
+};
 
-export default Header
+export default Header;

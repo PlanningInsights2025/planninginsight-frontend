@@ -9,10 +9,55 @@
   --success-color: #059669; /* green-600 */
   --error-color: #ef4444; /* red-500 */
 
-  color: var(--text-primary);
+  color: #111827 !important;
   max-height: 80vh;
   overflow-y: auto;
   padding: 0.5rem;
+}
+
+/* Ensure all text elements are visible */
+.application-form *,
+.application-form input,
+.application-form textarea,
+.application-form select,
+.application-form label {
+  color: #111827;
+}
+
+.application-form input::placeholder,
+.application-form textarea::placeholder {
+  color: #9ca3af;
+  opacity: 1;
+}
+
+/* Layout: on wide screens place the summary as a left column and form content to the right */
+.application-form {
+  display: block;
+}
+
+@media (min-width: 900px) {
+  .application-form {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 1.5rem;
+    align-items: start;
+    padding: 1rem;
+  }
+
+  /* Summary sits in the left column and stays visually separated */
+  .application-summary {
+    margin: 0;
+    position: sticky;
+    top: 1.25rem;
+    height: fit-content;
+  }
+
+  /* Main content flows in the right column */
+  .application-form > .form-section,
+  .application-form > .documents-grid,
+  .application-form > .form-actions {
+    grid-column: 2 / 3;
+  }
 }
 
 /* Ensure the form and inner grids scale nicely on small screens */
@@ -39,20 +84,30 @@
   .btn.btn-outline { width: 100%; justify-content: center; }
 }
 
-/* Application Summary */
+
+/* Application Summary (left column) */
 .application-summary {
-  background: #f8fafc;
-  padding: 1.5rem;
-  border-radius: 0.5rem;
+  box-sizing: border-box;
+  max-width: 320px;
+  width: 100%;
+  padding: 1.25rem; /* 20px */
+  border-radius: 10px;
+  background: #ffffff;
   border: 1px solid var(--border-color);
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
+  color: var(--text-primary);
+  line-height: 1.4;
+  overflow: hidden;
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
 }
 
 .application-summary h3 {
   font-size: 1.125rem;
   font-weight: 600;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
   color: var(--text-primary);
+  line-height: 1.25;
 }
 
 .summary-grid {
@@ -65,6 +120,8 @@
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .summary-item .label {
@@ -81,21 +138,27 @@
 
 /* Form Sections */
 .form-section {
-  margin-bottom: 2rem;
-  padding-bottom: 2rem;
-  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 1.5rem;
+  padding: 1rem 1rem 1.25rem 1rem; /* 16px top/side, 20px bottom */
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: #ffffff;
+  box-shadow: 0 1px 0 rgba(16,24,40,0.02);
+  line-height: 1.45;
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
 }
 
 .form-section:last-of-type {
-  border-bottom: none;
   margin-bottom: 0;
 }
 
 .form-section h3 {
   font-size: 1.125rem;
   font-weight: 600;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
   color: var(--text-primary);
+  line-height: 1.25;
 }
 
 .section-description {
@@ -114,14 +177,17 @@
 
 /* Form Groups */
 .form-group {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem; /* consistent spacing between groups (16px) */
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .form-label {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 500;
-  color: var(--text-primary);
+  color: #111827;
   font-size: 0.875rem;
 }
 
@@ -135,11 +201,14 @@
 .form-input {
   width: 100%;
   padding: 0.75rem;
+  min-height: 44px; /* consistent control height */
   border: 1px solid var(--border-color);
   border-radius: 0.5rem;
   font-size: 0.875rem;
   transition: all 0.2s ease;
   font-family: inherit;
+  color: var(--text-primary);
+  background-color: #ffffff;
 }
 
 .form-input:focus {
@@ -157,6 +226,8 @@ textarea.form-input {
   resize: vertical;
   min-height: 120px;
   line-height: 1.5;
+  color: var(--text-primary);
+  background-color: #ffffff;
 }
 
 /* Input with Icon */
@@ -269,8 +340,7 @@ textarea.form-input {
 }
 
 .document-description {
-  color: var(-
-  -text-secondary);
+  color: var(--text-secondary);
   font-size: 0.75rem;
   margin-bottom: 1rem;
   line-height: 1.4;
@@ -309,6 +379,58 @@ textarea.form-input {
   margin-top: 2rem;
 }
 
+/* Make sure primary submit (Apply) is always visible and prominent */
+.form-actions {
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.form-actions .btn {
+  min-width: 120px;
+  padding: 0.6rem 1rem;
+  border-radius: 10px;
+}
+
+.form-actions .btn.primary {
+  background: var(--primary-color);
+  color: #fff;
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 1px 0 rgba(16,24,40,0.02);
+}
+
+@media (max-width: 768px) {
+  .form-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+    gap: 0.75rem;
+    padding-top: 1rem;
+    margin-top: 1rem;
+  }
+
+  .form-actions .btn {
+    width: 100%;
+  }
+}
+
+/* Button sizing and visual consistency */
+.form-actions .btn {
+  min-height: 44px;
+  padding: 0.6rem 1rem;
+  border-radius: 10px;
+}
+
+/* Make sure file-chooser label looks like a control */
+.document-upload .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid var(--border-color);
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .application-form {
@@ -341,4 +463,91 @@ textarea.form-input {
   .writing-tips {
     padding: 0.75rem;
   }
+}
+
+/* Stronger modal-scoped overrides to ensure the left summary column remains readable
+   even when other page CSS defines different container widths. Scoped to the
+   modal body to avoid global conflicts. */
+.jp-modal-body.application-form {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: minmax(220px, 320px) 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.jp-modal-body.application-form .application-summary {
+  min-width: 220px;
+  max-width: 320px;
+  padding: 16px;
+  border-radius: 10px;
+  background: #fff;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 6px 16px rgba(2,6,23,0.04);
+  overflow: hidden;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.jp-modal-body.application-form .application-summary h3,
+.jp-modal-body.application-form .application-summary h4 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  line-height: 1.15;
+  white-space: normal;
+  hyphens: auto;
+}
+
+.jp-modal-body.application-form .application-summary .summary-item .label {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.jp-modal-body.application-form .application-summary .summary-item .value {
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  .jp-modal-body.application-form { grid-template-columns: 1fr; }
+}
+
+/* Modal-specific layout fixes: ensure the summary card sits in the left column
+   and does not float above content. This prevents the small floating card
+   appearance and aligns the template like a professional form layout. */
+.jp-modal .application-form,
+.jp-modal-body.application-form {
+  display: grid !important;
+  grid-template-columns: minmax(220px, 300px) 1fr !important;
+  gap: 20px !important;
+  align-items: start !important;
+  padding: 20px !important;
+}
+
+.jp-modal .application-summary,
+.jp-modal-body.application-form .application-summary {
+  position: static !important;
+  top: auto !important;
+  margin: 0 !important;
+  box-shadow: 0 8px 20px rgba(2,6,23,0.04);
+  border-radius: 10px;
+  padding: 14px !important;
+}
+
+.jp-modal .application-summary h3,
+.jp-modal .application-summary h4 {
+  margin: 0 0 8px 0 !important;
+  font-size: 1rem !important;
+  font-weight: 700 !important;
+}
+
+.jp-modal .application-summary .summary-item { padding: 6px 0; }
+
+@media (max-width: 920px) {
+  .jp-modal .application-form,
+  .jp-modal-body.application-form { grid-template-columns: 1fr !important; }
+  .jp-modal .application-summary { width: 100% !important; }
 }

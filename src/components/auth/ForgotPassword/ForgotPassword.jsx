@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../../../hooks/useAuth'
 import { useNotification } from '../../../contexts/NotificationContext'
 import { validateEmail } from '../../../utils/helpers'
-import './Auth.css'
 import './ForgotPassword.css'
 
 import { 
@@ -17,8 +16,6 @@ import {
   EyeOff
 } from 'lucide-react'
 import Loader from '../../common/Loader/Loader'
-import './Login.css'
-import './ForgotPassword.css'
 
 /**
  * Enhanced Forgot Password Component - 2025
@@ -30,6 +27,7 @@ const ForgotPassword = () => {
 
   const [step, setStep] = useState('email') // email -> otp -> reset -> success
   const [loading, setLoading] = useState(false)
+  const [resetToken, setResetToken] = useState('') // Store token from OTP verification
   const [formData, setFormData] = useState({
     email: '',
     otp: ['', '', '', '', '', ''],
@@ -118,12 +116,21 @@ const ForgotPassword = () => {
     try {
       const result = await verifyOTP(formData.email, otpString)
       if (result.success) {
-        showNotification('Code verified successfully', 'success')
-        setStep('reset')
+        // Store the reset token returned from backend
+        const token = result.data?.token
+        if (token) {
+          setResetToken(token)
+          showNotification('Code verified successfully', 'success')
+          setStep('reset')
+        } else {
+          console.error('No token received:', result)
+          showNotification('Token not received. Please try again.', 'error')
+        }
       } else {
         showNotification(result.error || 'Invalid verification code', 'error')
       }
     } catch (error) {
+      console.error('OTP verification error:', error)
       showNotification('Verification failed', 'error')
     } finally {
       setLoading(false)
@@ -153,7 +160,14 @@ const ForgotPassword = () => {
 
     setLoading(true)
     try {
-      const result = await resetPassword('reset-token', formData.newPassword)
+      if (!resetToken) {
+        showNotification('Invalid session. Please start over.', 'error')
+        setStep('email')
+        setLoading(false)
+        return
+      }
+      
+      const result = await resetPassword(resetToken, formData.newPassword)
       if (result.success) {
         showNotification('Password reset successfully!', 'success')
         setStep('success')
