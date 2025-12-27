@@ -1,5 +1,13 @@
+<<<<<<< HEAD
 // filepath: ProfileMenu.jsx
 import React, { useEffect, useRef, useState } from "react";
+=======
+
+// filepath: c:\Users\Lenovo\Downloads\Planning-Insights22\Planning-Insights\frontend\src\components\common\Header\ProfileMenu.jsx
+import React, { useEffect, useRef, useState } from "react";
+
+// MUI icons
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
 import PersonOutlineRoundedIcon from "@mui/icons-material/PersonOutlineRounded";
 import TuneRoundedIcon from "@mui/icons-material/TuneRounded";
 import PaletteRoundedIcon from "@mui/icons-material/PaletteRounded";
@@ -41,7 +49,10 @@ const ProfileMenu = ({
   const [open, setOpen] = useState(false);
   const [activeKey, setActiveKey] = useState("settings");
   const [status, setStatus] = useState(user?.status || "Online");
+<<<<<<< HEAD
   const [isMobile, setIsMobile] = useState(false);
+=======
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
 
   const buttonRef = useRef(null);
   const menuRef = useRef(null);
@@ -60,6 +71,7 @@ const ProfileMenu = ({
     return (parts[0][0] + parts[1][0]).toUpperCase();
   }, [name]);
 
+<<<<<<< HEAD
   // Detect mobile viewport
   useEffect(() => {
     const checkMobile = () => {
@@ -73,6 +85,9 @@ const ProfileMenu = ({
   }, []);
 
   // Outside click when menu is open
+=======
+  // outside click when menu is open
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
   useEffect(() => {
     if (!open) return;
 
@@ -86,32 +101,49 @@ const ProfileMenu = ({
         setOpen(false);
       }
     };
+<<<<<<< HEAD
 
+=======
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
     document.addEventListener("mousedown", handleClick);
     return () => {
       document.removeEventListener("mousedown", handleClick);
     };
   }, [open]);
 
+<<<<<<< HEAD
   // Keyboard shortcuts (ESC and P)
+=======
+  // keyboard shortcuts (ESC and P)
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
   useEffect(() => {
     const handleKey = (e) => {
       // Ignore if typing in an input field
       if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") {
         return;
       }
+<<<<<<< HEAD
 
+=======
+      
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
       if (e.key === "Escape" && open) {
         setOpen(false);
         buttonRef.current?.focus();
       }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
       if (e.key.toLowerCase() === "p") {
         e.preventDefault();
         setOpen((prev) => !prev);
       }
     };
+<<<<<<< HEAD
 
+=======
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
     document.addEventListener("keydown", handleKey);
     return () => {
       document.removeEventListener("keydown", handleKey);
@@ -122,6 +154,7 @@ const ProfileMenu = ({
     '"Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
 
   const styles = {
+<<<<<<< HEAD
     root: {
       position: "relative",
       fontFamily: baseFont,
@@ -131,6 +164,15 @@ const ProfileMenu = ({
       alignItems: "center",
       gap: isMobile ? 6 : 8,
       padding: isMobile ? "4px 8px 4px 4px" : "4px 10px 4px 4px",
+=======
+    root: { position: "relative", fontFamily: baseFont },
+
+    trigger: {
+      display: "inline-flex",
+      alignItems: "center",
+      gap: 8,
+      padding: "4px 10px 4px 4px",
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
       borderRadius: 999,
       border: "1px solid rgba(148,163,184,0.55)",
       background: "#ffffff",
@@ -148,8 +190,13 @@ const ProfileMenu = ({
     },
     avatarWrap: {
       position: "relative",
+<<<<<<< HEAD
       width: isMobile ? 28 : 32,
       height: isMobile ? 28 : 32,
+=======
+      width: 32,
+      height: 32,
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
       borderRadius: 999,
       overflow: "hidden",
       background:
@@ -159,6 +206,7 @@ const ProfileMenu = ({
       justifyContent: "center",
       color: "#ecfdf3",
       fontWeight: 600,
+<<<<<<< HEAD
       fontSize: isMobile ? 11 : 13,
       flexShrink: 0,
     },
@@ -167,18 +215,33 @@ const ProfileMenu = ({
       height: "100%",
       objectFit: "cover",
     },
+=======
+      fontSize: 13,
+      flexShrink: 0,
+    },
+    avatarImg: { width: "100%", height: "100%", objectFit: "cover" },
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
     statusDot: {
       position: "absolute",
       right: -1,
       bottom: -1,
+<<<<<<< HEAD
       width: isMobile ? 8 : 10,
       height: isMobile ? 8 : 10,
+=======
+      width: 10,
+      height: 10,
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
       borderRadius: 999,
       border: "2px solid #f9fafb",
       backgroundColor: status === "Online" ? "#22c55e" : "#9ca3af",
     },
     triggerText: {
+<<<<<<< HEAD
       display: isMobile ? "none" : "flex",
+=======
+      display: "flex",
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
       flexDirection: "column",
       alignItems: "flex-start",
       maxWidth: 170,
@@ -201,11 +264,16 @@ const ProfileMenu = ({
       textOverflow: "ellipsis",
     },
     caret: {
+<<<<<<< HEAD
       marginLeft: isMobile ? 2 : 4,
+=======
+      marginLeft: 4,
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
       fontSize: 12,
       color: "#9ca3af",
       transform: open ? "rotate(-180deg)" : "rotate(0deg)",
       transition: "transform 150ms ease",
+<<<<<<< HEAD
       display: isMobile ? "none" : "block",
     },
     menu: {
@@ -225,13 +293,35 @@ const ProfileMenu = ({
       padding: isMobile ? 14 : 18,
       zIndex: 60,
       transformOrigin: isMobile ? "center" : "top right",
+=======
+    },
+
+    menu: {
+      position: "absolute",
+      right: 0,
+      marginTop: 10,
+      minWidth: 320,
+      background: "#ffffff",
+      borderRadius: 28,
+      boxShadow:
+        "0 32px 80px rgba(15,23,42,0.35), 0 0 0 1px rgba(209,213,219,0.5)",
+      padding: 18,
+      zIndex: 60,
+      transformOrigin: "top right",
+      transform: open ? "scale(1)" : "scale(0.97)",
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
       opacity: open ? 1 : 0,
       pointerEvents: open ? "auto" : "none",
       transition:
         "opacity 120ms ease, transform 120ms cubic-bezier(0.16, 1, 0.3, 1)",
+<<<<<<< HEAD
       maxHeight: isMobile ? "85vh" : "auto",
       overflowY: isMobile ? "auto" : "visible",
     },
+=======
+    },
+
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
     header: {
       display: "flex",
       alignItems: "center",
@@ -240,8 +330,13 @@ const ProfileMenu = ({
     },
     headerAvatar: {
       position: "relative",
+<<<<<<< HEAD
       width: isMobile ? 36 : 40,
       height: isMobile ? 36 : 40,
+=======
+      width: 40,
+      height: 40,
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
       borderRadius: 999,
       overflow: "hidden",
       background:
@@ -251,6 +346,7 @@ const ProfileMenu = ({
       justifyContent: "center",
       color: "#ecfdf3",
       fontWeight: 600,
+<<<<<<< HEAD
       fontSize: isMobile ? 14 : 16,
       flexShrink: 0,
     },
@@ -266,15 +362,30 @@ const ProfileMenu = ({
     headerEmail: {
       marginTop: 2,
       fontSize: isMobile ? 11 : 12,
+=======
+      fontSize: 16,
+      flexShrink: 0,
+    },
+    headerText: { flex: 1, minWidth: 0 },
+    headerName: { fontSize: 14, fontWeight: 600, color: "#020617" },
+    headerEmail: {
+      marginTop: 2,
+      fontSize: 12,
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
       color: "#6b7280",
       whiteSpace: "nowrap",
       overflow: "hidden",
       textOverflow: "ellipsis",
     },
+<<<<<<< HEAD
     headerRightIcon: {
       fontSize: 18,
       color: "#cbd5e1",
     },
+=======
+    headerRightIcon: { fontSize: 18, color: "#cbd5f5" },
+
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
     subtleDivider: {
       height: 1,
       width: "100%",
@@ -282,16 +393,23 @@ const ProfileMenu = ({
       background:
         "linear-gradient(90deg, transparent, rgba(226,232,240,1), transparent)",
     },
+<<<<<<< HEAD
     list: {
       display: "flex",
       flexDirection: "column",
       gap: 4,
     },
+=======
+
+    list: { display: "flex", flexDirection: "column", gap: 4 },
+
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
     row: (accent, active, danger) => ({
       display: "flex",
       alignItems: "center",
       gap: 10,
       borderRadius: 14,
+<<<<<<< HEAD
       padding: isMobile ? "10px" : "8px 10px",
       cursor: "pointer",
       background: active ? "rgba(187,247,208,0.9)" : "transparent",
@@ -303,6 +421,21 @@ const ProfileMenu = ({
     iconWrap: (accent, active) => ({
       width: isMobile ? 32 : 26,
       height: isMobile ? 32 : 26,
+=======
+      padding: "8px 10px",
+      cursor: "pointer",
+      background: active
+        ? "rgba(187,247,208,0.9)"
+        : "transparent",
+      color: danger ? "#b91c1c" : "#111827",
+      transition: "background 120ms ease, transform 80ms ease",
+    }),
+    rowHoverBg: "rgba(240,253,244,0.9)",
+
+    iconWrap: (accent, active) => ({
+      width: 26,
+      height: 26,
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
       borderRadius: 999,
       display: "flex",
       alignItems: "center",
@@ -315,6 +448,7 @@ const ProfileMenu = ({
         : "transparent",
       color: active ? "#f0fdf4" : "#111827",
     }),
+<<<<<<< HEAD
     labelCol: {
       flex: 1,
       minWidth: 0,
@@ -334,6 +468,15 @@ const ProfileMenu = ({
       fontSize: 10,
       color: "#9ca3af",
     },
+=======
+
+    labelCol: { flex: 1, minWidth: 0, display: "flex", flexDirection: "column" },
+    label: { fontSize: 13, fontWeight: 500 },
+    subLabel: { fontSize: 11, color: "#9ca3af", marginTop: 1 },
+
+    rightHint: { fontSize: 10, color: "#9ca3af" },
+
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
     footerNote: {
       marginTop: 12,
       fontSize: 10,
@@ -360,6 +503,7 @@ const ProfileMenu = ({
 
   return (
     <div style={styles.root}>
+<<<<<<< HEAD
       <button
         ref={buttonRef}
         style={styles.trigger}
@@ -372,12 +516,25 @@ const ProfileMenu = ({
           e.currentTarget.style.transform = "translateY(0)";
         }}
         aria-label="User menu"
+=======
+      {/* Trigger */}
+      <button
+        ref={buttonRef}
+        type="button"
+        style={{
+          ...styles.trigger,
+          ...(open ? styles.triggerHover : null),
+        }}
+        onClick={() => setOpen((o) => !o)}
+        aria-haspopup="menu"
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
         aria-expanded={open}
       >
         <div style={styles.avatarWrap}>
           {avatarUrl ? (
             <img src={avatarUrl} alt={name} style={styles.avatarImg} />
           ) : (
+<<<<<<< HEAD
             <span>{initials}</span>
           )}
           <div style={styles.statusDot} />
@@ -390,11 +547,27 @@ const ProfileMenu = ({
       </button>
 
       <div ref={menuRef} style={styles.menu}>
+=======
+            initials
+          )}
+          <span style={styles.statusDot} />
+        </div>
+        <div style={styles.triggerText}>
+          <span style={styles.triggerName}>{name}</span>
+          {email && <span style={styles.triggerEmail}>{email}</span>}
+        </div>
+        <span style={styles.caret}>▾</span>
+      </button>
+
+      {/* Menu card */}
+      <div style={styles.menu} ref={menuRef} role="menu">
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
         <div style={styles.header}>
           <div style={styles.headerAvatar}>
             {avatarUrl ? (
               <img src={avatarUrl} alt={name} style={styles.avatarImg} />
             ) : (
+<<<<<<< HEAD
               <span>{initials}</span>
             )}
             <div style={styles.statusDot} />
@@ -402,6 +575,14 @@ const ProfileMenu = ({
           <div style={styles.headerText}>
             <div style={styles.headerName}>{name}</div>
             <div style={styles.headerEmail}>{email}</div>
+=======
+              initials
+            )}
+          </div>
+          <div style={styles.headerText}>
+            <div style={styles.headerName}>{name}</div>
+            {email && <div style={styles.headerEmail}>{email}</div>}
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
           </div>
           <MoreHorizRoundedIcon style={styles.headerRightIcon} />
         </div>
@@ -417,6 +598,7 @@ const ProfileMenu = ({
                 style={styles.row(accent, active, danger)}
                 onClick={() => handleRowClick(key)}
                 onMouseEnter={(e) => {
+<<<<<<< HEAD
                   if (!active && !danger) {
                     e.currentTarget.style.background = styles.rowHoverBg;
                   }
@@ -444,6 +626,46 @@ const ProfileMenu = ({
                     <div style={styles.subLabel}>{status}</div>
                   )}
                 </div>
+=======
+                  if (!active) {
+                    e.currentTarget.style.background = styles.rowHoverBg;
+                  }
+                  e.currentTarget.style.transform = "translateY(-1px)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = active
+                    ? "rgba(187,247,208,0.9)"
+                    : "transparent";
+                  e.currentTarget.style.transform = "";
+                }}
+              >
+                <div style={styles.iconWrap(accent, active)}>
+                  <Icon
+                    style={{
+                      fontSize: 18,
+                    }}
+                  />
+                </div>
+                <div style={styles.labelCol}>
+                  <span style={styles.label}>{label}</span>
+                  {key === "status" && (
+                    <span style={styles.subLabel}>Current: {status}</span>
+                  )}
+                  {key === "notifications" && (
+                    <span style={styles.subLabel}>
+                      Control alerts & digest emails
+                    </span>
+                  )}
+                  {key === "theme" && (
+                    <span style={styles.subLabel}>
+                      Accent color, dark / light mode
+                    </span>
+                  )}
+                </div>
+                {key === "settings" && (
+                  <span style={styles.rightHint}>⌘ ,</span>
+                )}
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
                 {key === "profile" && (
                   <span style={styles.rightHint}>P</span>
                 )}
@@ -453,7 +675,11 @@ const ProfileMenu = ({
         </div>
 
         <div style={styles.footerNote}>
+<<<<<<< HEAD
           Press <strong>ESC</strong> to close • <strong>P</strong> to toggle
+=======
+          Press “P” to open profile · Planning Insights
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
         </div>
       </div>
     </div>

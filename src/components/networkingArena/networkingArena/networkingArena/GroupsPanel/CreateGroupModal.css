@@ -1,4 +1,67 @@
+<<<<<<< HEAD:src/components/networkingArena/GroupsPanel/CreateGroupModal.css
 /* CreateGroupModal.css - Planning Insights Enhanced Premium Design - FULLY RESPONSIVE */
+=======
+/* CreateGroupModal.css - Modern Planning Insights Design */
+
+/* ===== CSS Variables ===== */
+:root {
+  /* Planning Insights Colors */
+  --lavender: #A9A2CD;
+  --deep-purple: #524393;
+  --navy-black: #1B1528;
+  --lime-green: #BDD337;
+  --cream-white: #EEF3CE;
+  
+  /* Planning Insights Theme Colors */
+  --lime-primary: #BDD337;
+  --lime-light: #A4A2CD;
+  --lime-dark: #524393;
+  --white: #FFFFFF;
+  --off-white: #F8F9FA;
+  --light-gray: #E9ECEF;
+  --medium-gray: #6C757D;
+  --dark-gray: #343A40;
+  --background-light: #FFF9F5;
+  
+  /* Shadows */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+  --shadow-2xl: 0 25px 50px rgba(0, 0, 0, 0.25);
+  
+  /* Border Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+  
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 350ms ease;
+}
+
+/* ===== Modal Overlay ===== */
+.create-group-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(27, 21, 40, 0.60); /* Lighter overlay */
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 1rem;
+  animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow-y: auto;
+}
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3:src/components/networkingArena/networkingArena/networkingArena/GroupsPanel/CreateGroupModal.css
 
 @keyframes fadeIn {
   from {

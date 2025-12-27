@@ -271,6 +271,176 @@ const Dashboard = () => {
   }
 
   /**
+   * Update current time every second for timezone display
+   */
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date())
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [])
+
+  /**
+   * Apply dark mode to document
+   */
+  useEffect(() => {
+    if (settings.darkMode) {
+      document.documentElement.classList.add('dark-mode')
+      localStorage.setItem('darkMode', 'true')
+    } else {
+      document.documentElement.classList.remove('dark-mode')
+      localStorage.setItem('darkMode', 'false')
+    }
+  }, [settings.darkMode])
+
+  /**
+   * Check URL params to open settings modal
+   */
+  useEffect(() => {
+    const params = new URLSearchParams(location.search)
+    if (params.get('openSettings') === 'true') {
+      setShowSettingsModal(true)
+      // Clean up URL
+      navigate('/dashboard', { replace: true })
+    }
+  }, [location.search, navigate])
+
+  /**
+   * Show toast notification
+   */
+  const showToastNotification = (message) => {
+    setToastMessage(message)
+    setShowToast(true)
+    setTimeout(() => setShowToast(false), 3000)
+  }
+
+  /**
+   * Handle notification click - navigate to notifications page
+   */
+  const handleNotificationClick = () => {
+    navigate('/notifications')
+    showToastNotification('📬 Opening notifications...')
+  }
+
+  /**
+   * Handle notification read
+   */
+  const markNotificationAsRead = (id) => {
+    setNotifications(notifications.map(notif => 
+      notif.id === id ? { ...notif, read: true } : notif
+    ))
+  }
+
+  /**
+   * Clear all notifications
+   */
+  const clearAllNotifications = () => {
+    setNotifications([])
+    showToastNotification('🗑️ All notifications cleared')
+    setShowNotificationModal(false)
+  }
+
+  /**
+   * Handle settings modal open
+   */
+  const handleSettingsClick = () => {
+    setShowSettingsModal(true)
+  }
+
+  /**
+   * Update settings
+   */
+  const updateSetting = (key) => {
+    setSettings(prev => ({
+      ...prev,
+      [key]: !prev[key]
+    }))
+    showToastNotification(`✓ ${key} updated`)
+  }
+
+  /**
+   * Save settings
+   */
+  const saveSettings = () => {
+    showToastNotification('✓ Settings saved successfully!')
+    setShowSettingsModal(false)
+  }
+
+  /**
+   * Handle password change
+   */
+  const handlePasswordChange = () => {
+    if (!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword) {
+      showToastNotification('⚠️ Please fill all password fields')
+      return
+    }
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      showToastNotification('⚠️ Passwords do not match')
+      return
+    }
+    if (passwordData.newPassword.length < 8) {
+      showToastNotification('⚠️ Password must be at least 8 characters')
+      return
+    }
+    // In real implementation, send to backend
+    showToastNotification('✓ Password changed successfully')
+    setShowPasswordModal(false)
+    setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' })
+  }
+
+  /**
+   * Handle email change
+   */
+  const handleEmailChange = () => {
+    setShowEmailModal(true)
+  }
+
+  /**
+   * Submit email change
+   */
+  const submitEmailChange = () => {
+    if (!newEmail || !newEmail.includes('@')) {
+      showToastNotification('⚠️ Please enter a valid email address')
+      return
+    }
+    showToastNotification('📧 Email change request sent. Check your inbox.')
+    setShowEmailModal(false)
+    setNewEmail('')
+  }
+
+  /**
+   * Handle account deletion
+   */
+  const handleAccountDeletion = () => {
+    if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+      showToastNotification('⚠️ Account deletion initiated. You will receive a confirmation email.')
+    }
+  }
+
+  /**
+   * Handle data export
+   */
+  const handleDataExport = () => {
+    showToastNotification('📥 Preparing your data export. This may take a few minutes.')
+  }
+
+  /**
+   * Get current time in specific timezone
+   */
+  const getTimeInTimezone = (timezone) => {
+    try {
+      return currentTime.toLocaleTimeString('en-US', {
+        timeZone: timezone,
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      })
+    } catch (error) {
+      return ''
+    }
+  }
+
+  /**
    * Simulate loading user data from API
    */
   const loadUserData = () => {
@@ -694,14 +864,12 @@ const Dashboard = () => {
     </div>
   )
 
-  if (!isAuthenticated || !user) {
+  // Show loading while checking authentication
+  if (!user) {
     return (
       <div className="dashboard-loading">
         <div className="loading-message">
-          <p>Please log in to access your dashboard.</p>
-          <Link to="/login" className="btn btn-primary">
-            Sign In
-          </Link>
+          <p>Loading dashboard...</p>
         </div>
       </div>
     )

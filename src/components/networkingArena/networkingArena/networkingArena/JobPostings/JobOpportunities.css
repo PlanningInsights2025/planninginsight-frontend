@@ -111,7 +111,10 @@
 }
 
 /* Material Design Multiselect Dropdown - Clean Flat UI */
+<<<<<<< HEAD:src/components/networkingArena/JobPostings/JobOpportunities.css
 
+=======
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3:src/components/networkingArena/networkingArena/networkingArena/JobPostings/JobOpportunities.css
 .material-multiselect-wrapper {
   position: relative;
   margin-bottom: 2rem;
@@ -169,7 +172,10 @@
 }
 
 /* Material Design Dropdown Panel - Flat & Clean */
+<<<<<<< HEAD:src/components/networkingArena/JobPostings/JobOpportunities.css
 
+=======
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3:src/components/networkingArena/networkingArena/networkingArena/JobPostings/JobOpportunities.css
 .multiselect-dropdown {
   position: absolute;
   top: calc(100% + 8px);
@@ -196,7 +202,10 @@
 }
 
 /* Control Buttons Section - Material Design */
+<<<<<<< HEAD:src/components/networkingArena/JobPostings/JobOpportunities.css
 
+=======
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3:src/components/networkingArena/networkingArena/networkingArena/JobPostings/JobOpportunities.css
 .multiselect-controls {
   display: flex;
   gap: 0.5rem;
@@ -231,7 +240,10 @@
 }
 
 /* Options List - Clean Material Design */
+<<<<<<< HEAD:src/components/networkingArena/JobPostings/JobOpportunities.css
 
+=======
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3:src/components/networkingArena/networkingArena/networkingArena/JobPostings/JobOpportunities.css
 .multiselect-options {
   max-height: 280px;
   overflow-y: auto;
@@ -257,7 +269,10 @@
 }
 
 /* Option Item - Material Design Checkbox */
+<<<<<<< HEAD:src/components/networkingArena/JobPostings/JobOpportunities.css
 
+=======
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3:src/components/networkingArena/networkingArena/networkingArena/JobPostings/JobOpportunities.css
 .multiselect-option {
   display: flex;
   align-items: center;
@@ -278,7 +293,10 @@
 }
 
 /* Material Design Checkbox */
+<<<<<<< HEAD:src/components/networkingArena/JobPostings/JobOpportunities.css
 
+=======
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3:src/components/networkingArena/networkingArena/networkingArena/JobPostings/JobOpportunities.css
 .material-checkbox {
   position: relative;
   width: 20px;
@@ -341,7 +359,10 @@
 }
 
 /* Action Buttons - Material Design */
+<<<<<<< HEAD:src/components/networkingArena/JobPostings/JobOpportunities.css
 
+=======
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3:src/components/networkingArena/networkingArena/networkingArena/JobPostings/JobOpportunities.css
 .multiselect-actions {
   display: flex;
   gap: 8px;
@@ -392,7 +413,10 @@
 }
 
 /* Selected Count Badge */
+<<<<<<< HEAD:src/components/networkingArena/JobPostings/JobOpportunities.css
 
+=======
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3:src/components/networkingArena/networkingArena/networkingArena/JobPostings/JobOpportunities.css
 .selected-count {
   display: inline-flex;
   align-items: center;
@@ -601,6 +625,7 @@
   font-size: 14px;
 }
 
+<<<<<<< HEAD:src/components/networkingArena/JobPostings/JobOpportunities.css
 /* ============================================
    RESPONSIVE BREAKPOINTS
    Mobile First - Tablet - Desktop
@@ -608,6 +633,10 @@
 
 /* ===== Large Desktop (1440px+) ===== */
 @media (min-width: 1440px) {
+=======
+/* Responsive Design */
+@media (max-width: 768px) {
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3:src/components/networkingArena/networkingArena/networkingArena/JobPostings/JobOpportunities.css
   .job-opportunities {
     max-width: 1400px;
     margin: 0 auto;
@@ -804,6 +833,7 @@
     border-radius: 12px;
   }
 
+<<<<<<< HEAD:src/components/networkingArena/JobPostings/JobOpportunities.css
   .applications-button,
   .saved-jobs-button {
     padding: 0.75rem 1.125rem;
@@ -830,6 +860,32 @@
   .checkbox-input {
     width: 18px;
     height: 18px;
+=======
+  .multiselect-dropdown {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-height: 70vh;
+    border-radius: 12px 12px 0 0;
+    animation: dropdownSlideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes dropdownSlideUp {
+    from {
+      opacity: 0;
+      transform: translateY(100%);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .multiselect-options {
+    max-height: calc(70vh - 140px);
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3:src/components/networkingArena/networkingArena/networkingArena/JobPostings/JobOpportunities.css
   }
 }
 
@@ -849,6 +905,7 @@
     font-size: 1.25rem;
   }
 
+<<<<<<< HEAD:src/components/networkingArena/JobPostings/JobOpportunities.css
   .job-opportunities-header svg {
     width: 24px;
     height: 24px;
@@ -1050,10 +1107,16 @@
     flex-direction: column;
     gap: 8px;
     padding: 10px;
+=======
+  .multiselect-controls {
+    flex-direction: column;
+    gap: 8px;
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3:src/components/networkingArena/networkingArena/networkingArena/JobPostings/JobOpportunities.css
   }
 
   .control-btn {
     width: 100%;
+<<<<<<< HEAD:src/components/networkingArena/JobPostings/JobOpportunities.css
     font-size: 0.75rem;
     padding: 8px;
   }
@@ -1080,16 +1143,22 @@
   .option-plus-icon {
     width: 16px;
     height: 16px;
+=======
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3:src/components/networkingArena/networkingArena/networkingArena/JobPostings/JobOpportunities.css
   }
 
   .multiselect-actions {
     flex-direction: column-reverse;
     gap: 8px;
+<<<<<<< HEAD:src/components/networkingArena/JobPostings/JobOpportunities.css
     padding: 10px;
+=======
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3:src/components/networkingArena/networkingArena/networkingArena/JobPostings/JobOpportunities.css
   }
 
   .action-btn {
     width: 100%;
+<<<<<<< HEAD:src/components/networkingArena/JobPostings/JobOpportunities.css
     padding: 10px 12px;
     font-size: 0.8125rem;
   }
@@ -1474,5 +1543,7 @@
 
   .multiselect-options {
     max-height: calc(60vh - 120px);
+=======
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3:src/components/networkingArena/networkingArena/networkingArena/JobPostings/JobOpportunities.css
   }
 }

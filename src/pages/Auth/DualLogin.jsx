@@ -218,6 +218,7 @@ const DualLogin = () => {
         console.warn('New device detected for admin login');
       }
 
+<<<<<<< HEAD
       // Store token if provided
       if (data.token) {
         localStorage.setItem('auth_token', data.token);
@@ -225,6 +226,17 @@ const DualLogin = () => {
 
       // Navigate to dashboard
       navigate(currentRole === 'admin' ? '/admin/dashboard' : '/dashboard');
+=======
+      // Store token if provided (using correct key)
+      if (data.token) {
+        localStorage.setItem('authToken', data.token);
+      }
+
+      // Navigate to dashboard with a small delay to ensure token is stored
+      setTimeout(() => {
+        navigate(currentRole === 'admin' ? '/admin' : '/dashboard');
+      }, 100);
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
 
     } catch (err) {
       console.error('Login error:', err);

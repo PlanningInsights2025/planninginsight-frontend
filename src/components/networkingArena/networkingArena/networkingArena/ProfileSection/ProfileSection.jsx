@@ -3,8 +3,11 @@ import ReactDOM from 'react-dom';
 import { User, Award, Eye, TrendingUp, Link2, Edit, Check, Star, Shield, X } from 'lucide-react';
 import './ProfileSection.css';
 import { useAuth } from '@/contexts/AuthContext';
+<<<<<<< HEAD:src/components/networkingArena/ProfileSection/ProfileSection.jsx
 import * as profileAPI from '@/services/api/profile';
 import toast from 'react-hot-toast';
+=======
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3:src/components/networkingArena/networkingArena/networkingArena/ProfileSection/ProfileSection.jsx
 
 const ProfileSection = ({ userRole, setUserRole }) => {
   const { user } = useAuth();
@@ -41,6 +44,10 @@ const ProfileSection = ({ userRole, setUserRole }) => {
 
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
+<<<<<<< HEAD:src/components/networkingArena/ProfileSection/ProfileSection.jsx
+=======
+  // Update profile data when user role changes
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3:src/components/networkingArena/networkingArena/networkingArena/ProfileSection/ProfileSection.jsx
   useEffect(() => {
     fetchProfileData();
   }, []);
@@ -73,6 +80,7 @@ const ProfileSection = ({ userRole, setUserRole }) => {
     return '#ef4444';
   };
 
+<<<<<<< HEAD:src/components/networkingArena/ProfileSection/ProfileSection.jsx
   const handleSaveProfile = async () => {
     try {
       const response = await profileAPI.updateProfile({
@@ -103,6 +111,17 @@ const ProfileSection = ({ userRole, setUserRole }) => {
       console.error('Error updating profile:', error);
       // Silently fail
     }
+=======
+  const handleSaveProfile = () => {
+    // Save profile data (in real app, this would make an API call)
+    setShowEditModal(false);
+    setShowSuccessMessage(true);
+    
+    // Hide success message after 3 seconds
+    setTimeout(() => {
+      setShowSuccessMessage(false);
+    }, 3000);
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3:src/components/networkingArena/networkingArena/networkingArena/ProfileSection/ProfileSection.jsx
   };
 
   if (isLoading) {

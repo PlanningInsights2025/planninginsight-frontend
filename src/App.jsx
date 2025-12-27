@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 
 // Context Providers
@@ -17,6 +17,7 @@ import Home from './pages/Home/Home';
 import About from './pages/About/About';
 import Login from './pages/Auth/Login';
 import Signup from './pages/Auth/Signup';
+import ForgotPassword from './pages/Auth/ForgotPassword';
 import Dashboard from './pages/Dashboard/Dashboard';
 import Profile from './pages/Dashboard/Profile';
 import Jobs from './pages/Jobs/Jobs';
@@ -32,11 +33,38 @@ import CollaborateEvent from './pages/News/CollaborateEvent/CollaborateEvent';
 import Forum from './pages/Forum/Forum';
 import ForumCreate from './pages/Forum/ForumCreate';
 import ForumThreadDetail from './pages/Forum/ForumThreadDetail';
+<<<<<<< HEAD
 import NetworkingArena from './pages/Networking Arena/Networking Arena/NetworkingArena';
+=======
+import NetworkingArena from './pages/Networking Arena/Networking Arena/Networking Arena/NetworkingArena';
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
 import Admin from './pages/Admin/Admin';
 
 // Styles
 import './App.css';
+
+/**
+ * Layout wrapper that conditionally renders Header/Footer
+ */
+function AppLayout({ children }) {
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith('/admin');
+
+  return (
+    <div className="app">
+      {/* Header - Hidden on admin routes */}
+      {!isAdminRoute && <Header />}
+
+      {/* Main Content Area */}
+      <main className="main-content">
+        {children}
+      </main>
+
+      {/* Footer - Hidden on admin routes */}
+      {!isAdminRoute && <Footer />}
+    </div>
+  );
+}
 
 /**
  * Main Application Component
@@ -49,10 +77,16 @@ function App() {
         <NotificationProvider>
           <AuthProvider>
             <UserProvider>
-              <div className="app">
-                {/* Header - Present on all pages */}
-                <Header />
+              <AppLayout>
+                <Routes>
+                  {/* Public Routes */}
+                  <Route path="/" element={<Home />} />
+                  <Route path="/about" element={<About />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/signup" element={<Signup />} />
+                  <Route path="/auth/forgot-password" element={<ForgotPassword />} />
 
+<<<<<<< HEAD
                 {/* Main Content Area */}
                 <main className="main-content">
                   <Routes>
@@ -65,6 +99,11 @@ function App() {
                     {/* Dashboard */}
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/profile" element={<Profile />} />
+=======
+                  {/* Dashboard */}
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/profile" element={<Profile />} />
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
 
                     {/* Job Portal */}
                     <Route path="/jobs" element={<JobPortal />} />
@@ -97,14 +136,11 @@ function App() {
                     {/* Fallback - Redirect to Home */}
                     <Route path="*" element={<Navigate to="/" replace />} />
                   </Routes>
-                </main>
+              </AppLayout>
 
-                {/* Footer - Present on all pages */}
-                <Footer />
-
-                {/* Toast Notifications */}
-                <Toaster
-                  position="top-right"
+              {/* Toast Notifications */}
+              <Toaster
+                position="top-right"
                   toastOptions={{
                     duration: 4000,
                     style: {
@@ -127,7 +163,7 @@ function App() {
                     },
                   }}
                 />
-              </div>
+
             </UserProvider>
           </AuthProvider>
         </NotificationProvider>

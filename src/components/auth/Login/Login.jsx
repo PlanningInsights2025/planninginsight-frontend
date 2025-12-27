@@ -1,24 +1,76 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { signInWithGoogle } from "../../../services/api/firebaseAuth";
-import { useAuth } from '../../../hooks/useAuth'
-import { useNotification } from '../../../contexts/NotificationContext'
+import { useAuth } from '../../../hooks/useAuth';
+import { useNotification } from '../../../contexts/NotificationContext';
+import PersonIcon from '@mui/icons-material/Person';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({ email: "", password: "", rememberMe: false });
+  const [currentRole, setCurrentRole] = useState('user'); // 'user' or 'admin'
+  const [twoFactorCode, setTwoFactorCode] = useState('');
+  const [securityQuestion, setSecurityQuestion] = useState('');
+  const [securityAnswer, setSecurityAnswer] = useState('');
+  const [trustDevice, setTrustDevice] = useState(false);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
   const { login, setAuthState } = useAuth()
   const { showNotification } = useNotification()
   const [loading, setLoading] = useState(false)
+
+  // Load saved role from localStorage
+  useEffect(() => {
+    const savedRole = localStorage.getItem('pi_last_role');
+    if (savedRole === 'admin' || savedRole === 'user') {
+      setCurrentRole(savedRole);
+    }
+  }, []);
+
+  // Admin rate limiting functions
+  const checkAdminLockout = () => {
+    const lockUntil = Number(localStorage.getItem('pi_admin_lock_until') || 0);
+    if (lockUntil && Date.now() < lockUntil) {
+      const remainingMin = Math.ceil((lockUntil - Date.now()) / 60000);
+      return {
+        locked: true,
+        message: `Too many failed admin attempts. Try again in ${remainingMin} minutes.`
+      };
+    }
+    return { locked: false };
+  };
+
+  const recordAdminFailure = () => {
+    const fails = Number(localStorage.getItem('pi_admin_fail_count') || 0) + 1;
+    localStorage.setItem('pi_admin_fail_count', String(fails));
+    
+    if (fails >= 3) {
+      const lockMs = 15 * 60 * 1000;
+      const until = Date.now() + lockMs;
+      localStorage.setItem('pi_admin_lock_until', String(until));
+    }
+  };
+
+  const resetAdminFailures = () => {
+    localStorage.removeItem('pi_admin_fail_count');
+    localStorage.removeItem('pi_admin_lock_until');
+  };
+
+  const handleRoleChange = (role) => {
+    setCurrentRole(role);
+    setError('');
+    localStorage.setItem('pi_last_role', role);
+  };
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData({ ...formData, [name]: type === "checkbox" ? checked : value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+<<<<<<< HEAD
     ;(async () => {
       setLoading(true)
       try {
@@ -69,8 +121,128 @@ export default function Login() {
         showNotification(err?.message || 'Login failed', 'error')
       } finally {
         setLoading(false)
+=======
+    setError('');
+    setLoading(true);
+
+    try {
+      // Admin lockout check
+      if (currentRole === 'admin') {
+        const lockCheck = checkAdminLockout();
+        if (lockCheck.locked) {
+          setError(lockCheck.message);
+          showNotification(lockCheck.message, 'error');
+          // Switch to user mode (stealth)
+          handleRoleChange('user');
+          setLoading(false);
+          return;
+        }
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
       }
-    })()
+
+      // Validate admin-specific fields
+      if (currentRole === 'admin') {
+        if (!twoFactorCode || twoFactorCode.length !== 6) {
+          setError('Please enter your 6-digit 2FA code');
+          setLoading(false);
+          return;
+        }
+        if (!securityQuestion || !securityAnswer.trim()) {
+          setError('Please answer the security question');
+          setLoading(false);
+          return;
+        }
+      }
+
+      // Choose endpoint based on role
+      const endpoint = currentRole === 'admin' 
+        ? `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api'}/admin/login`
+        : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api'}/auth/login`;
+
+      const payload = {
+        email: formData.email,
+        password: formData.password,
+        role: currentRole,
+        ...(currentRole === 'admin' && {
+          twoFactorCode,
+          securityQuestion,
+          securityAnswer,
+          trustDevice,
+          deviceId: localStorage.getItem('device_id') || crypto.randomUUID()
+        }),
+        ...(currentRole === 'user' && {
+          rememberMe: formData.rememberMe,
+        }),
+      };
+
+      // Store device ID
+      if (currentRole === 'admin' && !localStorage.getItem('device_id')) {
+        localStorage.setItem('device_id', payload.deviceId);
+      }
+
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Auth-Role': currentRole,
+        },
+        credentials: 'include',
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        if (currentRole === 'admin') {
+          recordAdminFailure();
+          setError('Admin credentials not recognized. Switching to User mode for safety.');
+          showNotification('Invalid admin credentials', 'error');
+          handleRoleChange('user');
+        } else {
+          setError(data.message || 'Invalid credentials');
+          showNotification(data.message || 'Login failed', 'error');
+        }
+        setLoading(false);
+        return;
+      }
+
+      // Success
+      resetAdminFailures();
+
+      if (data.token || data.data?.token) {
+        const token = data.token || data.data.token;
+        localStorage.setItem('authToken', token);
+      }
+
+      // Update auth context with user data
+      if (data.data?.user) {
+        const userData = {
+          id: data.data.user.id,
+          email: data.data.user.email,
+          role: data.data.user.role,
+          firstName: data.data.user.profile?.firstName || '',
+          lastName: data.data.user.profile?.lastName || '',
+          displayName: `${data.data.user.profile?.firstName || ''} ${data.data.user.profile?.lastName || ''}`.trim(),
+          photoURL: data.data.user.profile?.photoURL || null
+        };
+        // Call login with userData to update context
+        await login(userData);
+      }
+
+      showNotification(`Signed in as ${currentRole}`, 'success');
+      
+      // Small delay to ensure context updates
+      setTimeout(() => {
+        navigate(currentRole === 'admin' ? '/admin/dashboard' : '/dashboard');
+      }, 100);
+
+    } catch (err) {
+      console.error('Login error:', err);
+      setError('Something went wrong. Please try again.');
+      showNotification(err?.message || 'Login failed', 'error');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleGoogleSignIn = async () => {
@@ -461,6 +633,66 @@ export default function Login() {
             <h1 style={styles.title}>Welcome Back</h1>
             <p style={styles.subtitle}>Sign in to continue your journey</p>
 
+            {/* Role Toggle */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: '8px',
+              padding: '4px',
+              background: 'rgba(102, 126, 234, 0.08)',
+              borderRadius: '12px',
+              marginBottom: '20px',
+              position: 'relative',
+            }}>
+              <button
+                type="button"
+                onClick={() => handleRoleChange('user')}
+                style={{
+                  padding: '10px 16px',
+                  border: 'none',
+                  borderRadius: '10px',
+                  background: currentRole === 'user' ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : 'transparent',
+                  color: currentRole === 'user' ? '#fff' : '#666',
+                  fontWeight: currentRole === 'user' ? '600' : '500',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  fontSize: '14px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '6px',
+                  boxShadow: currentRole === 'user' ? '0 4px 12px rgba(102, 126, 234, 0.3)' : 'none',
+                }}
+              >
+                <PersonIcon sx={{ fontSize: 18 }} /> User
+              </button>
+              <button
+                type="button"
+                onClick={() => handleRoleChange('admin')}
+                style={{
+                  padding: '10px 16px',
+                  border: 'none',
+                  borderRadius: '10px',
+                  background: currentRole === 'admin' ? 'linear-gradient(135deg, #dc2626 0%, #991b1b 100%)' : 'transparent',
+                  color: currentRole === 'admin' ? '#fff' : '#666',
+                  fontWeight: currentRole === 'admin' ? '600' : '500',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  fontSize: '14px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '6px',
+                  boxShadow: currentRole === 'admin' ? '0 4px 12px rgba(220, 38, 38, 0.3)' : 'none',
+                }}
+              >
+                <AdminPanelSettingsIcon sx={{ fontSize: 18 }} /> Admin
+              </button>
+            </div>
+
+            {/* Show social login only for user mode */}
+            {currentRole === 'user' && (
+              <>
             <div style={styles.socialContainer}>
               <button 
                 type="button" 
@@ -494,6 +726,39 @@ export default function Login() {
               <span style={styles.dividerText}>or use your email</span>
               <div style={styles.dividerLine}></div>
             </div>
+              </>
+            )}
+
+            {/* Admin mode info */}
+            {currentRole === 'admin' && (
+              <div style={{
+                padding: '12px 16px',
+                background: 'rgba(220, 38, 38, 0.08)',
+                borderRadius: '10px',
+                marginBottom: '20px',
+                fontSize: '13px',
+                color: '#991b1b',
+                border: '1px solid rgba(220, 38, 38, 0.2)',
+              }}>
+                <strong>Admin Login:</strong> 2FA code and security question required
+              </div>
+            )}
+
+            {/* Error Display */}
+            {error && (
+              <div style={{
+                padding: '12px 16px',
+                background: 'rgba(220, 38, 38, 0.1)',
+                borderRadius: '10px',
+                marginBottom: '20px',
+                fontSize: '14px',
+                color: '#dc2626',
+                fontWeight: '500',
+                border: '1px solid rgba(220, 38, 38, 0.25)',
+              }}>
+                {error}
+              </div>
+            )}
 
             <div style={styles.inputGroup}>
               <label style={styles.label}>Email Address</label>
@@ -531,18 +796,123 @@ export default function Login() {
               </div>
             </div>
 
-            <div style={styles.rememberRow}>
-              <label style={styles.checkbox}>
-                <input 
-                  type="checkbox" 
-                  name="rememberMe"
-                  checked={formData.rememberMe}
-                  onChange={handleChange}
-                />
-                <span>Remember me</span>
-              </label>
-              <a style={styles.link} href="#">Forgot Password?</a>
-            </div>
+            {/* Admin-only fields */}
+            {currentRole === 'admin' && (
+              <div style={{
+                padding: '16px',
+                background: 'rgba(248, 250, 252, 0.6)',
+                borderRadius: '12px',
+                border: '1.5px dashed rgba(220, 38, 38, 0.25)',
+                marginBottom: '20px',
+              }}>
+                <div style={styles.inputGroup}>
+                  <label style={styles.label}>2FA Code</label>
+                  <input
+                    style={styles.input}
+                    type="text"
+                    inputMode="numeric"
+                    placeholder="6-digit code"
+                    maxLength="6"
+                    value={twoFactorCode}
+                    onChange={(e) => setTwoFactorCode(e.target.value.replace(/\D/g, ''))}
+                    required={currentRole === 'admin'}
+                  />
+                </div>
+
+                <div style={styles.inputGroup}>
+                  <label style={styles.label}>Security Question</label>
+                  <select
+                    style={styles.input}
+                    value={securityQuestion}
+                    onChange={(e) => setSecurityQuestion(e.target.value)}
+                    required={currentRole === 'admin'}
+                  >
+                    <option value="">Select a question</option>
+                    <option value="city">What city did you grow up in?</option>
+                    <option value="teacher">What was the name of your first teacher?</option>
+                    <option value="pet">What was your first pet's name?</option>
+                  </select>
+                </div>
+
+                <div style={styles.inputGroup}>
+                  <label style={styles.label}>Answer</label>
+                  <input
+                    style={styles.input}
+                    type="text"
+                    placeholder="Your answer"
+                    value={securityAnswer}
+                    onChange={(e) => setSecurityAnswer(e.target.value)}
+                    required={currentRole === 'admin'}
+                    autoComplete="off"
+                  />
+                </div>
+
+                <label style={{ ...styles.checkbox, marginTop: '8px' }}>
+                  <input
+                    type="checkbox"
+                    checked={trustDevice}
+                    onChange={(e) => setTrustDevice(e.target.checked)}
+                  />
+                  <span>Trust this device for 7 days</span>
+                </label>
+              </div>
+            )}
+
+            {/* User-only remember me and links */}
+            {currentRole === 'user' && (
+              <div style={styles.rememberRow}>
+                <label style={styles.checkbox}>
+                  <input 
+                    type="checkbox" 
+                    name="rememberMe"
+                    checked={formData.rememberMe}
+                    onChange={handleChange}
+                  />
+                  <span>Remember me</span>
+                </label>
+                <a 
+                  style={styles.link} 
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate('/auth/forgot-password');
+                  }}
+                >
+                  Forgot Password?
+                </a>
+              </div>
+            )}
+
+            {/* Admin-only links */}
+            {currentRole === 'admin' && (
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                marginBottom: '20px',
+                fontSize: '14px',
+              }}>
+                <a 
+                  style={{...styles.link, color: '#dc2626'}} 
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate('/admin/help');
+                  }}
+                >
+                  Admin Help
+                </a>
+                <a 
+                  style={{...styles.link, color: '#dc2626'}} 
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate('/admin/emergency');
+                  }}
+                >
+                  Emergency Access
+                </a>
+              </div>
+            )}
 
             <button type="submit" className="submit-btn" style={styles.button} disabled={loading}>
               {loading ? (
@@ -554,6 +924,16 @@ export default function Login() {
                 'Sign In'
               )}
             </button>
+
+            {/* Session info */}
+            <p style={{
+              marginTop: '12px',
+              textAlign: 'center',
+              fontSize: '12px',
+              color: '#999',
+            }}>
+              Session: {currentRole === 'admin' ? 'up to 2 hours (Admin)' : 'up to 30 days (User)'}
+            </p>
           </form>
         </div>
 
