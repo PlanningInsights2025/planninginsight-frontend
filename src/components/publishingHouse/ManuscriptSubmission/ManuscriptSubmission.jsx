@@ -109,7 +109,10 @@ const ManuscriptSubmission = () => {
 
     // Clear error when user starts typing
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: undefined }));
+      setErrors(prev => ({
+        ...prev,
+        [field]: undefined
+      }));
     }
   };
 
@@ -122,6 +125,7 @@ const ManuscriptSubmission = () => {
       ...updatedAuthors[index],
       [field]: value
     };
+
     setFormData(prev => ({
       ...prev,
       authors: updatedAuthors
@@ -141,6 +145,7 @@ const ManuscriptSubmission = () => {
       isCorresponding: false,
       order: formData.authors.length + 1
     };
+
     setFormData(prev => ({
       ...prev,
       authors: [...prev.authors, newAuthor]
@@ -217,7 +222,10 @@ const ManuscriptSubmission = () => {
 
     // Clear error
     if (errors.manuscriptFile) {
-      setErrors(prev => ({ ...prev, manuscriptFile: undefined }));
+      setErrors(prev => ({
+        ...prev,
+        manuscriptFile: undefined
+      }));
     }
   };
 
@@ -236,12 +244,14 @@ const ManuscriptSubmission = () => {
       ...prev,
       keywords: [...prev.keywords, tempKeyword.trim()]
     }));
-
     setTempKeyword('');
 
     // Clear error
     if (errors.keywords) {
-      setErrors(prev => ({ ...prev, keywords: undefined }));
+      setErrors(prev => ({
+        ...prev,
+        keywords: undefined
+      }));
     }
   };
 
@@ -276,20 +286,14 @@ const ManuscriptSubmission = () => {
       newErrors.keywords = 'At least one keyword is required';
     }
 
-    if (!formData.manuscriptType) {
-      newErrors.manuscriptType = 'Manuscript type is required';
-    }
-
     // Validate authors
     formData.authors.forEach((author, index) => {
       if (!author.firstName.trim()) {
         newErrors[`author[${index}].firstName`] = 'First name is required';
       }
-
       if (!author.lastName.trim()) {
         newErrors[`author[${index}].lastName`] = 'Last name is required';
       }
-
       if (!author.email.trim()) {
         newErrors[`author[${index}].email`] = 'Email is required';
       } else if (!/\S+@\S+\.\S+/.test(author.email)) {
@@ -357,7 +361,10 @@ const ManuscriptSubmission = () => {
       if (result) {
         // Redirect to submissions tracking page
         navigate('/publishing/submissions', {
-          state: { submitted: true, submissionId: result.submissionId }
+          state: {
+            submitted: true,
+            submissionId: result.submissionId
+          }
         });
       }
     } catch (error) {
@@ -401,7 +408,7 @@ const ManuscriptSubmission = () => {
           <p>Submit your research for peer review and publication</p>
           {journal && (
             <div className="journal-info">
-              <span>Submitting to: <strong>{journal.title}</strong></span>
+              <span>Submitting to <strong>{journal.title}</strong></span>
             </div>
           )}
         </div>
@@ -415,6 +422,7 @@ const ManuscriptSubmission = () => {
               <div className="form-section">
                 <h3>Manuscript Details</h3>
 
+                {/* Title */}
                 <div className="form-group">
                   <label className="form-label required">Title</label>
                   <input
@@ -429,6 +437,7 @@ const ManuscriptSubmission = () => {
                   )}
                 </div>
 
+                {/* Abstract */}
                 <div className="form-group">
                   <label className="form-label required">Abstract</label>
                   <textarea
@@ -436,7 +445,7 @@ const ManuscriptSubmission = () => {
                     onChange={(e) => handleInputChange('abstract', e.target.value)}
                     className={`form-textarea ${errors.abstract ? 'error' : ''}`}
                     placeholder="Provide a comprehensive abstract..."
-                    rows="6"
+                    rows={6}
                   />
                   {errors.abstract && (
                     <span className="error-message">{errors.abstract}</span>
@@ -446,6 +455,7 @@ const ManuscriptSubmission = () => {
                   </div>
                 </div>
 
+                {/* Keywords */}
                 <div className="form-group">
                   <label className="form-label required">Keywords</label>
                   <div className="keyword-input">
@@ -472,6 +482,7 @@ const ManuscriptSubmission = () => {
                       Add
                     </button>
                   </div>
+
                   <div className="keywords-list">
                     {formData.keywords.map((keyword, index) => (
                       <span key={index} className="keyword-tag">
@@ -490,39 +501,6 @@ const ManuscriptSubmission = () => {
                     <span className="error-message">{errors.keywords}</span>
                   )}
                 </div>
-
-                <div className="form-grid">
-                  <div className="form-group">
-                    <label className="form-label required">Manuscript Type</label>
-                    <select
-                      value={formData.manuscriptType}
-                      onChange={(e) =>
-                        handleInputChange('manuscriptType', e.target.value)
-                      }
-                      className="form-select"
-                    >
-                      <option value="research">Research Article</option>
-                      <option value="review">Review Article</option>
-                      <option value="case-study">Case Study</option>
-                      <option value="short-communication">
-                        Short Communication
-                      </option>
-                      <option value="book-review">Book Review</option>
-                    </select>
-                  </div>
-
-                  <div className="form-group">
-                    <label className="form-label">Version</label>
-                    <input
-                      type="text"
-                      value={formData.version}
-                      onChange={(e) => handleInputChange('version', e.target.value)}
-                      className="form-input"
-                      placeholder="e.g., 1.0, Initial Submission"
-                    />
-                    <div className="field-note">Optional version identifier</div>
-                  </div>
-                </div>
               </div>
 
               {/* Authors Section */}
@@ -533,9 +511,7 @@ const ManuscriptSubmission = () => {
                     <div key={index} className="author-item">
                       <div className="author-header">
                         <span className="author-type">
-                          {author.isCorresponding
-                            ? 'Corresponding Author'
-                            : `Author ${author.order}`}
+                          {author.isCorresponding ? 'Corresponding Author' : 'Author'} #{author.order}
                         </span>
                         {formData.authors.length > 1 && (
                           <button
@@ -554,9 +530,7 @@ const ManuscriptSubmission = () => {
                           <input
                             type="text"
                             value={author.firstName}
-                            onChange={(e) =>
-                              handleAuthorChange(index, 'firstName', e.target.value)
-                            }
+                            onChange={(e) => handleAuthorChange(index, 'firstName', e.target.value)}
                             className="form-input"
                             placeholder="First name"
                             disabled={author.id === user?.id}
@@ -568,9 +542,7 @@ const ManuscriptSubmission = () => {
                           <input
                             type="text"
                             value={author.lastName}
-                            onChange={(e) =>
-                              handleAuthorChange(index, 'lastName', e.target.value)
-                            }
+                            onChange={(e) => handleAuthorChange(index, 'lastName', e.target.value)}
                             className="form-input"
                             placeholder="Last name"
                             disabled={author.id === user?.id}
@@ -582,9 +554,7 @@ const ManuscriptSubmission = () => {
                           <input
                             type="email"
                             value={author.email}
-                            onChange={(e) =>
-                              handleAuthorChange(index, 'email', e.target.value)
-                            }
+                            onChange={(e) => handleAuthorChange(index, 'email', e.target.value)}
                             className="form-input"
                             placeholder="Email address"
                             disabled={author.id === user?.id}
@@ -596,9 +566,7 @@ const ManuscriptSubmission = () => {
                           <input
                             type="text"
                             value={author.affiliation}
-                            onChange={(e) =>
-                              handleAuthorChange(index, 'affiliation', e.target.value)
-                            }
+                            onChange={(e) => handleAuthorChange(index, 'affiliation', e.target.value)}
                             className="form-input"
                             placeholder="Institution or organization"
                           />
@@ -644,6 +612,7 @@ const ManuscriptSubmission = () => {
 
                 <div className="form-group">
                   <label className="form-label">Upload Manuscript</label>
+
                   {!formData.manuscriptFile ? (
                     <div className="file-upload-area">
                       <input
@@ -674,10 +643,7 @@ const ManuscriptSubmission = () => {
                       <button
                         type="button"
                         onClick={() => {
-                          setFormData(prev => ({
-                            ...prev,
-                            manuscriptFile: null
-                          }));
+                          setFormData(prev => ({ ...prev, manuscriptFile: null }));
                           if (fileInputRef.current) {
                             fileInputRef.current.value = '';
                           }
@@ -702,8 +668,8 @@ const ManuscriptSubmission = () => {
                   </div>
                   <div className="warning-content">
                     <p>
-                      Please ensure your manuscript file does not contain any author
-                      names, affiliations, or identifying information. Submissions with
+                      Please ensure your manuscript file does not contain any author names,
+                      affiliations, or identifying information. Submissions with
                       identifying information will be automatically rejected.
                     </p>
                   </div>
@@ -713,6 +679,7 @@ const ManuscriptSubmission = () => {
               {/* Cover Letter */}
               <div className="form-section">
                 <h3>Cover Letter</h3>
+
                 <div className="form-group">
                   <label className="form-label required">
                     Cover Letter to Editors
@@ -722,7 +689,7 @@ const ManuscriptSubmission = () => {
                     onChange={(e) => handleInputChange('coverLetter', e.target.value)}
                     placeholder="Explain the significance of your research and why it's suitable for this journal..."
                     className={`form-textarea ${errors.coverLetter ? 'error' : ''}`}
-                    rows="6"
+                    rows={6}
                   />
                   {errors.coverLetter && (
                     <span className="error-message">{errors.coverLetter}</span>
@@ -737,14 +704,12 @@ const ManuscriptSubmission = () => {
                     <input
                       type="checkbox"
                       checked={formData.agreeToTerms}
-                      onChange={(e) =>
-                        handleInputChange('agreeToTerms', e.target.checked)
-                      }
+                      onChange={(e) => handleInputChange('agreeToTerms', e.target.checked)}
                       className="checkbox-input"
                     />
                     <span className="checkbox-text">
-                      I agree to the terms and conditions and confirm that this
-                      manuscript is original work and has not been published elsewhere.
+                      I agree to the terms and conditions and confirm that this manuscript
+                      is original work and has not been published elsewhere.
                     </span>
                   </label>
                   {errors.agreeToTerms && (
@@ -791,17 +756,17 @@ const ManuscriptSubmission = () => {
                 <h3>Submission Guidelines</h3>
                 <div className="journal-details">
                   <div className="detail-row">
-                    <span className="detail-label">Review Time:</span>
+                    <span className="detail-label">Review Time</span>
                     <span className="detail-value">{journal.reviewTime} days</span>
                   </div>
                   <div className="detail-row">
-                    <span className="detail-label">Acceptance Rate:</span>
+                    <span className="detail-label">Acceptance Rate</span>
                     <span className="detail-value">{journal.acceptanceRate}%</span>
                   </div>
                   <div className="detail-row">
-                    <span className="detail-label">Publication Fee:</span>
+                    <span className="detail-label">Publication Fee</span>
                     <span className="detail-value">
-                      {journal.publicationFee || 'Free'}
+                      {journal.publicationFee ? `$${journal.publicationFee}` : 'Free'}
                     </span>
                   </div>
                 </div>
@@ -821,6 +786,7 @@ const ManuscriptSubmission = () => {
                     </div>
                   </div>
                 </div>
+
                 <div className="timeline-item">
                   <div className="timeline-marker"></div>
                   <div className="timeline-content">
@@ -830,6 +796,7 @@ const ManuscriptSubmission = () => {
                     </div>
                   </div>
                 </div>
+
                 <div className="timeline-item">
                   <div className="timeline-marker"></div>
                   <div className="timeline-content">
@@ -839,6 +806,7 @@ const ManuscriptSubmission = () => {
                     </div>
                   </div>
                 </div>
+
                 <div className="timeline-item">
                   <div className="timeline-marker"></div>
                   <div className="timeline-content">

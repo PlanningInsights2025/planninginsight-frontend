@@ -8,7 +8,7 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({ email: "", password: "", rememberMe: false });
   const navigate = useNavigate();
-  const { login } = useAuth()
+  const { login, setAuthState } = useAuth()
   const { showNotification } = useNotification()
   const [loading, setLoading] = useState(false)
 
@@ -22,15 +22,50 @@ export default function Login() {
     ;(async () => {
       setLoading(true)
       try {
-        const response = await login(formData.email, formData.password)
-        if (response.success) {
+        // Try backend login with email/password
+        console.log('🔐 Login: Attempting backend login...')
+        const response = await fetch(`http://localhost:3000/api/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: formData.email,
+            password: formData.password
+          })
+        })
+        
+        const data = await response.json()
+        console.log('📥 Login: Backend response:', data)
+        
+        if (data.success && data.data?.token && data.data?.user) {
+          // Save token
+          console.log('🔑 Login: Saving token...')
+          localStorage.setItem('authToken', data.data.token)
+          
+          // Format and set user data
+          const formattedUser = {
+            id: data.data.user.id || data.data.user._id,
+            email: data.data.user.email,
+            firstName: data.data.user.profile?.firstName || '',
+            lastName: data.data.user.profile?.lastName || '',
+            displayName: `${data.data.user.profile?.firstName || ''} ${data.data.user.profile?.lastName || ''}`.trim() || data.data.user.email,
+            role: data.data.user.role || 'user',
+            emailVerified: data.data.user.emailVerified || true,
+            status: data.data.user.status || 'active',
+            photoURL: data.data.user.profile?.avatar || null,
+            profile: data.data.user.profile || {}
+          }
+          
+          console.log('👤 Login: Setting auth state...')
+          setAuthState(formattedUser)
+          console.log('✅ Login: Success!')
+          
           showNotification('Signed in successfully', 'success')
-          navigate('/dashboard')
+          navigate('/dashboard', { replace: true })
         } else {
-          showNotification(response.error || 'Login failed', 'error')
+          showNotification(data.message || 'Login failed', 'error')
         }
       } catch (err) {
-        console.error('Login error', err)
+        console.error('❌ Login error:', err)
         showNotification(err?.message || 'Login failed', 'error')
       } finally {
         setLoading(false)
@@ -162,16 +197,6 @@ export default function Login() {
     google: {
       borderColor: "#ea4335",
       color: "#ea4335",
-      background: "#fff",
-    },
-    facebook: {
-      borderColor: "#1877f2",
-      color: "#1877f2",
-      background: "#fff",
-    },
-    github: {
-      borderColor: "#333",
-      color: "#333",
       background: "#fff",
     },
     linkedin: {
@@ -387,20 +412,6 @@ export default function Login() {
             box-shadow: 0 8px 20px rgba(234, 67, 53, 0.3);
           }
           
-          .social-facebook:hover {
-            background: #1877f2 !important;
-            color: #fff !important;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(24, 119, 242, 0.3);
-          }
-          
-          .social-github:hover {
-            background: #333 !important;
-            color: #fff !important;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(51, 51, 51, 0.3);
-          }
-          
           .social-linkedin:hover {
             background: #0a66c2 !important;
             color: #fff !important;
@@ -467,24 +478,6 @@ export default function Login() {
                 }}
               >
                 G
-              </button>
-              <button 
-                type="button" 
-                className="social-facebook" 
-                style={{ ...styles.socialBase, ...styles.facebook }}
-                aria-label="Sign in with Facebook"
-              >
-                f
-              </button>
-              <button 
-                type="button" 
-                className="social-github" 
-                style={{ ...styles.socialBase, ...styles.github }}
-                aria-label="Sign in with GitHub"
-              >
-                <svg style={{ width: "24px", height: "24px" }} viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                </svg>
               </button>
               <button 
                 type="button" 
@@ -569,7 +562,7 @@ export default function Login() {
             <div style={styles.overlayContent}>
               <h1 style={styles.overlayTitle}>Hello, Friend!</h1>
               <p style={styles.overlayText}>
-                Enter your personal details and start your journey with us
+               Start Your Journey With Us
               </p>
               <button
                 className="ghost-btn"

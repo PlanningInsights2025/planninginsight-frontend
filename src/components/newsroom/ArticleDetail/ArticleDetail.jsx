@@ -257,7 +257,7 @@ const ArticleDetail = () => {
         <div className="premium-content-restricted">
           <div className="premium-overlay">
             <div className="premium-message">
-              <h3>Premium Content</h3>
+              {/* <h3>Premium Content</h3> */}
               <p>This article is available to premium subscribers only.</p>
               <div className="premium-actions">
                 <button className="btn btn-primary">

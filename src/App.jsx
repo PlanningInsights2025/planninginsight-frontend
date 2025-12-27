@@ -14,14 +14,16 @@ import Footer from './components/common/Footer/Footer';
 
 // Page Components
 import Home from './pages/Home/Home';
+import About from './pages/About/About';
 import Login from './pages/Auth/Login';
 import Signup from './pages/Auth/Signup';
 import Dashboard from './pages/Dashboard/Dashboard';
+import Profile from './pages/Dashboard/Profile';
 import Jobs from './pages/Jobs/Jobs';
 import JobPortal from './pages/Jobs/JobPortal';
 import JobDetail from './pages/Jobs/JobDetail';
 import Learning from './pages/Learning/Learning';
-import CourseDetail from './components/learningCentre/CourseDetail/CourseDetail';
+import CourseDetail from './pages/Learning/CourseDetail';
 import Enrollment from './pages/Learning/Enrollment';
 import Publishing from './pages/Publishing/Publishing';
 import ManuscriptSubmission from './pages/Publishing/ManuscriptSubmission/ManuscriptSubmission';
@@ -30,7 +32,7 @@ import CollaborateEvent from './pages/News/CollaborateEvent/CollaborateEvent';
 import Forum from './pages/Forum/Forum';
 import ForumCreate from './pages/Forum/ForumCreate';
 import ForumThreadDetail from './pages/Forum/ForumThreadDetail';
-import NetworkingArena from './pages/Networking Arena/NetworkingArena';
+import NetworkingArena from './pages/Networking Arena/Networking Arena/NetworkingArena';
 import Admin from './pages/Admin/Admin';
 
 // Styles
@@ -56,11 +58,13 @@ function App() {
                   <Routes>
                     {/* Public Routes */}
                     <Route path="/" element={<Home />} />
+                    <Route path="/about" element={<About />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/signup" element={<Signup />} />
 
                     {/* Dashboard */}
                     <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/profile" element={<Profile />} />
 
                     {/* Job Portal */}
                     <Route path="/jobs" element={<JobPortal />} />

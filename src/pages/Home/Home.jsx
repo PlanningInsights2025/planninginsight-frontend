@@ -2,31 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { useNotification } from '../../contexts/NotificationContext';
-import {
-  Search,
-  ArrowRight,
-  Users,
-  Book,
-  FileText,
-  MessageSquare,
-  Briefcase,
-  Award,
-  Clock,
-  Star,
-  MapPin,
-  Calendar,
-  ChevronRight,
-  Zap,
-  CheckCircle,
-  BarChart,
-  Globe,
-  TrendingUp,
-  Sparkles,
-  Target,
-  Rocket,
-  ChevronsUp,
-  X,
-} from 'lucide-react';
+import { Search, ArrowRight, Users, Book, FileText, MessageSquare, Briefcase, Award, Clock, Star, MapPin, Calendar, ChevronRight, Zap, CheckCircle, BarChart, Globe, TrendingUp, Sparkles, Target, Rocket, ChevronsUp, X, Trophy, Crown, Medal } from 'lucide-react';
 import './Home.css';
 
 const Home = () => {
@@ -47,6 +23,9 @@ const Home = () => {
   const [startX, setStartX] = useState(0);
   const [currentX, setCurrentX] = useState(0);
   const [isTestimonialPaused, setIsTestimonialPaused] = useState(false);
+  
+  // New state for leaderboard modal
+  const [showLeaderboardModal, setShowLeaderboardModal] = useState(false);
 
   const [stats, setStats] = useState({
     jobs: 0,
@@ -54,6 +33,15 @@ const Home = () => {
     professionals: 0,
     publications: 0,
   });
+
+  // Top users with highest points - Mock data (replace with API call)
+  const [topUsers, setTopUsers] = useState([
+    { id: 1, name: 'Rahul Sharma', points: 0, avatar: '👨‍💼', badge: 'Expert' },
+    { id: 2, name: 'Priya Patel', points: 10230, avatar: '👩‍💼', badge: 'Pro' },
+    { id: 3, name: 'Amit Kumar', points: 9876, avatar: '👨‍🎓', badge: 'Advanced' },
+    { id: 4, name: 'Sneha Singh', points: 8945, avatar: '👩‍🎓', badge: 'Expert' },
+    { id: 5, name: 'Vikas Gupta', points: 7654, avatar: '👨‍💻', badge: 'Pro' }
+  ]);
 
   const heroRef = useRef(null);
   const sliderRef = useRef(null);
@@ -72,8 +60,7 @@ const Home = () => {
     const handleScroll = () => {
       if (!ticking) {
         window.requestAnimationFrame(() => {
-          const totalHeight =
-            document.documentElement.scrollHeight - window.innerHeight;
+          const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
           const progress = (window.scrollY / totalHeight) * 100;
           setScrollProgress(progress);
           setShowScrollTop(window.scrollY > 400);
@@ -117,10 +104,7 @@ const Home = () => {
       });
     };
 
-    const observer = new IntersectionObserver(
-      observerCallback,
-      observerOptions
-    );
+    const observer = new IntersectionObserver(observerCallback, observerOptions);
     const animatedElements = document.querySelectorAll('.animate-on-scroll');
     animatedElements.forEach((el) => observer.observe(el));
 
@@ -130,40 +114,40 @@ const Home = () => {
   }, []);
 
   // Animated counter
-  useEffect(() => {
-    const targetStats = {
-      jobs: 2500,
-      courses: 450,
-      professionals: 15000,
-      publications: 890,
-    };
+  // useEffect(() => {
+  //   const targetStats = {
+  //     jobs: 2500,
+  //     courses: 450,
+  //     professionals: 15000,
+  //     publications: 890,
+  //   };
 
-    const duration = 2500;
-    const steps = 75;
-    const interval = duration / steps;
-    let currentStep = 0;
+  //   const duration = 2500;
+  //   const steps = 75;
+  //   const interval = duration / steps;
+  //   let currentStep = 0;
 
-    const easeOutQuart = (t) => 1 - Math.pow(1 - t, 4);
+  //   const easeOutQuart = (t) => 1 - Math.pow(1 - t, 4);
 
-    const timer = setInterval(() => {
-      currentStep++;
-      const progress = easeOutQuart(currentStep / steps);
+  //   const timer = setInterval(() => {
+  //     currentStep++;
+  //     const progress = easeOutQuart(currentStep / steps);
 
-      setStats({
-        jobs: Math.floor(targetStats.jobs * progress),
-        courses: Math.floor(targetStats.courses * progress),
-        professionals: Math.floor(targetStats.professionals * progress),
-        publications: Math.floor(targetStats.publications * progress),
-      });
+  //     setStats({
+  //       jobs: Math.floor(targetStats.jobs * progress),
+  //       courses: Math.floor(targetStats.courses * progress),
+  //       professionals: Math.floor(targetStats.professionals * progress),
+  //       publications: Math.floor(targetStats.publications * progress),
+  //     });
 
-      if (currentStep >= steps) {
-        clearInterval(timer);
-        setStats(targetStats);
-      }
-    }, interval);
+  //     if (currentStep >= steps) {
+  //       clearInterval(timer);
+  //       setStats(targetStats);
+  //     }
+  //   }, interval);
 
-    return () => clearInterval(timer);
-  }, []);
+  //   return () => clearInterval(timer);
+  // }, []);
 
   // Auto-rotate features
   useEffect(() => {
@@ -179,8 +163,7 @@ const Home = () => {
     if (!isTestimonialPaused) {
       const rotateTimer = setInterval(() => {
         setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
-      }, 5000); // Auto-rotate every 5 seconds
-
+      }, 5000);
       return () => clearInterval(rotateTimer);
     }
   }, [isTestimonialPaused]);
@@ -213,11 +196,22 @@ const Home = () => {
     navigate(path);
   };
 
+  // Leaderboard Modal Handlers
+  const openLeaderboardModal = () => {
+    setShowLeaderboardModal(true);
+    document.body.style.overflow = 'hidden';
+  };
+
+  const closeLeaderboardModal = () => {
+    setShowLeaderboardModal(false);
+    document.body.style.overflow = 'auto';
+  };
+
   // Testimonial swipe handlers
   const handleTouchStart = (e) => {
     setIsDragging(true);
     setStartX(e.touches[0].clientX);
-    setIsTestimonialPaused(true); // Pause auto-rotation on touch
+    setIsTestimonialPaused(true);
   };
 
   const handleTouchMove = (e) => {
@@ -228,28 +222,21 @@ const Home = () => {
   const handleTouchEnd = () => {
     if (!isDragging) return;
     setIsDragging(false);
-    
+
     const diff = startX - currentX;
     const threshold = 50;
 
     if (Math.abs(diff) > threshold) {
       if (diff > 0) {
-        // Swipe left - next
-        setCurrentTestimonial((prev) => 
-          prev === testimonials.length - 1 ? 0 : prev + 1
-        );
+        setCurrentTestimonial((prev) => (prev === testimonials.length - 1 ? 0 : prev + 1));
       } else {
-        // Swipe right - previous
-        setCurrentTestimonial((prev) => 
-          prev === 0 ? testimonials.length - 1 : prev - 1
-        );
+        setCurrentTestimonial((prev) => (prev === 0 ? testimonials.length - 1 : prev - 1));
       }
     }
-    
+
     setStartX(0);
     setCurrentX(0);
-    
-    // Resume auto-rotation after 3 seconds
+
     setTimeout(() => {
       setIsTestimonialPaused(false);
     }, 3000);
@@ -258,7 +245,7 @@ const Home = () => {
   const handleMouseDown = (e) => {
     setIsDragging(true);
     setStartX(e.clientX);
-    setIsTestimonialPaused(true); // Pause auto-rotation on mouse down
+    setIsTestimonialPaused(true);
   };
 
   const handleMouseMove = (e) => {
@@ -269,46 +256,40 @@ const Home = () => {
   const handleMouseUp = () => {
     if (!isDragging) return;
     setIsDragging(false);
-    
+
     const diff = startX - currentX;
     const threshold = 50;
 
     if (Math.abs(diff) > threshold) {
       if (diff > 0) {
-        setCurrentTestimonial((prev) => 
-          prev === testimonials.length - 1 ? 0 : prev + 1
-        );
+        setCurrentTestimonial((prev) => (prev === testimonials.length - 1 ? 0 : prev + 1));
       } else {
-        setCurrentTestimonial((prev) => 
-          prev === 0 ? testimonials.length - 1 : prev - 1
-        );
+        setCurrentTestimonial((prev) => (prev === 0 ? testimonials.length - 1 : prev - 1));
       }
     }
-    
+
     setStartX(0);
     setCurrentX(0);
-    
-    // Resume auto-rotation after 3 seconds
+
     setTimeout(() => {
       setIsTestimonialPaused(false);
     }, 3000);
   };
 
   const handleTestimonialMouseEnter = () => {
-    setIsTestimonialPaused(true); // Pause on hover
+    setIsTestimonialPaused(true);
   };
 
   const handleTestimonialMouseLeave = () => {
     if (!isDragging) {
-      setIsTestimonialPaused(false); // Resume on mouse leave
+      setIsTestimonialPaused(false);
     }
   };
 
   const handleDotClick = (index) => {
     setCurrentTestimonial(index);
     setIsTestimonialPaused(true);
-    
-    // Resume auto-rotation after 3 seconds
+
     setTimeout(() => {
       setIsTestimonialPaused(false);
     }, 3000);
@@ -318,59 +299,35 @@ const Home = () => {
     {
       icon: Briefcase,
       title: 'Job Portal',
-      description:
-        'Connect with top opportunities in urban planning and built environment sectors',
+      description: 'Connect with top opportunities in urban planning and built environment sectors',
       path: '/jobs',
       color: '#2563eb',
       stats: '2,500+ Jobs',
       gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      details:
-        'Access verified job listings from leading companies across urban planning, architecture, and infrastructure sectors.',
-      features: [
-        'AI-Powered Job Matching',
-        'Resume Builder',
-        'Interview Preparation',
-        'Salary Insights',
-        'Career Path Recommendations',
-      ],
+      details: 'Access verified job listings from leading companies across urban planning, architecture, and infrastructure sectors.',
+      features: ['AI-Powered Job Matching', 'Resume Builder', 'Interview Preparation', 'Salary Insights', 'Career Path Recommendations'],
     },
     {
       icon: Book,
       title: 'Learning Centre',
-      description:
-        'Master new skills with expert-led courses and professional certifications',
+      description: 'Master new skills with expert-led courses and professional certifications',
       path: '/learning',
       color: '#059669',
       stats: '450+ Courses',
       gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-      details:
-        'Upskill with industry-recognized courses taught by leading experts.',
-      features: [
-        'Expert Instructors',
-        'Hands-On Projects',
-        'Industry Certifications',
-        'Flexible Learning',
-        'Lifetime Access',
-      ],
+      details: 'Upskill with industry-recognized courses taught by leading experts.',
+      features: ['Expert Instructors', 'Hands-On Projects', 'Industry Certifications', 'Flexible Learning', 'Lifetime Access'],
     },
     {
       icon: FileText,
       title: 'Publishing House',
-      description:
-        'Access peer-reviewed research and contribute to the knowledge base',
+      description: 'Access peer-reviewed research and contribute to the knowledge base',
       path: '/publishing',
       color: '#dc2626',
       stats: '890+ Publications',
       gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-      details:
-        'Explore cutting-edge research papers, case studies, and whitepapers.',
-      features: [
-        'Peer-Reviewed Content',
-        'Research Database',
-        'Publish Your Work',
-        'Citation Tools',
-        'Academic Networking',
-      ],
+      details: 'Explore cutting-edge research papers, case studies, and whitepapers.',
+      features: ['Peer-Reviewed Content', 'Research Database', 'Publish Your Work', 'Citation Tools', 'Academic Networking'],
     },
     {
       icon: MessageSquare,
@@ -380,34 +337,19 @@ const Home = () => {
       color: '#7c3aed',
       stats: 'Daily Updates',
       gradient: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-      details:
-        'Get the latest news, trends, and insights from the urban planning industry.',
-      features: [
-        'Daily News Updates',
-        'Expert Analysis',
-        'Industry Reports',
-        'Trend Forecasts',
-        'Newsletter Subscriptions',
-      ],
+      details: 'Get the latest news, trends, and insights from the urban planning industry.',
+      features: ['Daily News Updates', 'Expert Analysis', 'Industry Reports', 'Trend Forecasts', 'Newsletter Subscriptions'],
     },
     {
       icon: Users,
       title: 'Discussion Forum',
-      description:
-        'Network with professionals and solve real-world challenges together',
+      description: 'Network with professionals and solve real-world challenges together',
       path: '/forum',
       color: '#ea580c',
       stats: '15K+ Members',
       gradient: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
-      details:
-        'Join a vibrant community of professionals, students, and experts.',
-      features: [
-        'Active Community',
-        'Q&A Forums',
-        'Expert Mentorship',
-        'Networking Events',
-        'Private Messaging',
-      ],
+      details: 'Join a vibrant community of professionals, students, and experts.',
+      features: ['Active Community', 'Q&A Forums', 'Expert Mentorship', 'Networking Events', 'Private Messaging'],
     },
   ];
 
@@ -456,7 +398,7 @@ const Home = () => {
       students: 1247,
       rating: 4.8,
       level: 'Intermediate',
-      image: '📊',
+      image: '🏙️',
     },
     {
       id: 2,
@@ -476,7 +418,7 @@ const Home = () => {
       students: 567,
       rating: 4.9,
       level: 'Beginner',
-      image: '💻',
+      image: '📊',
     },
   ];
 
@@ -486,8 +428,7 @@ const Home = () => {
       name: 'Rahul Mehta',
       role: 'Urban Planner',
       company: 'Smart Cities Mission',
-      content:
-        'Planning Insights helped me secure my dream role within weeks. The platform\'s AI-powered matching is incredibly precise.',
+      content: 'Planning Insights helped me secure my dream role within weeks. The platform\'s AI-powered matching is incredibly precise.',
       rating: 5,
       avatar: '👨‍💼',
     },
@@ -496,20 +437,18 @@ const Home = () => {
       name: 'Sneha Patel',
       role: 'Architecture Student',
       company: 'IIT Delhi',
-      content:
-        'The courses are comprehensive and taught by industry leaders. I gained practical skills that I apply daily in my projects.',
+      content: 'The courses are comprehensive and taught by industry leaders. I gained practical skills that I apply daily in my projects.',
       rating: 5,
       avatar: '👩‍🎓',
     },
     {
       id: 3,
-      name: 'Sneha Patel',
-      role: 'Architecture Student',
-      company: 'IIT Delhi',
-      content:
-        'The courses are comprehensive and taught by industry leaders. I gained practical skills that I apply daily in my projects.',
+      name: 'Amit Singh',
+      role: 'Sustainability Consultant',
+      company: 'GreenTech India',
+      content: 'The publishing house feature allowed me to share my research with a global audience. The peer-review process is exceptional.',
       rating: 5,
-      avatar: '👩‍🎓',
+      avatar: '👨‍🔬',
     },
   ];
 
@@ -517,33 +456,29 @@ const Home = () => {
     {
       icon: CheckCircle,
       title: 'Verified Opportunities',
-      description: 'All job postings are verified for authenticity',
+      description: 'Authentic opportunities you can trust',
     },
     {
       icon: Award,
       title: 'Certified Courses',
-      description: 'Industry-recognized certifications',
+      description: 'Courses recognized by industry leaders',
     },
     {
       icon: Globe,
       title: 'Global Network',
-      description: 'Connect with professionals worldwide',
+      description: 'Collaborate with professionals around the world',
     },
     {
       icon: BarChart,
       title: 'Career Growth',
-      description: 'Track your professional development',
+      description: 'Unlock your full professional potential',
     },
   ];
 
   return (
     <div className="homepage">
       {/* Scroll Progress Bar */}
-      <div
-        className="scroll-progress-bar"
-        style={{ width: `${scrollProgress}%` }}
-        aria-hidden="true"
-      />
+      <div className="scroll-progress-bar" style={{ width: `${scrollProgress}%` }} aria-hidden="true"></div>
 
       {/* ENHANCED HERO SECTION WITH IMAGE */}
       <section className="hero-section-enhanced" ref={heroRef}>
@@ -551,11 +486,9 @@ const Home = () => {
           <div
             className="hero-parallax-layer"
             style={{
-              transform: `translate(${mousePosition.x * 0.02}px, ${
-                mousePosition.y * 0.02
-              }px)`,
+              transform: `translate(${mousePosition.x * 0.02}px, ${mousePosition.y * 0.02}px)`,
             }}
-          />
+          ></div>
         </div>
 
         <div className="container">
@@ -564,22 +497,15 @@ const Home = () => {
             <div className="hero-text-enhanced">
               <div className="hero-badge-enhanced">
                 <Sparkles size={16} />
-                <span>India's Premier Urban Planning Platform</span>
+                <span>The Next-Gen Urban Planning Starts Here.</span>
               </div>
 
               <h1 className="hero-title-enhanced">
-                Empowering Urban
-                <br />
-                Professionals to
-                <br />
-                <span className="text-gradient-enhanced">Shape Tomorrow</span>
+                Welcome to a digital workspace built for urban planners, architects, and city innovators
               </h1>
 
               <p className="hero-description-enhanced">
-                Join India's premier platform connecting urban planning
-                professionals with opportunities, knowledge, and a thriving
-                community. Access 2,500+ jobs, 450+ courses, and network with
-                15,000+ experts.
+                Sign in to access powerful planning tools, collaborative design environments, and data­driven insights that shape sustainable and future-ready urban spaces
               </p>
 
               {/* Enhanced Search Bar */}
@@ -602,22 +528,13 @@ const Home = () => {
 
                 <div className="search-tags-enhanced">
                   <span className="tags-label">Popular:</span>
-                  <button
-                    className="tag-btn"
-                    onClick={() => setSearchQuery('Urban Planner')}
-                  >
+                  <button className="tag-btn" onClick={() => setSearchQuery('Urban Planner')}>
                     Urban Planner
                   </button>
-                  <button
-                    className="tag-btn"
-                    onClick={() => setSearchQuery('Smart Cities')}
-                  >
+                  <button className="tag-btn" onClick={() => setSearchQuery('Smart Cities')}>
                     Smart Cities
                   </button>
-                  <button
-                    className="tag-btn"
-                    onClick={() => setSearchQuery('Sustainability')}
-                  >
+                  <button className="tag-btn" onClick={() => setSearchQuery('Sustainability')}>
                     Sustainability
                   </button>
                 </div>
@@ -627,27 +544,24 @@ const Home = () => {
               <div className="hero-actions-enhanced">
                 {!isAuthenticated ? (
                   <>
-                    <Link
-                      to="/Signup"
-                      className="btn-enhanced btn-primary-enhanced"
-                    >
-                      <span className="btn-shine" />
-                      <span>Get Started Free</span>
+                    <Link to="/Signup" className="btn-enhanced btn-primary-enhanced">
+                      <span className="btn-shine">
+                        <span>Get Started Free</span>
+                      </span>
                       <Rocket size={20} />
                     </Link>
                     <Link to="/login" className="btn-enhanced btn-outline-enhanced">
-                      <span className="btn-shine" />
-                      <span>Sign In</span>
+                      <span className="btn-shine">
+                        <span>Sign In</span>
+                      </span>
                       <ArrowRight size={20} />
                     </Link>
                   </>
                 ) : (
-                  <Link
-                    to="/dashboard"
-                    className="btn-enhanced btn-primary-enhanced"
-                  >
-                    <span className="btn-shine" />
-                    <span>Go to Dashboard</span>
+                  <Link to="/dashboard" className="btn-enhanced btn-primary-enhanced">
+                    <span className="btn-shine">
+                      <span>Go to Dashboard</span>
+                    </span>
                     <Target size={20} />
                   </Link>
                 )}
@@ -656,27 +570,19 @@ const Home = () => {
               {/* Hero Stats */}
               <div className="hero-stats-enhanced">
                 <div className="stat-item-enhanced">
-                  <div className="stat-number-enhanced">
-                    {stats.jobs.toLocaleString()}
-                  </div>
+                  <div className="stat-number-enhanced">{stats.jobs.toLocaleString()}</div>
                   <div className="stat-label-enhanced">Active Jobs</div>
                 </div>
                 <div className="stat-item-enhanced">
-                  <div className="stat-number-enhanced">
-                    {stats.courses.toLocaleString()}
-                  </div>
+                  <div className="stat-number-enhanced">{stats.courses.toLocaleString()}</div>
                   <div className="stat-label-enhanced">Courses</div>
                 </div>
                 <div className="stat-item-enhanced">
-                  <div className="stat-number-enhanced">
-                    {(stats.professionals / 1000).toFixed(0)}K
-                  </div>
+                  <div className="stat-number-enhanced">{(stats.professionals / 1000).toFixed(0)}K</div>
                   <div className="stat-label-enhanced">Professionals</div>
                 </div>
                 <div className="stat-item-enhanced">
-                  <div className="stat-number-enhanced">
-                    {stats.publications.toLocaleString()}
-                  </div>
+                  <div className="stat-number-enhanced">{stats.publications.toLocaleString()}</div>
                   <div className="stat-label-enhanced">Publications</div>
                 </div>
               </div>
@@ -692,62 +598,56 @@ const Home = () => {
                     alt="Modern Urban Planning"
                     className="urban-planning-image"
                   />
-                  <div className="image-overlay-gradient" />
+                  <div className="image-overlay-gradient"></div>
                 </div>
 
                 {/* Floating Stat Cards */}
                 <div className="floating-stats-container">
+                  {/* Jobs Available Card */}
                   <div className="floating-stat-card-enhanced card-position-1">
                     <div
                       className="card-icon-enhanced"
-                      style={{
-                        background:
-                          'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                      }}
+                      style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}
                     >
                       <Briefcase size={28} color="white" />
                     </div>
                     <div className="card-content-enhanced">
-                      <div className="card-number-enhanced">
-                        {stats.jobs.toLocaleString()}
-                      </div>
+                      <div className="card-number-enhanced">{stats.jobs.toLocaleString()}</div>
                       <div className="card-label-enhanced">Jobs Available</div>
                     </div>
                   </div>
 
+                  {/* Courses Card */}
                   <div className="floating-stat-card-enhanced card-position-2">
                     <div
                       className="card-icon-enhanced"
-                      style={{
-                        background:
-                          'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-                      }}
+                      style={{ background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' }}
                     >
                       <Book size={28} color="white" />
                     </div>
                     <div className="card-content-enhanced">
-                      <div className="card-number-enhanced">
-                        {stats.courses.toLocaleString()}
-                      </div>
+                      <div className="card-number-enhanced">{stats.courses.toLocaleString()}</div>
                       <div className="card-label-enhanced">Courses</div>
                     </div>
                   </div>
 
-                  <div className="floating-stat-card-enhanced card-position-3">
+                  {/* TOP USERS POINTS LEADERBOARD CARD - CLICKABLE */}
+                  <div 
+                    className="floating-stat-card-enhanced card-position-3 leaderboard-card-clickable"
+                    onClick={openLeaderboardModal}
+                    role="button"
+                    tabIndex={0}
+                    aria-label="View user points leaderboard"
+                  >
                     <div
                       className="card-icon-enhanced"
-                      style={{
-                        background:
-                          'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
-                      }}
+                      style={{ background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)' }}
                     >
-                      <Users size={28} color="white" />
+                      <Trophy size={28} color="white" />
                     </div>
                     <div className="card-content-enhanced">
-                      <div className="card-number-enhanced">
-                        {(stats.professionals / 1000).toFixed(0)}K
-                      </div>
-                      <div className="card-label-enhanced">Active Members</div>
+                      <div className="card-number-enhanced">{topUsers[0]?.points.toLocaleString()}</div>
+                      <div className="card-label-enhanced">Top User Points</div>
                     </div>
                   </div>
                 </div>
@@ -769,6 +669,75 @@ const Home = () => {
           <span>Scroll to explore</span>
         </div>
       </section>
+
+      {/* LEADERBOARD MODAL */}
+      {showLeaderboardModal && (
+        <div className="leaderboard-modal-overlay" onClick={closeLeaderboardModal}>
+          <div className="leaderboard-modal-container" onClick={(e) => e.stopPropagation()}>
+            <button
+              className="leaderboard-modal-close"
+              onClick={closeLeaderboardModal}
+              aria-label="Close leaderboard"
+            >
+              <X size={24} />
+            </button>
+
+            <div className="leaderboard-modal-header">
+              <div className="leaderboard-modal-icon">
+                <Trophy size={48} color="white" />
+              </div>
+              <h2>Top Users Leaderboard</h2>
+              <p>Highest Point Earners</p>
+            </div>
+
+            <div className="leaderboard-modal-body">
+              <div className="leaderboard-list">
+                {topUsers.map((user, index) => (
+                  <div key={user.id} className={`leaderboard-item rank-${index + 1}`}>
+                    <div className="leaderboard-rank">
+                      {index === 0 && <Crown size={24} color="#fbbf24" />}
+                      {index === 1 && <Medal size={24} color="#c0c0c0" />}
+                      {index === 2 && <Medal size={24} color="#cd7f32" />}
+                      {index > 2 && <span className="rank-number">#{index + 1}</span>}
+                    </div>
+
+                    <div className="leaderboard-avatar">{user.avatar}</div>
+
+                    <div className="leaderboard-info">
+                      <h4>{user.name}</h4>
+                      <span className="user-badge">{user.badge}</span>
+                    </div>
+
+                    <div className="leaderboard-points">
+                      <Trophy size={18} color="#fbbf24" />
+                      <span>{user.points.toLocaleString()}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {user && (
+                <div className="your-rank-section">
+                  <h3>Your Rank</h3>
+                  <div className="your-rank-card">
+                    <div className="your-rank-avatar">👤</div>
+                    <div className="your-rank-info">
+                      <h4>{user.name || 'Your Name'}</h4>
+                      <p>Rank: #47 • 2,340 points</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="leaderboard-modal-footer">
+              <button className="btn-professional btn-primary-professional" onClick={closeLeaderboardModal}>
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Benefits Section */}
       <section className="benefits-section animate-on-scroll">
@@ -793,82 +762,32 @@ const Home = () => {
           <div className="section-header-professional">
             <p className="section-subtitle">EXPLORE OUR PLATFORM</p>
             <h2>
-              Discover All the{' '}
-              <span className="text-gradient-professional">Tools & Resources</span>
+              Tools That Power Your <span className="text-gradient-professional">Progress</span>
             </h2>
             <p>
-              Comprehensive tools to advance your career in urban planning and
-              built environment sectors
+              Access powerful tools, curated resources, and opportunities designed for urban planning and the built environment.
             </p>
           </div>
 
-          <div
-            className="autoscroll-wrapper"
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
-          >
+          <div className="autoscroll-wrapper" onMouseEnter={() => setIsPaused(true)} onMouseLeave={() => setIsPaused(false)}>
             <div className={`autoscroll-track ${isPaused ? 'paused' : ''}`}>
-              {platformFeatures.map((feature, index) => {
+              {[...platformFeatures, ...platformFeatures].map((feature, index) => {
                 const FeatureIcon = feature.icon;
                 return (
                   <div
-                    key={`first-${index}`}
+                    key={`feature-${index}`}
                     className="feature-card-autoscroll"
                     onClick={() => handlePlatformClick(feature)}
                     role="button"
                     tabIndex={0}
                     aria-label={`View details for ${feature.title}`}
                   >
-                    <div
-                      className="feature-card-bg-autoscroll"
-                      style={{ background: feature.gradient }}
-                    />
+                    <div className="feature-card-bg-autoscroll" style={{ background: feature.gradient }}></div>
                     <div className="feature-card-content-autoscroll">
-                      <div
-                        className="feature-icon-autoscroll"
-                        style={{ background: feature.gradient }}
-                      >
+                      <div className="feature-icon-autoscroll" style={{ background: feature.gradient }}>
                         <FeatureIcon size={40} color="white" />
                       </div>
-                      <div className="feature-badge-autoscroll">
-                        {feature.stats}
-                      </div>
-                      <h3>{feature.title}</h3>
-                      <p>{feature.description}</p>
-                      <div className="feature-link-autoscroll">
-                        <span>Explore More</span>
-                        <ArrowRight size={20} />
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-
-              {platformFeatures.map((feature, index) => {
-                const FeatureIcon = feature.icon;
-                return (
-                  <div
-                    key={`second-${index}`}
-                    className="feature-card-autoscroll"
-                    onClick={() => handlePlatformClick(feature)}
-                    role="button"
-                    tabIndex={0}
-                    aria-label={`View details for ${feature.title}`}
-                  >
-                    <div
-                      className="feature-card-bg-autoscroll"
-                      style={{ background: feature.gradient }}
-                    />
-                    <div className="feature-card-content-autoscroll">
-                      <div
-                        className="feature-icon-autoscroll"
-                        style={{ background: feature.gradient }}
-                      >
-                        <FeatureIcon size={40} color="white" />
-                      </div>
-                      <div className="feature-badge-autoscroll">
-                        {feature.stats}
-                      </div>
+                      <div className="feature-badge-autoscroll">{feature.stats}</div>
                       <h3>{feature.title}</h3>
                       <p>{feature.description}</p>
                       <div className="feature-link-autoscroll">
@@ -884,32 +803,20 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Platform Modal - FIXED WITH PROPER NAVIGATION */}
+      {/* Platform Modal */}
       {showPlatformModal && selectedPlatform && (
         <div className="platform-modal-overlay" onClick={closePlatformModal}>
-          <div
-            className="platform-modal-container"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              className="platform-modal-close"
-              onClick={closePlatformModal}
-              aria-label="Close modal"
-            >
+          <div className="platform-modal-container" onClick={(e) => e.stopPropagation()}>
+            <button className="platform-modal-close" onClick={closePlatformModal} aria-label="Close modal">
               <X size={24} />
             </button>
 
-            <div
-              className="platform-modal-header"
-              style={{ background: selectedPlatform.gradient }}
-            >
+            <div className="platform-modal-header" style={{ background: selectedPlatform.gradient }}>
               <div className="platform-modal-icon">
                 <selectedPlatform.icon size={48} color="white" />
               </div>
               <h2>{selectedPlatform.title}</h2>
-              <div className="platform-modal-badge">
-                {selectedPlatform.stats}
-              </div>
+              <div className="platform-modal-badge">{selectedPlatform.stats}</div>
             </div>
 
             <div className="platform-modal-body">
@@ -936,8 +843,9 @@ const Home = () => {
                   className="btn-professional btn-primary-professional btn-large-professional btn-block-professional"
                   style={{ background: selectedPlatform.color }}
                 >
-                  <span className="btn-shine" />
-                  <span>Explore {selectedPlatform.title}</span>
+                  <span className="btn-shine">
+                    <span>Explore {selectedPlatform.title}</span>
+                  </span>
                   <ArrowRight size={20} />
                 </button>
               </div>
@@ -946,47 +854,34 @@ const Home = () => {
         </div>
       )}
 
-      {/* Featured Jobs Section - AUTO-SCROLLING CAROUSEL */}
+      {/* Featured Jobs Section */}
       <section className="jobs-section-professional animate-on-scroll">
         <div className="container-full">
           <div className="section-header-professional">
             <p className="section-subtitle">OPPORTUNITIES</p>
             <h2>
-              Discover Curated{' '}
-              <span className="text-gradient-professional">Job Positions</span>
+              Your Next Career <span className="text-gradient-professional">Step</span>
             </h2>
-            <p>
-              From leading organizations seeking talented urban planning professionals
-            </p>
+            <p>Connect with organizations offering roles across planning, design, and development sectors</p>
           </div>
 
-          <div
-            className="jobs-autoscroll-wrapper"
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
-          >
+          <div className="jobs-autoscroll-wrapper" onMouseEnter={() => setIsPaused(true)} onMouseLeave={() => setIsPaused(false)}>
             <div className={`jobs-autoscroll-track ${isPaused ? 'paused' : ''}`}>
               {[...Array(2)].map((_, loopIndex) =>
                 featuredJobs.map((job) => (
-                  <div
-                    key={`${loopIndex}-${job.id}`}
-                    className="job-card-professional"
-                  >
+                  <div key={`${loopIndex}-${job.id}`} className="job-card-professional">
                     {job.urgent && (
                       <div className="urgent-badge-professional">
                         <Zap size={14} />
                         <span>Urgent</span>
                       </div>
                     )}
-
                     <div className="job-header">
                       <div className="job-logo">{job.logo}</div>
                       <div className="job-type-badge">{job.type}</div>
                     </div>
-
                     <h3>{job.title}</h3>
                     <p className="company-name">{job.company}</p>
-
                     <div className="job-details">
                       <div className="job-detail-item">
                         <MapPin size={16} />
@@ -997,15 +892,11 @@ const Home = () => {
                         <span>Deadline: {job.deadline}</span>
                       </div>
                     </div>
-
                     <div className="job-salary">{job.salary}</div>
-
-                    <Link
-                      to={`/jobs/${job.id}`}
-                      className="btn-professional btn-primary-professional btn-block-professional"
-                    >
-                      <span className="btn-shine" />
-                      <span>Apply Now</span>
+                    <Link to={`/jobs/${job.id}`} className="btn-professional btn-primary-professional btn-block-professional">
+                      <span className="btn-shine">
+                        <span>Apply Now</span>
+                      </span>
                       <ArrowRight size={18} />
                     </Link>
                   </div>
@@ -1015,48 +906,36 @@ const Home = () => {
           </div>
 
           <div className="section-footer-professional">
-            <Link
-              to="/jobs"
-              className="btn-professional btn-secondary-professional btn-large-professional"
-            >
-              <span className="btn-shine" />
-              <span>View All Jobs</span>
+            <Link to="/jobs" className="btn-professional btn-secondary-professional btn-large-professional">
+              <span className="btn-shine">
+                <span>View All Jobs</span>
+              </span>
               <ArrowRight size={20} />
             </Link>
           </div>
         </div>
       </section>
 
-      {/* Featured Courses Section - AUTO-SCROLLING CAROUSEL */}
+      {/* Featured Courses Section */}
       <section className="courses-section-professional animate-on-scroll">
         <div className="container-full">
           <div className="section-header-professional">
             <p className="section-subtitle">LEARNING</p>
             <h2>
-              Advance Your{' '}
-              <span className="text-gradient-professional">Expertise</span>
+              Advance Your <span className="text-gradient-professional">Skills</span>
             </h2>
-            <p>With industry-leading courses taught by expert instructors</p>
+            <p>Advance your knowledge through practical, industry-aligned learning.</p>
           </div>
 
-          <div
-            className="courses-autoscroll-wrapper"
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
-          >
+          <div className="courses-autoscroll-wrapper" onMouseEnter={() => setIsPaused(true)} onMouseLeave={() => setIsPaused(false)}>
             <div className={`courses-autoscroll-track ${isPaused ? 'paused' : ''}`}>
               {[...Array(2)].map((_, loopIndex) =>
                 featuredCourses.map((course) => (
-                  <div
-                    key={`${loopIndex}-${course.id}`}
-                    className="course-card-professional"
-                  >
+                  <div key={`${loopIndex}-${course.id}`} className="course-card-professional">
                     <div className="course-image">{course.image}</div>
                     <div className="course-level-badge">{course.level}</div>
-
                     <h3>{course.title}</h3>
                     <p className="course-instructor">By {course.instructor}</p>
-
                     <div className="course-meta">
                       <div className="course-meta-item">
                         <Clock size={16} />
@@ -1071,13 +950,10 @@ const Home = () => {
                         <span>{course.rating}</span>
                       </div>
                     </div>
-
-                    <Link
-                      to={`/courses/${course.id}`}
-                      className="btn-professional btn-primary-professional btn-block-professional"
-                    >
-                      <span className="btn-shine" />
-                      <span>Enroll Now</span>
+                    <Link to={`/courses/${course.id}`} className="btn-professional btn-primary-professional btn-block-professional">
+                      <span className="btn-shine">
+                        <span>Enroll Now</span>
+                      </span>
                       <ArrowRight size={18} />
                     </Link>
                   </div>
@@ -1087,36 +963,28 @@ const Home = () => {
           </div>
 
           <div className="section-footer-professional">
-            <Link
-              to="/learning"
-              className="btn-professional btn-secondary-professional btn-large-professional"
-            >
-              <span className="btn-shine" />
-              <span>Browse All Courses</span>
+            <Link to="/learning" className="btn-professional btn-secondary-professional btn-large-professional">
+              <span className="btn-shine">
+                <span>Browse All Courses</span>
+              </span>
               <ArrowRight size={20} />
             </Link>
           </div>
         </div>
       </section>
 
-      {/* Testimonials Section - 3D COVERFLOW WITH AUTO-ROTATION */}
+      {/* Testimonials Section */}
       <section className="testimonials-section-professional animate-on-scroll">
         <div className="container">
           <div className="section-header-professional">
             <p className="section-subtitle">SUCCESS STORIES</p>
             <h2>
-              Join Thousands{' '}
-              <span className="text-gradient-professional">
-                Advancing Their Careers
-              </span>
+              Join Thousands <span className="text-gradient-professional">Shaping Urban Change</span>
             </h2>
-            <p>
-              Hear from professionals who transformed their careers with Planning
-              Insights
-            </p>
+            <p>Highlighting real achievements shaping better urban environments.</p>
           </div>
 
-          <div 
+          <div
             className="testimonials-coverflow-wrapper"
             ref={sliderRef}
             onTouchStart={handleTouchStart}
@@ -1127,26 +995,20 @@ const Home = () => {
             onMouseUp={handleMouseUp}
             onMouseLeave={handleMouseUp}
             onMouseEnter={handleTestimonialMouseEnter}
+            onMouseOut={handleTestimonialMouseLeave}
           >
             <div className="testimonials-coverflow-container">
               <div className="testimonials-coverflow-track">
                 {testimonials.map((testimonial, index) => {
                   const offset = index - currentTestimonial;
                   const isActive = index === currentTestimonial;
-                  
+
                   return (
                     <div
                       key={testimonial.id}
-                      className={`testimonial-card-coverflow ${isActive ? 'active' : ''} ${
-                        offset < 0 ? 'prev' : offset > 0 ? 'next' : ''
-                      }`}
+                      className={`testimonial-card-coverflow ${isActive ? 'active' : ''} ${offset < 0 ? 'prev' : ''} ${offset > 0 ? 'next' : ''}`}
                       style={{
-                        transform: `
-                          translateX(${offset * 120}%) 
-                          rotateY(${offset * 45}deg) 
-                          scale(${isActive ? 1 : 0.8})
-                          translateZ(${isActive ? 0 : -200}px)
-                        `,
+                        transform: `translateX(${offset * 120}%) rotateY(${offset * 45}deg) scale(${isActive ? 1 : 0.8}) translateZ(${isActive ? 0 : -200}px)`,
                         opacity: Math.abs(offset) > 1 ? 0 : 1,
                         zIndex: isActive ? 10 : 5 - Math.abs(offset),
                       }}
@@ -1156,9 +1018,7 @@ const Home = () => {
                           <Star key={i} size={20} fill="currentColor" style={{ color: '#fbbf24' }} />
                         ))}
                       </div>
-
                       <p className="testimonial-content">{testimonial.content}</p>
-
                       <div className="testimonial-author">
                         <div className="author-avatar">{testimonial.avatar}</div>
                         <div className="author-info">
@@ -1182,7 +1042,7 @@ const Home = () => {
                   className={`testimonial-dot ${index === currentTestimonial ? 'active' : ''}`}
                   onClick={() => handleDotClick(index)}
                   aria-label={`Go to testimonial ${index + 1}`}
-                />
+                ></button>
               ))}
             </div>
           </div>
@@ -1193,59 +1053,48 @@ const Home = () => {
       <section className="cta-section-professional animate-on-scroll">
         <div className="container">
           <div className="cta-content-professional">
-            <h2>Ready to Transform Your Career?</h2>
+            <h2>Ready to Shape Your Future in Urban Planning?</h2>
             <p>
-              Join thousands of professionals leveraging Planning Insights to
-              discover opportunities, develop skills, and build meaningful
-              connections.
+              Be part of a growing global community turning ideas into impact. Planning Insights helps you unlock new opportunities, sharpen your
+              skills, and connect with professionals shaping cities of tomorrow.
             </p>
 
             <div className="cta-actions-professional">
               {!isAuthenticated ? (
                 <>
-                  <Link
-                    to="/Signup"
-                    className="btn-professional btn-primary-professional btn-large-professional"
-                  >
-                    <span className="btn-shine" />
-                    <span>Get Started Free</span>
+                  <Link to="/Signup" className="btn-professional btn-primary-professional btn-large-professional">
+                    <span className="btn-shine">
+                      <span>Get Started Free</span>
+                    </span>
                     <Rocket size={22} />
                   </Link>
-                  <Link
-                    to="/about"
-                    className="btn-professional btn-outline-professional btn-large-professional"
-                  >
-                    <span className="btn-shine" />
-                    <span>Learn More</span>
+                  <Link to="/about" className="btn-professional btn-outline-professional btn-large-professional">
+                    <span className="btn-shine">
+                      <span>Learn More</span>
+                    </span>
                     <ArrowRight size={22} />
                   </Link>
                 </>
               ) : (
-                <Link
-                  to="/dashboard"
-                  className="btn-professional btn-primary-professional btn-large-professional"
-                >
-                  <span className="btn-shine" />
-                  <span>Go to Dashboard</span>
+                <Link to="/dashboard" className="btn-professional btn-primary-professional btn-large-professional">
+                  <span className="btn-shine">
+                    <span>Go to Dashboard</span>
+                  </span>
                   <Target size={22} />
                 </Link>
               )}
             </div>
 
             <p className="cta-note">
-              Sign in to apply for jobs, enroll in courses, participate in
-              discussions, and connect with 15,000+ professionals in your field.
+              Sign in to access verified job opportunities, expert forums, join meaningful discussions, and collaborate with 15,000+ professionals
+              across the built environment.
             </p>
           </div>
         </div>
       </section>
 
       {/* Scroll to Top Button */}
-      <button
-        className={`scroll-to-top-btn ${showScrollTop ? 'show' : ''}`}
-        onClick={scrollToTop}
-        aria-label="Scroll to top"
-      >
+      <button className={`scroll-to-top-btn ${showScrollTop ? 'show' : ''}`} onClick={scrollToTop} aria-label="Scroll to top">
         <ChevronsUp size={24} />
         <span className="scroll-top-text">TOP</span>
       </button>

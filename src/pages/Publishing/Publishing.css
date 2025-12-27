@@ -855,6 +855,7 @@
 .scroll-to-top {
   position: fixed;
   bottom: 2rem;
+  left: auto;
   right: 2rem;
   width: 56px;
   height: 56px;
