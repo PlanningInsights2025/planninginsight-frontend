@@ -1,8 +1,29 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './JobPortal.css';
 import './ApplicationForm.css';
+// import { useAuth } from '../../contexts/AuthContext';
+// import { useUser } from '../../contexts/UserContext';
 
 const JobPortal = () => {
+  const navigate = useNavigate();
+  // const { user, isAuthenticated } = useAuth(); // Uncomment when context is ready
+  // const { profile } = useUser(); // Uncomment when context is ready
+  
+  // Mock user profile data for autofill (replace with actual user data from context)
+  const [userProfile] = useState({
+    fullName: 'John Smith',
+    email: 'john.smith@example.com',
+    phone: '9876543210',
+    country: 'India',
+    dateOfBirth: '1995-05-15',
+    yearsOfExperience: '5',
+    currentCTC: '$50,000',
+    expectedCTC: '$60,000',
+    noticePeriod: '30 days',
+    portfolio: 'https://linkedin.com/in/johnsmith'
+  });
+  
   const [jobs, setJobs] = useState([]);
   const [filteredJobs, setFilteredJobs] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -13,6 +34,20 @@ const JobPortal = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isRecruiter, setIsRecruiter] = useState(false);
   const [isPremium, setIsPremium] = useState(false);
+
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (showJobDetail || showApplication || showRecruiterPortal) {
+      document.body.classList.add('modal-open');
+    } else {
+      document.body.classList.remove('modal-open');
+    }
+    
+    // Cleanup on unmount
+    return () => {
+      document.body.classList.remove('modal-open');
+    };
+  }, [showJobDetail, showApplication, showRecruiterPortal]);
   const [selectedFilters, setSelectedFilters] = useState({
     location: '',
     jobType: '',
@@ -20,82 +55,181 @@ const JobPortal = () => {
     salaryRange: ''
   });
   const [isLoading, setIsLoading] = useState(true);
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
-  // Mock data for demonstration
+  // Scroll to top handler
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Track scroll position to show/hide button
   useEffect(() => {
-    // Simulate API call
-    const t = setTimeout(() => {
-      // base examples
-      const base = [
-        {
-          id: 1,
-          title: "Senior Urban Planner",
-          company: "CityScape Architects",
-          location: "New York, USA",
-          type: "Full-time",
-          experience: "5+ years",
-          salary: "$80,000 - $120,000",
-          deadline: "2026-12-15",
-          description: "We are seeking an experienced Urban Planner to lead our sustainable city development projects. The ideal candidate will have expertise in transit-oriented development and community engagement.",
-          requirements: ["Master's degree in Urban Planning","5+ years of professional experience"],
-          recruiter: { name: "Alex Johnson", company: "CityScape Architects", id: "RID-001" },
-          applicants: 42, acceptanceProbability: 78, isPremium: true, featured: true, postedDate: "2025-11-10",
-          customFields: { noticePeriod: "30 days", currentCTC: "$90,000", expectedCTC: "$110,000" }
-        },
-        {
-          id: 2,
-          title: "Landscape Architect",
-          company: "GreenSpace Design",
-          location: "Barcelona, Spain",
-          type: "Full-time",
-          experience: "3+ years",
-          salary: "€45,000 - €65,000",
-          deadline: "2026-12-20",
-          description: "Join our innovative team to create sustainable and accessible public spaces. We're looking for creative minds with a passion for environmental design.",
-          requirements: ["Bachelor's degree in Landscape Architecture","3+ years of professional experience"],
-          recruiter: { name: "Maria Rodriguez", company: "GreenSpace Design", id: "RID-002" },
-          applicants: 28, acceptanceProbability: 65, isPremium: false, featured: false, postedDate: "2025-11-15",
-          customFields: { noticePeriod: "15 days", currentCTC: "€50,000", expectedCTC: "€60,000" }
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 300);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Load jobs from localStorage and sync with Recruiter portal
+  useEffect(() => {
+    const loadJobs = () => {
+      // Try to load jobs from localStorage first
+      const storedJobs = localStorage.getItem('recruiterJobs');
+      
+      if (storedJobs) {
+        try {
+          const parsedJobs = JSON.parse(storedJobs);
+          // Transform recruiter job format to job portal format
+          const transformedJobs = parsedJobs
+            .filter(job => job.status === 'active') // Only show active jobs
+            .map(job => ({
+              id: job.id,
+              title: job.title,
+              company: job.company || "TechCorp Solutions",
+              location: job.location,
+              type: job.type,
+              experience: job.experience,
+              salary: job.salary,
+              deadline: job.deadline,
+              description: job.description,
+              requirements: Array.isArray(job.requirements) ? job.requirements : [],
+              recruiter: { name: "Sarah Johnson", company: job.company || "TechCorp Solutions", id: "RID-001" },
+              applicants: job.applications || 0,
+              acceptanceProbability: Math.floor(60 + Math.random() * 30),
+              isPremium: job.isPremium || false,
+              featured: job.isFeatured || false,
+              postedDate: job.postedDate,
+              customFields: { noticePeriod: "30 days", currentCTC: "$90,000", expectedCTC: "$110,000" },
+              views: job.views || 0,
+              shortlisted: job.shortlisted || 0,
+              interviewed: job.interviewed || 0
+            }));
+          
+          setJobs(transformedJobs);
+          setFilteredJobs(transformedJobs);
+          setIsLoading(false);
+          return;
+        } catch (e) {
+          console.error('Error loading jobs from localStorage:', e);
         }
-      ];
+      }
+      
+      // Fallback to mock data if no stored jobs
+      const t = setTimeout(() => {
+        const base = [
+          {
+            id: 1,
+            title: "Senior Full Stack Developer",
+            company: "TechCorp Solutions",
+            location: "New York, USA",
+            type: "Full-time",
+            experience: "5+ years",
+            salary: "$120,000 - $150,000",
+            deadline: "2025-01-15",
+            description: "We are looking for a talented Full Stack Developer to join our engineering team. You will be responsible for developing and maintaining web applications using modern technologies.",
+            requirements: [
+              "5+ years of experience in full-stack development",
+              "Strong proficiency in React, Node.js, and TypeScript",
+              "Experience with cloud services (AWS/Azure)",
+              "Knowledge of database design and optimization",
+              "Excellent problem-solving skills"
+            ],
+            recruiter: { name: "Sarah Johnson", company: "TechCorp Solutions", id: "RID-001" },
+            applicants: 45, acceptanceProbability: 78, isPremium: true, featured: true, postedDate: "2024-12-15",
+            customFields: { noticePeriod: "30 days", currentCTC: "$110,000", expectedCTC: "$140,000" },
+            views: 892,
+            shortlisted: 8,
+            interviewed: 3
+          },
+          {
+            id: 2,
+            title: "Product Manager",
+            company: "TechCorp Solutions",
+            location: "Remote",
+            type: "Full-time",
+            experience: "3+ years",
+            salary: "$100,000 - $130,000",
+            deadline: "2025-01-20",
+            description: "Lead product development from conception to launch. Work with cross-functional teams to deliver exceptional products.",
+            requirements: [
+              "3+ years of product management experience",
+              "Strong analytical and strategic thinking",
+              "Excellent communication skills",
+              "Experience with Agile methodologies"
+            ],
+            recruiter: { name: "Sarah Johnson", company: "TechCorp Solutions", id: "RID-001" },
+            applicants: 28, acceptanceProbability: 65, isPremium: false, featured: false, postedDate: "2024-12-20",
+            customFields: { noticePeriod: "15 days", currentCTC: "$90,000", expectedCTC: "$110,000" },
+            views: 456,
+            shortlisted: 5,
+            interviewed: 2
+          }
+        ];
 
-      // generate more demo items
-      const more = Array.from({ length: 14 }).map((_, i) => {
-        const titles = ['Project Manager','Environmental Consultant','Urban Designer','Site Engineer','Sustainability Consultant','Transportation Planner','Building Services Engineer'];
-        const companies = ['BuildRight','EcoSolutions Inc.','CityScape Architects','GreenSpace Design','UrbanWorks Ltd'];
-        const locations = ['Singapore','Vancouver, Canada','New York, USA','Barcelona, Spain','London, UK'];
-        const types = ['Full-time','Contract','Part-time','Remote'];
-        const exp = ['1+ years','2+ years','3+ years','5+ years','7+ years'];
+        const more = Array.from({ length: 14 }).map((_, i) => {
+          const titles = ['UX Designer','Data Analyst','DevOps Engineer','Marketing Manager','Sales Executive','HR Manager','Business Analyst'];
+          const companies = ['TechCorp Solutions','InnovateTech','Digital Solutions Inc.','CloudWorks Ltd','StartupHub'];
+          const locations = ['New York, USA','Remote','San Francisco, USA','London, UK','Singapore'];
+          const types = ['Full-time','Contract','Part-time','Remote'];
+          const exp = ['1+ years','2+ years','3+ years','5+ years','7+ years'];
 
-        const idx = i % titles.length;
-        return {
-          id: 100 + i,
-          title: `${titles[idx]} ${i+1}`,
-          company: companies[i % companies.length],
-          location: locations[i % locations.length],
-          type: types[i % types.length],
-          experience: exp[i % exp.length],
-          salary: `$${50 + i * 5}k - $${60 + i * 6}k`,
-          deadline: `2026-12-${10 + (i % 20)}`,
-          description: 'This is a demo job description used to preview the card layout and spacing. Replace with live data from the API.',
-          requirements: ['Relevant degree','Experience in role'],
-          recruiter: { name: companies[i % companies.length] + ' HR', company: companies[i % companies.length], id: `RID-${i+100}` },
-          applicants: Math.floor(5 + Math.random()*80),
-          acceptanceProbability: Math.floor(40 + Math.random()*40),
-          isPremium: i % 6 === 0,
-          featured: i % 5 === 0,
-          postedDate: '2025-11-01',
-          customFields: { noticePeriod: `${10 + (i % 30)} days`, currentCTC: `$${40 + i}k`, expectedCTC: `$${45 + i}k` }
-        }
-      })
+          const idx = i % titles.length;
+          return {
+            id: 100 + i,
+            title: `${titles[idx]}`,
+            company: companies[i % companies.length],
+            location: locations[i % locations.length],
+            type: types[i % types.length],
+            experience: exp[i % exp.length],
+            salary: `$${50 + i * 5}k - $${60 + i * 6}k`,
+            deadline: `2025-01-${10 + (i % 20)}`,
+            description: 'Join our dynamic team and contribute to innovative projects. We offer competitive salary, flexible work arrangements, and excellent growth opportunities.',
+            requirements: ['Relevant degree or equivalent experience','Strong communication skills','Team player with problem-solving abilities'],
+            recruiter: { name: companies[i % companies.length] + ' HR', company: companies[i % companies.length], id: `RID-${i+100}` },
+            applicants: Math.floor(5 + Math.random()*80),
+            acceptanceProbability: Math.floor(40 + Math.random()*40),
+            isPremium: i % 6 === 0,
+            featured: i % 5 === 0,
+            postedDate: '2024-12-01',
+            customFields: { noticePeriod: `${10 + (i % 30)} days`, currentCTC: `$${40 + i}k`, expectedCTC: `${45 + i}k` },
+            views: Math.floor(200 + Math.random() * 800),
+            shortlisted: Math.floor(2 + Math.random() * 10),
+            interviewed: Math.floor(1 + Math.random() * 5)
+          }
+        });
 
-      const mockJobs = [...base, ...more];
-      setJobs(mockJobs);
-      setFilteredJobs(mockJobs);
-      setIsLoading(false);
-    }, 400);
+        const mockJobs = [...base, ...more];
+        setJobs(mockJobs);
+        setFilteredJobs(mockJobs);
+        setIsLoading(false);
+      }, 400);
 
-    return () => clearTimeout(t);
+      return () => clearTimeout(t);
+    };
+
+    loadJobs();
+
+    // Listen for localStorage changes (when jobs are added in recruiter portal)
+    const handleStorageChange = (e) => {
+      if (e.key === 'recruiterJobs') {
+        loadJobs();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Also listen for custom event for same-tab updates
+    const handleJobsUpdate = () => {
+      loadJobs();
+    };
+    
+    window.addEventListener('jobsUpdated', handleJobsUpdate);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('jobsUpdated', handleJobsUpdate);
+    };
   }, []);
 
   // Filter and search functionality
@@ -220,9 +354,9 @@ const JobPortal = () => {
             <h1 className="jp-title">Job Portal</h1>
             <p className="jp-sub">Find your next career opportunity in the built environment</p>
           </div>
-          <div className="jp-actions">
-            {/* Login and recruiter buttons removed — access to View Details and Apply is public */}
-          </div>
+          {/* <div className="jp-actions">
+            <button className="btn primary">Post Jobs</button>
+          </div> */}
         </div>
       </header>
 
@@ -257,7 +391,11 @@ const JobPortal = () => {
             <select value={selectedFilters.salaryRange} onChange={(e) => setSelectedFilters({...selectedFilters, salaryRange: e.target.value})}>
               {salaryRanges.map(s => <option key={s} value={s === 'All Ranges' ? '' : s}>{s}</option>)}
             </select>
+            <div className="jp-actions">
+            <button className="btn primary" onClick={() => navigate('/recruiter')}>Post Jobs</button>
           </div>
+          </div>
+          
         </section>
 
         {/* Public access: full details and application available without login */}
@@ -276,9 +414,18 @@ const JobPortal = () => {
 
       {showJobDetail && <JobDetailModal job={selectedJob} isPremium={isPremium} onClose={() => { setShowJobDetail(false); setSelectedJob(null); }} onApply={() => { setShowJobDetail(false); setShowApplication(true); }} />}
 
-      {showApplication && <ApplicationModal job={selectedJob} onClose={() => { setShowApplication(false); setSelectedJob(null); }} onSubmit={() => { setShowApplication(false); setSelectedJob(null); alert('Application submitted successfully!'); }} />}
+      {showApplication && <ApplicationModal job={selectedJob} userProfile={userProfile} onClose={() => { setShowApplication(false); setSelectedJob(null); }} onSubmit={() => { setShowApplication(false); setSelectedJob(null); alert('Application submitted successfully!'); }} />}
 
       {showRecruiterPortal && <RecruiterPortalModal onClose={() => setShowRecruiterPortal(false)} />}
+
+      {showScrollTop && (
+        <button className="scroll-to-top" onClick={scrollToTop} aria-label="Scroll to top">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <path d="M12 19V5M5 12l7-7 7 7"/>
+          </svg>
+          <span>TOP</span>
+        </button>
+      )}
     </div>
   );
 };
@@ -324,94 +471,109 @@ const JobCard = ({ job, isLoggedIn, isPremium, onViewJob, onApply }) => {
   );
 };
 
-// Job Detail Modal Component
+// Job Detail Modal Component — semantic, accessible, responsive
 const JobDetailModal = ({ job, isPremium, onClose, onApply }) => {
   const [showRecruiterProfile, setShowRecruiterProfile] = useState(false);
   if (!job) return null;
 
+  // derive structured requirement fields when available
+  const education = job.education || job.customFields?.education || null;
+  const experienceReq = job.experience || job.experienceRequired || null;
+  const skills = Array.isArray(job.skills) ? job.skills : (job.keySkills || []);
+
   return (
-    <div className="jp-modal-overlay">
-      <div className="jp-modal">
-        <div className="jp-modal-header">
+    <div className="jp-modal-overlay" role="presentation" onClick={(e)=>{ if(e.target === e.currentTarget) onClose(); }}>
+      <section className="jp-modal vertical" role="dialog" aria-modal="true" aria-labelledby="job-title" aria-describedby="job-desc">
+        <header className="jp-modal-header">
           <div>
-            <h2 style={{margin:0}}>{job.title}</h2>
+            <h2 id="job-title" style={{margin:0}}>{job.title}</h2>
             <div className="jp-company muted">{job.company} • {job.location}</div>
           </div>
-          <button className="modal-close" onClick={onClose} aria-label="Close">✕</button>
-        </div>
+          <button className="modal-close" onClick={onClose} aria-label="Close job details">✕</button>
+        </header>
 
-        <div className="jp-modal-body">
-          <div className="jp-main-col">
-            <div className="detail-section">
-              <h4>Job Description</h4>
+        <main className="jp-modal-body" id="job-desc">
+          <article className="jp-main-col" tabIndex={-1}>
+            {/* Job Description */}
+            <section className="detail-section" aria-labelledby="desc-heading">
+              <h3 id="desc-heading">Job Description</h3>
               <p className="text">{job.description}</p>
-            </div>
+              {/* Trustworthy intro — concise company mission snippet when available */}
+              {job.company && (
+                <p className="text" style={{marginTop:12}}><strong>About {job.company}:</strong> {job.companyOverview || 'We are committed to high-quality projects, sustainability, and professional growth for our team.'}</p>
+              )}
+            </section>
 
-            <div className="detail-section">
-              <h4>Requirements</h4>
+            {/* Requirements — structured when possible */}
+            <section className="detail-section" aria-labelledby="req-heading">
+              <h3 id="req-heading">Requirements</h3>
               <ul className="text">
-                {job.requirements.map((r, i) => <li key={i}>{r}</li>)}
+                {education && <li><strong>Education:</strong> {education}</li>}
+                {experienceReq && <li><strong>Experience:</strong> {experienceReq}</li>}
+                {skills && skills.length > 0 && <li><strong>Key skills:</strong> {skills.join(', ')}</li>}
+                {/* Fallback to generic requirements list */}
+                {!education && !experienceReq && (!skills || skills.length === 0) && job.requirements && job.requirements.map((r, i) => <li key={i}>{r}</li>)}
               </ul>
-            </div>
+            </section>
 
-            <div className="detail-section">
-              <h4>Additional Information</h4>
+            {/* Additional Information — two-column info cards */}
+            <section className="detail-section additional-info" aria-labelledby="info-heading">
+              <h3 id="info-heading">Additional Information</h3>
               <div className="two-col">
-                <div className="info-pair"><div className="name">Current CTC</div><div className="val">{job.customFields.currentCTC}</div></div>
-                <div className="info-pair"><div className="name">Expected CTC</div><div className="val">{job.customFields.expectedCTC}</div></div>
-                <div className="info-pair"><div className="name">Notice Period</div><div className="val">{job.customFields.noticePeriod}</div></div>
-                <div className="info-pair"><div className="name">Application Deadline</div><div className="val">{new Date(job.deadline).toLocaleDateString()}</div></div>
+                <div className="info-pair" aria-label="Current CTC"><div className="name">Current CTC</div><div className="val">{job.customFields?.currentCTC || '—'}</div></div>
+                <div className="info-pair" aria-label="Expected CTC"><div className="name">Expected CTC</div><div className="val">{job.customFields?.expectedCTC || '—'}</div></div>
+                <div className="info-pair" aria-label="Notice Period"><div className="name">Notice Period</div><div className="val">{job.customFields?.noticePeriod || '—'}</div></div>
+                <div className="info-pair" aria-label="Application Deadline"><div className="name">Application Deadline</div><div className="val">{job.deadline ? new Date(job.deadline).toLocaleDateString() : '—'}</div></div>
               </div>
-            </div>
-          </div>
+            </section>
+          </article>
 
-          <aside className="jp-side-col">
-            <div className="recruiter-card card">
-              <div style={{display:'flex', justifyContent:'space-between', alignItems:'flex-start'}}>
-                <div style={{display:'flex', gap:12, alignItems:'center'}}>
-                  <div className="recruiter-avatar">{job.recruiter.name.split(' ').map(n=>n[0]).join('')}</div>
-                  <div className="recruiter-info">
-                    <div className="org">{job.recruiter.company}</div>
-                    <div className="role">{job.recruiter.name}</div>
-                  </div>
+          <aside className="jp-side-col" aria-labelledby="recruiter-heading">
+            <div className="recruiter-card card" role="group" aria-label="Recruiter information">
+              <div style={{display:'flex', gap:12, alignItems:'center'}}>
+                <div className="recruiter-avatar" aria-hidden>{job.recruiter?.name ? job.recruiter.name.split(' ').map(n=>n[0]).join('') : 'R'}</div>
+                <div className="recruiter-info">
+                  <div className="org">{job.recruiter?.company || 'Recruiter'}</div>
+                  <div className="role">{job.recruiter?.name || ''}</div>
                 </div>
               </div>
               <div className="recruiter-actions">
-                <button className="btn white" onClick={() => setShowRecruiterProfile(true)}>View Profile</button>
-                <button className="btn primary" onClick={onApply}>Apply Now</button>
+                <button type="button" className="btn outline" onClick={() => setShowRecruiterProfile(true)}>View Profile</button>
+                <button type="button" className="btn primary" onClick={onApply}>Apply Now</button>
               </div>
             </div>
 
-            <div className="stats-card">
+            <div className="stats-card" aria-hidden>
               <div className="label">Application Stats</div>
-              <div style={{display:'flex', justifyContent:'space-between', marginTop:10}}><div className="muted">Total Applicants</div><div className="value">{job.applicants}</div></div>
-              {isPremium && <div style={{display:'flex', justifyContent:'space-between', marginTop:8}}><div className="muted">Your Match Score</div><div className="value">{job.acceptanceProbability}%</div></div>}
-              <div style={{display:'flex', justifyContent:'space-between', marginTop:8}}><div className="muted">Posted</div><div className="value">{new Date(job.postedDate).toLocaleDateString()}</div></div>
+              <div style={{display:'flex', justifyContent:'space-between', marginTop:10}}><div className="muted">Total Applicants</div><div className="value">{job.applicants ?? 0}</div></div>
+              {isPremium && <div style={{display:'flex', justifyContent:'space-between', marginTop:8}}><div className="muted">Your Match Score</div><div className="value">{job.acceptanceProbability ?? 0}%</div></div>}
+              <div style={{display:'flex', justifyContent:'space-between', marginTop:8}}><div className="muted">Posted</div><div className="value">{job.postedDate ? new Date(job.postedDate).toLocaleDateString() : '—'}</div></div>
             </div>
 
-            {!isPremium && <div className="card premium-note">Upgrade to see your AI compatibility score and get featured.</div>}
+            {!isPremium && <div className="card premium-note" role="note">Upgrade to see your AI compatibility score and get featured.</div>}
           </aside>
-        </div>
+        </main>
 
-        <div className="jp-modal-footer">
-          <h4>Similar Jobs</h4>
-          <div className="similar-list">
-            <div className="similar-item">Urban Designer — Design Studio Co.</div>
-            <div className="similar-item">Sustainability Consultant — Green Future Inc.</div>
-          </div>
-        </div>
+        {/* Sticky Apply Button Footer - stays visible */}
+        <footer className="jp-apply-sticky" role="region" aria-label="Job actions">
+          <button type="button" className="btn outline" onClick={onClose}>Close</button>
+          <button type="button" className="btn primary" onClick={onApply}>Apply for this Job</button>
+        </footer>
 
         {showRecruiterProfile && <RecruiterProfileModal recruiter={job.recruiter} onClose={() => setShowRecruiterProfile(false)} />}
-      </div>
+      </section>
     </div>
   );
 };
 
 // Application Modal (full form)
-const ApplicationModal = ({ job, onClose, onSubmit }) => {
+const ApplicationModal = ({ job, userProfile, onClose, onSubmit }) => {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
+  const [country, setCountry] = useState('');
+  const [dateOfBirth, setDateOfBirth] = useState('');
+  const [yearsOfExperience, setYearsOfExperience] = useState('');
   const [coverLetter, setCoverLetter] = useState('');
   const [resume, setResume] = useState(null);
   const [portfolio, setPortfolio] = useState('');
@@ -423,20 +585,166 @@ const ApplicationModal = ({ job, onClose, onSubmit }) => {
   const [errors, setErrors] = useState({});
 
   useEffect(()=>{
-    // Prefill with placeholder if available
-    if (job && job.customFields) {
-      setCurrentCTC(job.customFields.currentCTC || '');
-      setExpectedCTC(job.customFields.expectedCTC || '');
-      setNoticePeriod(job.customFields.noticePeriod || '');
+    // Autofill form with user profile data if available
+    if (userProfile) {
+      setFullName(userProfile.fullName || '');
+      setEmail(userProfile.email || '');
+      setPhone(userProfile.phone || '');
+      setCountry(userProfile.country || '');
+      setDateOfBirth(userProfile.dateOfBirth || '');
+      setYearsOfExperience(userProfile.yearsOfExperience || '');
+      setPortfolio(userProfile.portfolio || '');
+      setCurrentCTC(userProfile.currentCTC || '');
+      setExpectedCTC(userProfile.expectedCTC || '');
+      setNoticePeriod(userProfile.noticePeriod || '');
     }
-  }, [job]);
+    
+    // Prefill with job-specific fields if available (override user profile if needed)
+    if (job && job.customFields) {
+      if (job.customFields.currentCTC) setCurrentCTC(job.customFields.currentCTC);
+      if (job.customFields.expectedCTC) setExpectedCTC(job.customFields.expectedCTC);
+      if (job.customFields.noticePeriod) setNoticePeriod(job.customFields.noticePeriod);
+    }
+  }, [job, userProfile]);
+
+  // Handle full name with validation - only letters and spaces
+  const handleFullNameChange = (value) => {
+    // Remove any character that is not a letter or space
+    const processedValue = value.replace(/[^a-zA-Z\s]/g, '');
+    setFullName(processedValue);
+    
+    // Real-time validation
+    let newErrors = { ...errors };
+    if (value !== processedValue && value.length > 0) {
+      newErrors.fullName = 'Only letters and spaces are allowed';
+    } else if (processedValue.length > 0 && processedValue.length < 3) {
+      newErrors.fullName = 'Full name must be at least 3 characters';
+    } else if (processedValue.length >= 3) {
+      delete newErrors.fullName;
+    }
+    setErrors(newErrors);
+  };
+
+  // Handle email with validation
+  const handleEmailChange = (value) => {
+    setEmail(value);
+    
+    // Real-time validation
+    let newErrors = { ...errors };
+    if (value.length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+      newErrors.email = 'Please enter a valid email address';
+    } else if (value.length > 0) {
+      delete newErrors.email;
+    }
+    setErrors(newErrors);
+  };
+
+  // Handle phone with validation - only numbers, 10 digits
+  const handlePhoneChange = (value) => {
+    // Remove all non-digit characters
+    const processedValue = value.replace(/\D/g, '');
+    
+    // Limit to 10 digits
+    const limitedValue = processedValue.substring(0, 10);
+    setPhone(limitedValue);
+    
+    // Real-time validation
+    let newErrors = { ...errors };
+    if (value !== processedValue && value.length > 0) {
+      newErrors.phone = 'Only numbers are allowed (10 digits required)';
+    } else if (limitedValue.length > 0 && limitedValue.length < 10) {
+      newErrors.phone = 'Phone number must be exactly 10 digits';
+    } else if (limitedValue.length === 10) {
+      if (!/^[6-9]/.test(limitedValue)) {
+        newErrors.phone = 'Phone number must start with 6, 7, 8, or 9';
+      } else {
+        delete newErrors.phone;
+      }
+    }
+    setErrors(newErrors);
+  };
 
   const validate = () => {
     const e = {};
-    if (!fullName.trim()) e.fullName = 'Full name is required';
-    if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) e.email = 'Valid email required';
-    if (!phone.trim()) e.phone = 'Phone is required';
+    
+    // Full name validation
+    if (!fullName.trim()) {
+      e.fullName = 'Full name is required';
+    } else if (fullName.trim().length < 3) {
+      e.fullName = 'Full name must be at least 3 characters';
+    } else if (!/^[a-zA-Z\s]+$/.test(fullName)) {
+      e.fullName = 'Full name can only contain letters and spaces';
+    }
+    
+    // Email validation
+    if (!email.trim()) {
+      e.email = 'Email is required';
+    } else if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+      e.email = 'Please enter a valid email address';
+    }
+    
+    // Phone validation
+    if (!phone.trim()) {
+      e.phone = 'Phone number is required';
+    } else if (phone.length !== 10) {
+      e.phone = 'Phone number must be exactly 10 digits';
+    } else if (!/^[6-9]\d{9}$/.test(phone)) {
+      e.phone = 'Please enter a valid Indian mobile number';
+    }
+    
+    // Country validation
+    if (!country.trim()) {
+      e.country = 'Country/Location is required';
+    }
+    
+    // Date of Birth validation
+    if (!dateOfBirth) {
+      e.dateOfBirth = 'Date of birth is required';
+    } else {
+      const today = new Date();
+      const birthDate = new Date(dateOfBirth);
+      const age = today.getFullYear() - birthDate.getFullYear();
+      if (age < 18) {
+        e.dateOfBirth = 'You must be at least 18 years old';
+      } else if (age > 100) {
+        e.dateOfBirth = 'Please enter a valid date of birth';
+      }
+    }
+    
+    // Years of Experience validation
+    if (!yearsOfExperience) {
+      e.yearsOfExperience = 'Years of experience is required';
+    } else if (parseFloat(yearsOfExperience) < 0) {
+      e.yearsOfExperience = 'Years of experience cannot be negative';
+    } else if (parseFloat(yearsOfExperience) > 50) {
+      e.yearsOfExperience = 'Please enter a valid years of experience';
+    }
+    
+    // Expected CTC validation
+    if (!expectedCTC.trim()) {
+      e.expectedCTC = 'Expected CTC is required';
+    }
+    
+    // Notice Period validation
+    if (!noticePeriod.trim()) {
+      e.noticePeriod = 'Notice period is required';
+    }
+    
+    // Cover Letter validation
+    if (!coverLetter.trim()) {
+      e.coverLetter = 'Cover letter is required';
+    } else if (coverLetter.trim().length < 100) {
+      e.coverLetter = 'Cover letter must be at least 100 characters';
+    }
+    
+    // Resume validation
+    if (!resume) {
+      e.resume = 'Resume is required';
+    }
+    
+    // Agreement validation
     if (!agree) e.agree = 'You must agree to terms to apply';
+    
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -452,7 +760,7 @@ const ApplicationModal = ({ job, onClose, onSubmit }) => {
     // Prepare payload (client-side) — in a real app send to backend via API
     const payload = {
       jobId: job?.id,
-      fullName, email, phone, coverLetter, portfolio, currentCTC, expectedCTC, noticePeriod, contactMethod
+      fullName, email, phone, country, dateOfBirth, yearsOfExperience, coverLetter, portfolio, currentCTC, expectedCTC, noticePeriod, contactMethod
     };
     // Simulate upload action
     console.log('Submitting application', payload, resume);
@@ -465,7 +773,7 @@ const ApplicationModal = ({ job, onClose, onSubmit }) => {
 
   return (
     <div className="jp-modal-overlay">
-      <div className="jp-modal small">
+      <div className="jp-modal small vertical">
         <div className="jp-modal-header">
           <div>
             <h3 style={{margin:0}}>Apply for {job?.title}</h3>
@@ -490,20 +798,91 @@ const ApplicationModal = ({ job, onClose, onSubmit }) => {
             <div className="form-grid">
               <div className="form-group">
                 <label className="form-label">Full Name *</label>
-                <input className={`form-input ${errors.fullName ? 'error' : ''}`} value={fullName} onChange={(e)=>setFullName(e.target.value)} />
+                <input 
+                  type="text"
+                  name="fullName"
+                  className={`form-input ${errors.fullName ? 'error' : ''}`} 
+                  value={fullName} 
+                  onChange={(e)=>handleFullNameChange(e.target.value)}
+                  placeholder="Enter your full name (letters only)"
+                  required
+                />
                 {errors.fullName && <span className="error-message">{errors.fullName}</span>}
               </div>
 
               <div className="form-group">
                 <label className="form-label">Email *</label>
-                <input className={`form-input ${errors.email ? 'error' : ''}`} value={email} onChange={(e)=>setEmail(e.target.value)} />
+                <input 
+                  type="email"
+                  name="email"
+                  className={`form-input ${errors.email ? 'error' : ''}`} 
+                  value={email} 
+                  onChange={(e)=>handleEmailChange(e.target.value)}
+                  placeholder="you@example.com"
+                  required
+                />
                 {errors.email && <span className="error-message">{errors.email}</span>}
               </div>
 
               <div className="form-group">
                 <label className="form-label">Phone *</label>
-                <input className={`form-input ${errors.phone ? 'error' : ''}`} value={phone} onChange={(e)=>setPhone(e.target.value)} />
+                <input 
+                  type="tel"
+                  name="phone"
+                  className={`form-input ${errors.phone ? 'error' : ''}`} 
+                  value={phone} 
+                  onChange={(e)=>handlePhoneChange(e.target.value)}
+                  placeholder="10-digit mobile number"
+                  maxLength="10"
+                  inputMode="numeric"
+                  required
+                />
                 {errors.phone && <span className="error-message">{errors.phone}</span>}
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Country / Current Location *</label>
+                <input 
+                  type="text"
+                  name="country"
+                  className={`form-input ${errors.country ? 'error' : ''}`} 
+                  value={country} 
+                  onChange={(e)=>setCountry(e.target.value)}
+                  placeholder="e.g., United States, Singapore, India"
+                  required
+                />
+                {errors.country && <span className="error-message">{errors.country}</span>}
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Date of Birth *</label>
+                <input 
+                  type="date"
+                  name="dateOfBirth"
+                  className={`form-input ${errors.dateOfBirth ? 'error' : ''}`} 
+                  value={dateOfBirth} 
+                  onChange={(e)=>setDateOfBirth(e.target.value)}
+                  max={new Date().toISOString().split('T')[0]}
+                  required
+                />
+                {errors.dateOfBirth && <span className="error-message">{errors.dateOfBirth}</span>}
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Total Years of Experience *</label>
+                <input 
+                  type="number"
+                  name="yearsOfExperience"
+                  className={`form-input ${errors.yearsOfExperience ? 'error' : ''}`} 
+                  value={yearsOfExperience} 
+                  onChange={(e)=>setYearsOfExperience(e.target.value)}
+                  placeholder="e.g., 5"
+                  min="0"
+                  max="50"
+                  step="0.5"
+                  required
+                />
+                {errors.yearsOfExperience && <span className="error-message">{errors.yearsOfExperience}</span>}
               </div>
 
               <div className="form-group">
@@ -521,25 +900,71 @@ const ApplicationModal = ({ job, onClose, onSubmit }) => {
             <div className="form-grid">
               <div className="form-group">
                 <label className="form-label">Current CTC</label>
-                <input className="form-input" value={currentCTC} onChange={(e)=>setCurrentCTC(e.target.value)} />
+                <input 
+                  type="text"
+                  className="form-input" 
+                  value={currentCTC} 
+                  onChange={(e)=>setCurrentCTC(e.target.value)}
+                  placeholder="e.g., $50,000 or ₹5,00,000"
+                />
               </div>
               <div className="form-group">
-                <label className="form-label">Expected CTC</label>
-                <input className="form-input" value={expectedCTC} onChange={(e)=>setExpectedCTC(e.target.value)} />
+                <label className="form-label">Expected CTC *</label>
+                <input 
+                  type="text"
+                  name="expectedCTC"
+                  className={`form-input ${errors.expectedCTC ? 'error' : ''}`}
+                  value={expectedCTC} 
+                  onChange={(e)=>setExpectedCTC(e.target.value)}
+                  placeholder="e.g., $60,000 or ₹6,00,000"
+                  required
+                />
+                {errors.expectedCTC && <span className="error-message">{errors.expectedCTC}</span>}
               </div>
               <div className="form-group">
-                <label className="form-label">Notice Period</label>
-                <input className="form-input" value={noticePeriod} onChange={(e)=>setNoticePeriod(e.target.value)} />
+                <label className="form-label">Notice Period *</label>
+                <input 
+                  type="text"
+                  name="noticePeriod"
+                  className={`form-input ${errors.noticePeriod ? 'error' : ''}`}
+                  value={noticePeriod} 
+                  onChange={(e)=>setNoticePeriod(e.target.value)}
+                  placeholder="e.g., 30 days, Immediate"
+                  required
+                />
+                {errors.noticePeriod && <span className="error-message">{errors.noticePeriod}</span>}
               </div>
               <div className="form-group">
                 <label className="form-label">Portfolio / LinkedIn (optional)</label>
-                <input className="form-input" value={portfolio} onChange={(e)=>setPortfolio(e.target.value)} />
+                <input 
+                  type="text"
+                  className="form-input" 
+                  value={portfolio} 
+                  onChange={(e)=>setPortfolio(e.target.value)}
+                  placeholder="https://linkedin.com/in/yourprofile"
+                />
               </div>
             </div>
 
             <div className="form-group">
-              <label className="form-label">Cover Letter / Personal Pitch</label>
-              <textarea className="form-input" rows={6} value={coverLetter} onChange={(e)=>setCoverLetter(e.target.value)} />
+              <label className="form-label">
+                Cover Letter / Personal Pitch *
+                <span style={{fontSize: '12px', color: '#6b7280', marginLeft: '8px'}}>
+                  ({coverLetter.length}/1000 characters, min 100)
+                </span>
+              </label>
+              <textarea 
+                name="coverLetter"
+                className={`form-input ${errors.coverLetter ? 'error' : ''}`}
+                rows={6} 
+                value={coverLetter} 
+                onChange={(e)=>setCoverLetter(e.target.value)}
+                placeholder="Write a compelling cover letter that highlights your qualifications and enthusiasm for this role (minimum 100 characters)..."
+                minLength="100"
+                maxLength="1000"
+                required
+              />
+              {errors.coverLetter && <span className="error-message">{errors.coverLetter}</span>}
             </div>
           </div>
 
@@ -547,16 +972,26 @@ const ApplicationModal = ({ job, onClose, onSubmit }) => {
             <h3>Documents</h3>
             <div className="documents-grid">
               <div className="document-upload">
-                <label className="document-label">Resume / CV</label>
-                <input className="file-input" id="resume-file" type="file" onChange={handleFileChange} />
-                <label htmlFor="resume-file" className="btn">Choose file</label>
+                <label className="document-label">Resume / CV *</label>
+                <input 
+                  className="file-input" 
+                  id="resume-file" 
+                  type="file" 
+                  accept=".pdf,.doc,.docx"
+                  onChange={handleFileChange}
+                  required
+                />
+                <label htmlFor="resume-file" className={`btn ${errors.resume ? 'error' : ''}`}>
+                  {resume ? 'Change file' : 'Choose file'}
+                </label>
                 {resume && (
                   <div className="file-info">
                     <div className="file-name">{resume.name}</div>
                     <div className="file-size">{(resume.size/1024).toFixed(1)} KB</div>
                   </div>
                 )}
-                <div className="field-note">Accepted: PDF, DOC, DOCX. Max 5MB.</div>
+                {errors.resume && <div className="error-message">{errors.resume}</div>}
+                <div className="field-note">Accepted: PDF, DOC, DOCX. Max 5MB. Required.</div>
               </div>
             </div>
           </div>
@@ -583,7 +1018,7 @@ const ApplicationModal = ({ job, onClose, onSubmit }) => {
 const RecruiterProfileModal = ({ recruiter, onClose }) => {
   return (
     <div className="jp-modal-overlay">
-      <div className="jp-modal small">
+      <div className="jp-modal small vertical">
         <div className="jp-modal-header"><h3>Recruiter Profile</h3><button className="modal-close" onClick={onClose} aria-label="Close">✕</button></div>
         <div className="jp-modal-body">
           <div className="recruiter-large">
@@ -607,7 +1042,7 @@ const RecruiterPortalModal = ({ onClose }) => {
   const [activeTab, setActiveTab] = useState('dashboard');
   return (
     <div className="jp-modal-overlay">
-      <div className="jp-modal large">
+      <div className="jp-modal large vertical">
         <div className="jp-modal-header"><h3>Recruiter Portal</h3><button className="modal-close" onClick={onClose} aria-label="Close">✕</button></div>
         <div className="jp-modal-body">
           <div className="tabs">

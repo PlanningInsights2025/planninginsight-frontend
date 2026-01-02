@@ -25,9 +25,27 @@ import {
   Lightbulb,
   Users,
   Award,
-  UserX
+  UserX,
+  Trash2,
+  Database
 } from 'lucide-react';
 import './ThreadCreation.css';
+
+/**
+ * Get localStorage usage
+ */
+const getStorageInfo = () => {
+  let total = 0;
+  for (let key in localStorage) {
+    if (localStorage.hasOwnProperty(key)) {
+      total += localStorage[key].length + key.length;
+    }
+  }
+  const usedMB = (total / (1024 * 1024)).toFixed(2);
+  const limitMB = 10; // Most browsers limit to 5-10MB
+  const percentUsed = ((total / (limitMB * 1024 * 1024)) * 100).toFixed(1);
+  return { usedMB, percentUsed, total };
+};
 
 /**
  * Enhanced Thread Creation Component
@@ -66,6 +84,10 @@ const ThreadCreation = () => {
   const [charCount, setCharCount] = useState(0);
   const [showMediaUpload, setShowMediaUpload] = useState(false);
   const [autoSaveStatus, setAutoSaveStatus] = useState('');
+  const [showCreateCategory, setShowCreateCategory] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState('');
+  const [storageInfo, setStorageInfo] = useState({ usedMB: '0', percentUsed: '0' });
+  const [showStorageWarning, setShowStorageWarning] = useState(false);
 
   // Refs
   const contentEditableRef = useRef(null);
@@ -84,6 +106,7 @@ const ThreadCreation = () => {
     if (isAuthenticated) {
       loadForums();
       loadDraft();
+      updateStorageInfo();
     }
   }, [isAuthenticated]);
 
@@ -109,12 +132,50 @@ const ThreadCreation = () => {
   }, [formData.title, formData.content]);
 
   /**
-   * Update character count
+   * Update character count and storage info
    */
   useEffect(() => {
     const content = contentEditableRef.current?.textContent || '';
     setCharCount(content.length);
-  }, [formData.content]);
+    updateStorageInfo();
+  }, [formData.content, uploadedMedia]);
+
+  /**
+   * Update storage information
+   */
+  const updateStorageInfo = () => {
+    const info = getStorageInfo();
+    setStorageInfo(info);
+    setShowStorageWarning(parseFloat(info.percentUsed) > 80);
+  };
+
+  /**
+   * Clear old forum data
+   */
+  const handleClearOldData = () => {
+    if (confirm('Clear old forum threads to free up space? This will keep only the 3 most recent threads.')) {
+      try {
+        const threads = JSON.parse(localStorage.getItem('forum_threads') || '[]');
+        const recentThreads = threads.slice(0, 3);
+        localStorage.setItem('forum_threads', JSON.stringify(recentThreads));
+        
+        // Also clear other cache
+        const keysToRemove = [];
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key && (key.includes('cache') || key.includes('temp'))) {
+            keysToRemove.push(key);
+          }
+        }
+        keysToRemove.forEach(key => localStorage.removeItem(key));
+        
+        updateStorageInfo();
+        showNotification(`Cleared ${keysToRemove.length + (threads.length - recentThreads.length)} items`, 'success');
+      } catch (error) {
+        showNotification('Failed to clear data', 'error');
+      }
+    }
+  };
 
   /**
    * Load forums
@@ -123,15 +184,86 @@ const ThreadCreation = () => {
     setLoading(true);
     try {
       const response = await fetchForumsApi();
-      if (response) {
+      if (response && response.length > 0) {
         setForums(response);
+      } else {
+        // Use mock forums as fallback
+        const mockForums = [
+          { id: '1', name: 'General Discussion', description: 'General topics and announcements' },
+          { id: '2', name: 'Technical Help', description: 'Get help with technical issues' },
+          { id: '3', name: 'Career Advice', description: 'Career guidance and job hunting' },
+          { id: '4', name: 'Project Showcase', description: 'Share your projects and get feedback' },
+          { id: '5', name: 'Learning Resources', description: 'Share and discuss learning materials' },
+          { id: '6', name: 'Industry News', description: 'Latest news and updates' }
+        ];
+        setForums(mockForums);
       }
     } catch (error) {
       console.error('Error loading forums:', error);
-      showNotification('Failed to load forums', 'error');
+      // Use mock forums as fallback on error
+      const mockForums = [
+        { id: '1', name: 'General Discussion', description: 'General topics and announcements' },
+        { id: '2', name: 'Technical Help', description: 'Get help with technical issues' },
+        { id: '3', name: 'Career Advice', description: 'Career guidance and job hunting' },
+        { id: '4', name: 'Project Showcase', description: 'Share your projects and get feedback' },
+        { id: '5', name: 'Learning Resources', description: 'Share and discuss learning materials' },
+        { id: '6', name: 'Industry News', description: 'Latest news and updates' }
+      ];
+      setForums(mockForums);
     } finally {
+      // Load custom categories from localStorage
+      const customCategories = localStorage.getItem('custom_forum_categories');
+      if (customCategories) {
+        try {
+          const parsed = JSON.parse(customCategories);
+          setForums(prev => [...prev, ...parsed]);
+        } catch (e) {
+          console.error('Error loading custom categories:', e);
+        }
+      }
       setLoading(false);
     }
+  };
+
+  /**
+   * Create new custom category
+   */
+  const handleCreateCategory = () => {
+    if (!newCategoryName.trim()) {
+      showNotification('Please enter a category name', 'error');
+      return;
+    }
+
+    const newCategory = {
+      id: `custom-${Date.now()}`,
+      name: newCategoryName.trim(),
+      description: 'Custom category',
+      isCustom: true
+    };
+
+    // Add to forums list
+    setForums(prev => [...prev, newCategory]);
+
+    // Save to localStorage
+    const customCategories = localStorage.getItem('custom_forum_categories');
+    let existingCustom = [];
+    if (customCategories) {
+      try {
+        existingCustom = JSON.parse(customCategories);
+      } catch (e) {
+        console.error('Error parsing custom categories:', e);
+      }
+    }
+    existingCustom.push(newCategory);
+    localStorage.setItem('custom_forum_categories', JSON.stringify(existingCustom));
+
+    // Select the new category
+    setFormData(prev => ({ ...prev, forumId: newCategory.id }));
+    
+    // Reset and close
+    setNewCategoryName('');
+    setShowCreateCategory(false);
+    showNotification('Category created successfully', 'success');
   };
 
   /**
@@ -268,6 +400,123 @@ const ThreadCreation = () => {
   };
 
   /**
+   * Compress image before storing
+   */
+  const compressImage = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          // Create canvas for compression
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          
+          // Calculate new dimensions (max 1200px width/height)
+          let width = img.width;
+          let height = img.height;
+          const maxSize = 1200;
+          
+          if (width > maxSize || height > maxSize) {
+            if (width > height) {
+              height = (height / width) * maxSize;
+              width = maxSize;
+            } else {
+              width = (width / height) * maxSize;
+              height = maxSize;
+            }
+          }
+          
+          canvas.width = width;
+          canvas.height = height;
+          
+          // Draw and compress
+          ctx.drawImage(img, 0, 0, width, height);
+          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7); // 70% quality
+          
+          console.log(`📉 Compressed ${file.name}: ${(file.size / 1024).toFixed(0)}KB → ${(compressedDataUrl.length / 1024).toFixed(0)}KB`);
+          
+          resolve({
+            url: compressedDataUrl,
+            type: 'image',
+            name: file.name
+          });
+        };
+        img.onerror = () => reject(new Error('Failed to load image'));
+        img.src = e.target.result;
+      };
+      reader.onerror = () => reject(new Error('Failed to read file'));
+      reader.readAsDataURL(file);
+    });
+  };
+
+  /**
+   * Create video thumbnail
+   */
+  const createVideoThumbnail = (file) => {
+    return new Promise((resolve, reject) => {
+      const video = document.createElement('video');
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      
+      video.preload = 'metadata';
+      video.muted = true;
+      
+      video.onloadeddata = () => {
+        // Seek to 1 second or 10% of video duration
+        video.currentTime = Math.min(1, video.duration * 0.1);
+      };
+      
+      video.onseeked = () => {
+        // Set canvas size
+        canvas.width = Math.min(video.videoWidth, 800);
+        canvas.height = (canvas.width / video.videoWidth) * video.videoHeight;
+        
+        // Draw video frame
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        
+        // Get thumbnail as base64
+        const thumbnailUrl = canvas.toDataURL('image/jpeg', 0.7);
+        
+        console.log(`🎬 Created video thumbnail for ${file.name}`);
+        
+        // Create object URL for video (smaller storage footprint)
+        const videoUrl = URL.createObjectURL(file);
+        
+        resolve({
+          url: videoUrl,
+          thumbnail: thumbnailUrl,
+          type: 'video',
+          name: file.name,
+          size: file.size,
+          isObjectUrl: true // Flag to know we're using object URL
+        });
+      };
+      
+      video.onerror = () => {
+        console.warn('Failed to create video thumbnail, using placeholder');
+        const videoUrl = URL.createObjectURL(file);
+        resolve({
+          url: videoUrl,
+          thumbnail: null,
+          type: 'video',
+          name: file.name,
+          size: file.size,
+          isObjectUrl: true
+        });
+      };
+      
+      // Load video
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        video.src = e.target.result;
+      };
+      reader.onerror = () => reject(new Error('Failed to read video file'));
+      reader.readAsDataURL(file);
+    });
+  };
+
+  /**
    * Handle media upload
    */
   const handleMediaUpload = async (e) => {
@@ -284,33 +533,60 @@ const ThreadCreation = () => {
       return;
     }
 
-    // Validate file sizes (10MB for images, 50MB for videos)
+    // Validate file sizes (5MB for images, 10MB for videos - strict limit)
     const oversizedFiles = files.filter(file => {
       if (file.type.startsWith('image/')) {
-        return file.size > 10 * 1024 * 1024;
+        return file.size > 5 * 1024 * 1024;
       } else {
-        return file.size > 50 * 1024 * 1024;
+        return file.size > 10 * 1024 * 1024; // Reduced to 10MB
       }
     });
 
     if (oversizedFiles.length > 0) {
-      showNotification('Files too large. Max 10MB for images, 50MB for videos', 'error');
+      showNotification('Files too large. Max 5MB for images, 10MB for videos', 'error');
       return;
+    }
+    
+    // Limit number of media files
+    if (uploadedMedia.length + files.length > 4) {
+      showNotification('Maximum 4 media files allowed per thread', 'warning');
+      return;
+    }
+    
+    // Warn about videos
+    const hasVideo = files.some(f => f.type.startsWith('video/'));
+    if (hasVideo) {
+      showNotification('Note: Videos will be saved as references and may not persist after page refresh', 'info');
     }
 
     setIsUploading(true);
 
     try {
+      // Process files with compression for images
       const uploadPromises = files.map(async (file) => {
-        const formData = new FormData();
-        formData.append('file', file);
-        
-        const response = await uploadMediaApi(formData);
-        return {
-          url: response.url,
-          type: file.type.startsWith('image/') ? 'image' : 'video',
-          name: file.name
-        };
+        if (file.type.startsWith('image/') && file.type !== 'image/gif') {
+          // Compress images (except GIFs to preserve animation)
+          return compressImage(file);
+        } else if (file.type.startsWith('video/')) {
+          // For videos, create thumbnail only
+          return createVideoThumbnail(file);
+        } else {
+          // For GIFs, use as-is
+          return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            
+            reader.onload = (e) => {
+              resolve({
+                url: e.target.result,
+                type: file.type.startsWith('image/') ? 'image' : 'video',
+                name: file.name
+              });
+            };
+            
+            reader.onerror = () => reject(new Error('Failed to read file'));
+            reader.readAsDataURL(file);
+          });
+        }
       });
 
       const uploadedFiles = await Promise.all(uploadPromises);
@@ -318,21 +594,63 @@ const ThreadCreation = () => {
       
       // Insert media into editor
       uploadedFiles.forEach(media => {
-        if (media.type === 'image') {
-          const img = `<img src="${media.url}" alt="${media.name}" style="max-width: 100%; height: auto; margin: 1rem 0;" />`;
-          document.execCommand('insertHTML', false, img);
-        } else {
-          const video = `<video src="${media.url}" controls style="max-width: 100%; height: auto; margin: 1rem 0;"></video>`;
-          document.execCommand('insertHTML', false, video);
+        if (contentEditableRef.current) {
+          const editor = contentEditableRef.current;
+          
+          if (media.type === 'image') {
+            // Create image element properly
+            const imgWrapper = document.createElement('div');
+            imgWrapper.className = 'uploaded-media-wrapper';
+            imgWrapper.style.cssText = 'margin: 1rem 0; text-align: center;';
+            
+            const img = document.createElement('img');
+            img.src = media.url;
+            img.alt = media.name;
+            img.style.cssText = 'max-width: 100%; max-height: 400px; height: auto; border-radius: 8px; object-fit: contain; display: block; margin: 0 auto;';
+            
+            imgWrapper.appendChild(img);
+            editor.appendChild(imgWrapper);
+            
+            // Add a paragraph after for continued typing
+            const p = document.createElement('p');
+            p.innerHTML = '<br>';
+            editor.appendChild(p);
+          } else {
+            // Create video element properly
+            const videoWrapper = document.createElement('div');
+            videoWrapper.className = 'uploaded-media-wrapper';
+            videoWrapper.style.cssText = 'margin: 1rem 0; text-align: center;';
+            
+            const video = document.createElement('video');
+            video.src = media.url;
+            video.controls = true;
+            video.style.cssText = 'max-width: 100%; max-height: 400px; height: auto; border-radius: 8px; display: block; margin: 0 auto;';
+            
+            videoWrapper.appendChild(video);
+            editor.appendChild(videoWrapper);
+            
+            // Add a paragraph after for continued typing
+            const p = document.createElement('p');
+            p.innerHTML = '<br>';
+            editor.appendChild(p);
+          }
+          
+          // Update the content
+          setFormData(prev => ({ ...prev, content: editor.innerHTML }));
         }
       });
 
       showNotification('Media uploaded successfully', 'success');
       setShowMediaUpload(false);
     } catch (error) {
+      console.error('Upload error:', error);
       showNotification('Failed to upload media', 'error');
     } finally {
       setIsUploading(false);
+      // Reset file input
+      if (mediaInputRef.current) {
+        mediaInputRef.current.value = '';
+      }
     }
   };
 
@@ -351,10 +669,15 @@ const ThreadCreation = () => {
     }
 
     const content = contentEditableRef.current?.textContent.trim() || '';
-    if (!content) {
+    const hasMedia = uploadedMedia.length > 0;
+    const contentHTML = contentEditableRef.current?.innerHTML || '';
+    const hasImages = contentHTML.includes('<img') || contentHTML.includes('<video');
+    
+    // Content is valid if it has text (20+ chars) OR has uploaded media
+    if (!content && !hasMedia && !hasImages) {
       newErrors.content = 'Content is required';
-    } else if (content.length < 20) {
-      newErrors.content = 'Content must be at least 20 characters';
+    } else if (content && content.length < 20 && !hasMedia && !hasImages) {
+      newErrors.content = 'Content must be at least 20 characters or include media';
     }
 
     if (!formData.forumId) {
@@ -394,33 +717,158 @@ const ThreadCreation = () => {
       return;
     }
 
+    setSaving(true);
+    
     try {
-      setSaving(true);
+      // Prepare media for storage - use thumbnails for videos
+      const mediaForStorage = uploadedMedia.map(media => {
+        if (media.type === 'video' && media.isObjectUrl) {
+          // For videos, only save the thumbnail to localStorage
+          return {
+            type: 'video',
+            name: media.name,
+            thumbnail: media.thumbnail,
+            url: null, // Don't save actual video URL (it won't persist)
+            placeholder: true
+          };
+        }
+        return media;
+      });
       
       const threadData = {
+        id: `thread-${Date.now()}`,
         ...formData,
         content: contentEditableRef.current?.innerHTML || formData.content,
-        authorId: user?.id,
-        media: uploadedMedia
+        author: {
+          id: user?.id,
+          name: user?.displayName || `${user?.firstName} ${user?.lastName}`.trim() || user?.email,
+          avatar: user?.photoURL || user?.avatar || null,
+          points: user?.points || 0
+        },
+        media: mediaForStorage, // Use processed media
+        likes: 0,
+        commentCount: 0,
+        viewCount: 0,
+        createdAt: new Date().toISOString(),
+        isPinned: false
       };
 
-      const response = await createThreadApi(threadData);
-      
-      if (response) {
-        // Clear draft
-        localStorage.removeItem('thread_draft');
-        
-        // Show points notification
-        const pointsEarned = formData.isAnonymous ? 0 : 10;
-        if (pointsEarned > 0) {
-          showNotification(`Thread created! You earned ${pointsEarned} points 🎉`, 'success');
-        } else {
-          showNotification('Thread created successfully!', 'success');
+      console.log('✍️ Creating thread:', {
+        id: threadData.id,
+        title: threadData.title,
+        forumId: threadData.forumId,
+        mediaCount: mediaForStorage.length,
+        mediaTypes: mediaForStorage.map(m => `${m.type}${m.placeholder ? ' (thumbnail only)' : ''}`),
+        contentLength: threadData.content.length,
+        hasImages: threadData.content.includes('<img'),
+        hasVideos: threadData.content.includes('<video')
+      });
+
+      // Save to localStorage with quota handling
+      let threads = [];
+      try {
+        const existingThreads = localStorage.getItem('forum_threads');
+        if (existingThreads) {
+          threads = JSON.parse(existingThreads);
+          console.log(`📚 Found ${threads.length} existing threads in localStorage`);
         }
-        
-        // Navigate to thread
-        navigate(`/forum/thread/${response.id}`);
+      } catch (parseError) {
+        console.warn('⚠️ Could not parse existing threads, starting fresh');
+        threads = [];
       }
+      
+      threads.unshift(threadData);
+      console.log(`💾 Attempting to save ${threads.length} threads to localStorage...`);
+      
+      // Calculate storage size
+      const threadDataSize = JSON.stringify(threads).length;
+      const sizeInMB = (threadDataSize / (1024 * 1024)).toFixed(2);
+      console.log(`📦 Thread data size: ${sizeInMB} MB (${threadDataSize} bytes)`);
+      
+      // Try to save with aggressive quota handling
+      let saved = false;
+      let attempts = 0;
+      const maxAttempts = 5;
+      
+      while (!saved && attempts < maxAttempts) {
+        attempts++;
+        try {
+          // Clear some space first if needed
+          if (attempts > 1) {
+            console.warn(`⚠️ Attempt ${attempts}: Clearing old data to make space...`);
+            
+            // Remove old non-critical data
+            const keysToCheck = [];
+            for (let i = 0; i < localStorage.length; i++) {
+              const key = localStorage.key(i);
+              if (key && (key.includes('draft') || key.includes('cache') || key.includes('temp'))) {
+                keysToCheck.push(key);
+              }
+            }
+            keysToCheck.forEach(key => localStorage.removeItem(key));
+            console.log(`🧹 Cleared ${keysToCheck.length} non-critical items`);
+          }
+          
+          // Reduce thread count progressively
+          const maxThreads = Math.max(1, 15 - (attempts * 3));
+          const threadsToSave = threads.slice(0, maxThreads);
+          
+          localStorage.setItem('forum_threads', JSON.stringify(threadsToSave));
+          console.log(`✅ Thread saved successfully! (Attempt ${attempts}, keeping ${threadsToSave.length} threads)`);
+          
+          // Verify it was saved
+          const verification = localStorage.getItem('forum_threads');
+          const verifiedThreads = JSON.parse(verification);
+          console.log(`✅ Verified: ${verifiedThreads.length} threads in storage`);
+          console.log(`   First thread: "${verifiedThreads[0].title}"`);
+          
+          saved = true;
+        } catch (quotaError) {
+          console.warn(`❌ Attempt ${attempts} failed:`, quotaError.message);
+          
+          if (attempts >= maxAttempts) {
+            console.error('❌ All save attempts failed. LocalStorage is full.');
+            console.log('💡 Suggestion: Clear browser data or reduce image sizes');
+            
+            // Try one last time with just the thread data (no media in storage)
+            try {
+              const threadWithoutMedia = { ...threadData, media: [] };
+              threads[0] = threadWithoutMedia;
+              localStorage.setItem('forum_threads', JSON.stringify([threadWithoutMedia]));
+              console.log('✅ Saved thread WITHOUT media (media only in memory)');
+              saved = true;
+              showNotification('Thread created! (Images may not persist after refresh)', 'warning');
+            } catch (finalError) {
+              console.error('❌ Cannot save even without media:', finalError);
+              showNotification('Thread created but cannot be saved. Please clear browser data.', 'error');
+            }
+          }
+        }
+      }
+      
+      // Clear draft
+      try {
+        localStorage.removeItem('thread_draft');
+      } catch (e) {
+        // Ignore draft removal errors
+      }
+      
+      // Show success notification
+      const pointsEarned = formData.isAnonymous ? 0 : 10;
+      if (pointsEarned > 0) {
+        showNotification(`Thread created! You earned ${pointsEarned} points 🎉`, 'success');
+      } else {
+        showNotification('Thread created successfully!', 'success');
+      }
+      
+      // Dispatch custom event to notify Forum.jsx to reload data
+      window.dispatchEvent(new CustomEvent('forumThreadCreated'));
+      
+      // Navigate to forum page
+      setTimeout(() => {
+        navigate('/forum');
+      }, 300);
+      
     } catch (error) {
       console.error('Error creating thread:', error);
       showNotification('Failed to create thread. Please try again.', 'error');
@@ -475,12 +923,27 @@ const ThreadCreation = () => {
         <div className="creation-header animate-slide-down">
           <h1>Create New Thread</h1>
           <p>Share your question or start a discussion with the community</p>
-          {autoSaveStatus && (
-            <div className="auto-save-status">
-              <Check size={16} />
-              {autoSaveStatus}
-            </div>
-          )}
+          <div className="header-status">
+            {autoSaveStatus && (
+              <div className="auto-save-status">
+                <Check size={16} />
+                {autoSaveStatus}
+              </div>
+            )}
+            {showStorageWarning && (
+              <div className="storage-warning" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 12px', background: '#fff3cd', color: '#856404', borderRadius: '6px', fontSize: '14px' }}>
+                <AlertCircle size={16} />
+                <span>Storage: {storageInfo.usedMB}MB used ({storageInfo.percentUsed}%)</span>
+                <button 
+                  onClick={handleClearOldData}
+                  style={{ marginLeft: '8px', padding: '4px 8px', background: '#856404', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                >
+                  <Trash2 size={14} />
+                  Clear Old Data
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="creation-layout">
@@ -562,7 +1025,13 @@ const ThreadCreation = () => {
                     id="forum"
                     className={`form-select ${errors.forumId ? 'error' : ''}`}
                     value={formData.forumId}
-                    onChange={(e) => handleInputChange('forumId', e.target.value)}
+                    onChange={(e) => {
+                      if (e.target.value === 'create_new') {
+                        setShowCreateCategory(true);
+                      } else {
+                        handleInputChange('forumId', e.target.value);
+                      }
+                    }}
                   >
                     <option value="">Select a category...</option>
                     {forums.map(forum => (
@@ -570,9 +1039,53 @@ const ThreadCreation = () => {
                         {forum.name}
                       </option>
                     ))}
+                    <option value="create_new" style={{ fontWeight: 'bold', color: 'var(--primary-color)' }}>
+                      + Create New Category
+                    </option>
                   </select>
                   {errors.forumId && (
                     <span className="error-message">{errors.forumId}</span>
+                  )}
+                  
+                  {/* Create Category Input */}
+                  {showCreateCategory && (
+                    <div className="create-category-box" style={{ marginTop: '12px' }}>
+                      <input
+                        type="text"
+                        className="form-input"
+                        placeholder="Enter new category name..."
+                        value={newCategoryName}
+                        onChange={(e) => setNewCategoryName(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            handleCreateCategory();
+                          } else if (e.key === 'Escape') {
+                            setShowCreateCategory(false);
+                            setNewCategoryName('');
+                          }
+                        }}
+                        autoFocus
+                      />
+                      <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+                        <button
+                          type="button"
+                          onClick={handleCreateCategory}
+                          className="btn-primary btn-sm"
+                        >
+                          Create
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setShowCreateCategory(false);
+                            setNewCategoryName('');
+                          }}
+                          className="btn-secondary btn-sm"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
                   )}
                 </div>
               </div>

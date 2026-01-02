@@ -59,15 +59,18 @@ const ArticleDetail = () => {
   const loadArticleData = async () => {
     try {
       setLoading(true);
-      const [articleData, relatedData, commentsData] = await Promise.all([
-        fetchArticleApi(articleId),
-        fetchRelatedApi(articleId),
-        fetchCommentsApi(articleId)
-      ]);
-
-      if (articleData) {
+      console.log('=== LOADING ARTICLE DETAIL ===');
+      console.log('Article ID:', articleId);
+      
+      // Fetch article data
+      const response = await newsroomAPI.getArticle(articleId);
+      console.log('Article response:', response);
+      
+      if (response && response.data) {
+        const articleData = response.data;
         setArticle(articleData);
         setAuthor(articleData.author);
+        console.log('Article loaded:', articleData.title);
         
         // Check if user has access to premium content
         if (articleData.isPremium && !user?.subscription?.isActive) {
@@ -77,14 +80,30 @@ const ArticleDetail = () => {
         }
       }
 
-      if (relatedData) {
-        setRelatedArticles(relatedData);
+      // Try to fetch related articles and comments (optional)
+      try {
+        if (newsroomAPI.getRelatedArticles) {
+          const relatedData = await newsroomAPI.getRelatedArticles(articleId);
+          if (relatedData) {
+            setRelatedArticles(relatedData);
+          }
+        }
+      } catch (err) {
+        console.log('Related articles not available:', err.message);
       }
 
-      if (commentsData) {
-        setComments(commentsData);
+      try {
+        if (newsroomAPI.getArticleComments) {
+          const commentsData = await newsroomAPI.getArticleComments(articleId);
+          if (commentsData) {
+            setComments(commentsData);
+          }
+        }
+      } catch (err) {
+        console.log('Comments not available:', err.message);
       }
     } catch (error) {
+      console.error('Error loading article:', error);
       showNotification('Failed to load article', 'error');
     } finally {
       setLoading(false);
@@ -257,7 +276,7 @@ const ArticleDetail = () => {
         <div className="premium-content-restricted">
           <div className="premium-overlay">
             <div className="premium-message">
-              <h3>Premium Content</h3>
+              {/* <h3>Premium Content</h3> */}
               <p>This article is available to premium subscribers only.</p>
               <div className="premium-actions">
                 <button className="btn btn-primary">

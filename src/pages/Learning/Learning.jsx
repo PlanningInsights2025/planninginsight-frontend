@@ -14,12 +14,18 @@ function svgPlaceholder(text = "Image", w = 600, h = 360, bg = "#f3f4f6", fg = "
 // replace with API wiring when ready.
 
 const SAMPLE_COURSES = [
-  { id: 'react-101', title: 'React for Built Environment', instructor: 'Dr. A. Kumar', company: 'PI Learning', location: 'Mumbai, IN', duration: 6, mode: 'Live', fees: 2999, excerpt: 'Intro to React and component-driven UI for planning tools.', type: 'live', tags: ['React','Frontend','UI'], posted: '2d', thumbnail: svgPlaceholder('React Course') },
-  { id: 'pm-basics', title: 'Project Management Essentials', instructor: 'M. Sharma', company: 'BuildOps', location: 'Remote', duration: 3, mode: 'Pre-recorded', fees: 0, excerpt: 'Agile and waterfall techniques for built environment projects.', type: 'recorded', tags: ['PM','Agile'], posted: '1w', thumbnail: svgPlaceholder('PM Essentials') },
-  { id: 'data-vis', title: 'Data Visualization for Urban Analytics', instructor: 'L. Rao', company: 'Urbanlytics', location: 'Bengaluru, IN', duration: 4.5, mode: 'Live', fees: 1999, excerpt: 'Charts, maps and dashboards to communicate insights.', type: 'live', tags: ['Data','Maps'], posted: '4d', thumbnail: svgPlaceholder('Data Visualization') },
-  { id: 'cert-workflow', title: 'Certification & Assessment Workflow', instructor: 'S. Verma', company: 'Credify', location: 'Delhi, IN', duration: 2, mode: 'On-site', fees: 1499, excerpt: 'Assessment design, digital signatures and verifiable credentials.', type: 'offline', tags: ['Assessments','Credentials'], posted: '3w', thumbnail: svgPlaceholder('Certification') },
-  { id: 'razorpay-demo', title: 'Payments & Enrollment (Razorpay)', instructor: 'F. Iqbal', company: 'PI Learning', location: 'Hyderabad, IN', duration: 1.5, mode: 'Pre-recorded', fees: 999, excerpt: 'Integrate Razorpay for course enrollment and invoicing.', type: 'recorded', tags: ['Payments','Razorpay'], posted: '6d', thumbnail: svgPlaceholder('Payments') },
-  { id: 'instr-dashboard', title: 'Instructor Dashboard & Revenue', instructor: 'R. Singh', company: 'TeachDesk', location: 'Chennai, IN', duration: 3, mode: 'Live', fees: 2499, excerpt: 'Manage classes, materials, chats and payouts.', type: 'live', tags: ['Instructor','Revenue'], posted: '2d', thumbnail: svgPlaceholder('Instructor Dashboard') }
+  { id: 'react-101', title: 'React for Built Environment', instructor: 'Dr. A. Kumar', company: 'PI Learning', location: 'Mumbai, IN', duration: 6, mode: 'Live', fees: 2999, rating: 4.5, excerpt: 'Intro to React and component-driven UI for planning tools.', type: 'live', tags: ['React','Frontend','UI'], posted: '2d', thumbnail: svgPlaceholder('React Course') },
+  { id: 'pm-basics', title: 'Project Management Essentials', instructor: 'M. Sharma', company: 'BuildOps', location: 'Remote', duration: 3, mode: 'Pre-recorded', fees: 0, rating: 4.5, excerpt: 'Agile and waterfall techniques for built environment projects.', type: 'recorded', tags: ['PM','Agile'], posted: '1w', thumbnail: svgPlaceholder('PM Essentials') },
+  { id: 'data-vis', title: 'Data Visualization for Urban Analytics', instructor: 'L. Rao', company: 'Urbanlytics', location: 'Bengaluru, IN', duration: 4.5, mode: 'Live', fees: 1999, rating: 4.5, excerpt: 'Charts, maps and dashboards to communicate insights.', type: 'live', tags: ['Data','Maps'], posted: '4d', thumbnail: svgPlaceholder('Data Visualization') },
+  { id: 'cert-workflow', title: 'Certification & Assessment Workflow', instructor: 'S. Verma', company: 'Credify', location: 'Delhi, IN', duration: 2, mode: 'On-site', fees: 1499, rating: 4.5, excerpt: 'Assessment design, digital signatures and verifiable credentials.', type: 'offline', tags: ['Assessments','Credentials'], posted: '3w', thumbnail: svgPlaceholder('Certification') },
+  { id: 'razorpay-demo', title: 'Payments & Enrollment (Razorpay)', instructor: 'F. Iqbal', company: 'PI Learning', location: 'Hyderabad, IN', duration: 1.5, mode: 'Pre-recorded', fees: 999, rating: 4.2, excerpt: 'Integrate Razorpay for course enrollment and invoicing.', type: 'recorded', tags: ['Payments','Razorpay'], posted: '6d', thumbnail: svgPlaceholder('Payments') },
+  { id: 'instr-dashboard', title: 'Instructor Dashboard & Revenue', instructor: 'R. Singh', company: 'TeachDesk', location: 'Chennai, IN', duration: 3, mode: 'Live', fees: 2499, rating: 4.7, excerpt: 'Manage classes, materials, chats and payouts.', type: 'live', tags: ['Instructor','Revenue'], posted: '2d', thumbnail: svgPlaceholder('Instructor Dashboard') }
+]
+
+const FEATURED_COMPANIES = [
+  'PI Learning',
+  'BuildOps',
+  'Urbanlytics'
 ]
 
 function useDebounce(value, ms = 300){
@@ -37,10 +43,15 @@ const IconSearch = () => (
 
 // Header removed for Learning Centre page (use global site header instead)
 
-const Hero = ({ value, onChange, onClear, sortBy, setSortBy }) => (
+const Hero = ({ value, onChange, onClear, sortBy, setSortBy, navigate }) => (
   <section className="hero">
-    <h1>Learning Centre</h1>
-    <p className="sub">Browse courses like job postings — filter, save and apply.</p>
+    <div className="hero-header">
+      <div>
+        <h1>Learning Centre</h1>
+        <p className="sub">Browse courses like job postings — filter, save and apply.</p>
+      </div>
+      <button className="btn primary" onClick={() => navigate('/instructor')}>Post Courses</button>
+    </div>
 
     <div className="hero-controls">
       <div className="search-wrap">
@@ -105,9 +116,23 @@ const JobFilters = ({filters, setFilters, clearFilters, savedCourses = [], saved
       <div style={{marginTop:12}}>
         <h4 style={{margin:'8px 0'}}>Featured Companies</h4>
         <div className="company-list">
-          <div className="company">PI Learning</div>
-          <div className="company">BuildOps</div>
-          <div className="company">Urbanlytics</div>
+          {FEATURED_COMPANIES.map(comp => (
+            <div
+              key={comp}
+              role="button"
+              tabIndex={0}
+              className={"company" + (filters.company === comp ? ' active' : '')}
+              onClick={() => setFilters(f => ({ ...f, company: comp }))}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+                  e.preventDefault()
+                  setFilters(f => ({ ...f, company: comp }))
+                }
+              }}
+            >
+              {comp}
+            </div>
+          ))}
         </div>
       </div>
 
@@ -188,8 +213,7 @@ const EnrollForm = ({course, onCancel, onSubmit}) => {
 }
 
 export default function Learning(){
-  // For integration: replace sample data with API-loaded `courses` and `loading` state
-  const [courses] = useState(SAMPLE_COURSES)
+  const [courses, setCourses] = useState(SAMPLE_COURSES)
   const [query, setQuery] = useState('')
   const debouncedQuery = useDebounce(query, 250)
   const [sortBy, setSortBy] = useState('popular')
@@ -202,6 +226,69 @@ export default function Learning(){
   const [detailCourse, setDetailCourse] = useState(null)
   const [enrollFormCourse, setEnrollFormCourse] = useState(null)
   const [enrolledCourses, setEnrolledCourses] = useState([])
+
+  // Load courses from instructor's localStorage and sync in real-time
+  useEffect(() => {
+    const loadCourses = () => {
+      const storedCourses = localStorage.getItem('instructorCourses')
+      if (storedCourses) {
+        try {
+          const parsedCourses = JSON.parse(storedCourses)
+          // Only show Published courses in Learning Centre
+          const publishedCourses = parsedCourses
+            .filter(course => course.status === 'Published')
+            .map(course => ({
+              id: course.id,
+              title: course.title,
+              instructor: course.instructor || 'Dr. A. Kumar',
+              company: course.company || 'PI Learning',
+              location: course.location || 'Remote',
+              duration: course.duration,
+              mode: course.mode,
+              fees: course.fees || course.price || 0,
+              rating: course.rating || 4.5,
+              excerpt: course.excerpt || course.description?.substring(0, 100) + '...' || '',
+              type: course.type || (course.mode === 'Live' ? 'live' : course.mode === 'Pre-recorded' ? 'recorded' : 'offline'),
+              tags: course.tags || [course.category],
+              posted: course.posted || 'Recently',
+              thumbnail: course.thumbnail || svgPlaceholder(course.title)
+            }))
+          
+          // Merge with sample courses
+          const allCourses = [...publishedCourses, ...SAMPLE_COURSES]
+          setCourses(allCourses)
+        } catch (e) {
+          console.error('Error loading courses from localStorage:', e)
+          setCourses(SAMPLE_COURSES)
+        }
+      } else {
+        setCourses(SAMPLE_COURSES)
+      }
+    }
+
+    loadCourses()
+
+    // Listen for localStorage changes (cross-tab)
+    const handleStorageChange = (e) => {
+      if (e.key === 'instructorCourses') {
+        loadCourses()
+      }
+    }
+
+    window.addEventListener('storage', handleStorageChange)
+    
+    // Listen for custom event (same-tab updates)
+    const handleCoursesUpdate = () => {
+      loadCourses()
+    }
+    
+    window.addEventListener('coursesUpdated', handleCoursesUpdate)
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange)
+      window.removeEventListener('coursesUpdated', handleCoursesUpdate)
+    }
+  }, [])
 
   // Persist saved and enrolled lists to localStorage
   useEffect(() => {
@@ -258,7 +345,7 @@ export default function Learning(){
       setLoginPrompt(true)
       return
     }
-    navigate(`/learning/courses/${course.id}/enroll`, { state: { course } })
+    navigate('/learning/enroll', { state: { course } })
   }
 
   function handleEnquire(course){ setEnquireCourse(course) }
@@ -294,7 +381,7 @@ export default function Learning(){
       {/* Global site header is used; local header removed for this page */}
       <main className="learning-main container">
         <div className="left">
-          <Hero value={query} onChange={setQuery} onClear={()=>setQuery('')} sortBy={sortBy} setSortBy={setSortBy} />
+          <Hero value={query} onChange={setQuery} onClear={()=>setQuery('')} sortBy={sortBy} setSortBy={setSortBy} navigate={navigate} />
 
           <section className="courses-section">
             <div className="section-head">

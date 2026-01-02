@@ -1,14 +1,11 @@
 import React from 'react'
-import EnrollmentComponent from '../../components/learningCentre/Enrollment/Enrollment'
+import EnrollmentForm from './EnrollmentForm/EnrollmentForm'
 
-/**
- * Enrollment Page Component
- * Wraps the Enrollment component with page-level layout
- */
 const Enrollment = () => {
   return (
-    <div className="enrollment-page-wrapper">
-      <EnrollmentComponent />
+    <div>
+      <EnrollmentForm/>
+      
     </div>
   )
 }
