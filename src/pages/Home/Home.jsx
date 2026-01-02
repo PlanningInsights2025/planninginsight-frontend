@@ -461,17 +461,53 @@ const Home = () => {
     {
       icon: Award,
       title: 'Certified Courses',
+<<<<<<< HEAD
       description: 'Courses recognized by industry leaders',
+=======
+<<<<<<< HEAD
+      description: 'Courses recognized by industry leaders',
+=======
+<<<<<<< HEAD
+      description: 'Courses recognized by industry leaders',
+=======
+      description: ' Courses recognized by industry leaders',
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
     },
     {
       icon: Globe,
       title: 'Global Network',
+<<<<<<< HEAD
       description: 'Collaborate with professionals around the world',
+=======
+<<<<<<< HEAD
+      description: 'Collaborate with professionals around the world',
+=======
+<<<<<<< HEAD
+      description: 'Collaborate with professionals around the world',
+=======
+      description: ' Collaborate with professionals around the world',
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
     },
     {
       icon: BarChart,
       title: 'Career Growth',
+<<<<<<< HEAD
       description: 'Unlock your full professional potential',
+=======
+<<<<<<< HEAD
+      description: 'Unlock your full professional potential',
+=======
+<<<<<<< HEAD
+      description: 'Unlock your full professional potential',
+=======
+      description: ' Unlock your full professional potential',
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
     },
   ];
 
@@ -497,6 +533,13 @@ const Home = () => {
             <div className="hero-text-enhanced">
               <div className="hero-badge-enhanced">
                 <Sparkles size={16} />
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
                 <span>The Next-Gen Urban Planning Starts Here.</span>
               </div>
 
@@ -506,6 +549,23 @@ const Home = () => {
 
               <p className="hero-description-enhanced">
                 Sign in to access powerful planning tools, collaborative design environments, and data­driven insights that shape sustainable and future-ready urban spaces
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+              <span>The Next-Gen Urban Planning Starts Here.</span>
+              </div>
+
+              <h1 className="hero-title-enhanced">
+               Welcome to a digital workspace built for urban planners, architects, and city innovators
+              </h1>
+
+              <p className="hero-description-enhanced">
+               Sign in to access powerful planning tools, collaborative design environments, and datadriven insights that shape sustainable and future-ready urban spaces
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
               </p>
 
               {/* Enhanced Search Bar */}
@@ -762,10 +822,32 @@ const Home = () => {
           <div className="section-header-professional">
             <p className="section-subtitle">EXPLORE OUR PLATFORM</p>
             <h2>
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
               Tools That Power Your <span className="text-gradient-professional">Progress</span>
             </h2>
             <p>
               Access powerful tools, curated resources, and opportunities designed for urban planning and the built environment.
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+              {/* Tools That Power Your Progress{' '} */}
+              <span className="text-gradient-professional">Tools That Power Your Progress</span>
+            </h2>
+            <p>
+              Access powerful tools, curated resources, and opportunities designed for urban planning
+and the built environment.
+
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
             </p>
           </div>
 
@@ -860,9 +942,30 @@ const Home = () => {
           <div className="section-header-professional">
             <p className="section-subtitle">OPPORTUNITIES</p>
             <h2>
+<<<<<<< HEAD
               Your Next Career <span className="text-gradient-professional">Step</span>
             </h2>
             <p>Connect with organizations offering roles across planning, design, and development sectors</p>
+=======
+<<<<<<< HEAD
+              Your Next Career <span className="text-gradient-professional">Step</span>
+            </h2>
+            <p>Connect with organizations offering roles across planning, design, and development sectors</p>
+=======
+<<<<<<< HEAD
+              Your Next Career <span className="text-gradient-professional">Step</span>
+            </h2>
+            <p>Connect with organizations offering roles across planning, design, and development sectors</p>
+=======
+              {/* Your Next Career Step{' '} */}
+              <span className="text-gradient-professional">Your Next Career Step</span>
+            </h2>
+            <p>
+              Connect with organizations offering roles across planning, design, and development sectors
+            </p>
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
           </div>
 
           <div className="jobs-autoscroll-wrapper" onMouseEnter={() => setIsPaused(true)} onMouseLeave={() => setIsPaused(false)}>
@@ -922,7 +1025,20 @@ const Home = () => {
           <div className="section-header-professional">
             <p className="section-subtitle">LEARNING</p>
             <h2>
+<<<<<<< HEAD
               Advance Your <span className="text-gradient-professional">Skills</span>
+=======
+<<<<<<< HEAD
+              Advance Your <span className="text-gradient-professional">Skills</span>
+=======
+<<<<<<< HEAD
+              Advance Your <span className="text-gradient-professional">Skills</span>
+=======
+              {/* Advance Your{' '} */}
+              <span className="text-gradient-professional">Strengthen Your Professional Skills</span>
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
             </h2>
             <p>Advance your knowledge through practical, industry-aligned learning.</p>
           </div>
@@ -979,9 +1095,32 @@ const Home = () => {
           <div className="section-header-professional">
             <p className="section-subtitle">SUCCESS STORIES</p>
             <h2>
+<<<<<<< HEAD
               Join Thousands <span className="text-gradient-professional">Shaping Urban Change</span>
             </h2>
             <p>Highlighting real achievements shaping better urban environments.</p>
+=======
+<<<<<<< HEAD
+              Join Thousands <span className="text-gradient-professional">Shaping Urban Change</span>
+            </h2>
+            <p>Highlighting real achievements shaping better urban environments.</p>
+=======
+<<<<<<< HEAD
+              Join Thousands <span className="text-gradient-professional">Shaping Urban Change</span>
+            </h2>
+            <p>Highlighting real achievements shaping better urban environments.</p>
+=======
+              {/* Join Thousands{' '} */}
+              <span className="text-gradient-professional">
+                Stories That Inspire Urban Change
+              </span>
+            </h2>
+            <p>
+              Highlighting real achievements that shaping better urban environments.
+            </p>
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
           </div>
 
           <div
@@ -1055,8 +1194,24 @@ const Home = () => {
           <div className="cta-content-professional">
             <h2>Ready to Shape Your Future in Urban Planning?</h2>
             <p>
+<<<<<<< HEAD
               Be part of a growing global community turning ideas into impact. Planning Insights helps you unlock new opportunities, sharpen your
               skills, and connect with professionals shaping cities of tomorrow.
+=======
+<<<<<<< HEAD
+              Be part of a growing global community turning ideas into impact. Planning Insights helps you unlock new opportunities, sharpen your
+              skills, and connect with professionals shaping cities of tomorrow.
+=======
+<<<<<<< HEAD
+              Be part of a growing global community turning ideas into impact. Planning Insights helps you unlock new opportunities, sharpen your
+              skills, and connect with professionals shaping cities of tomorrow.
+=======
+             Be part of a growing global community turning ideas into impact. Planning Insights helps
+you unlock new opportunities, sharpen your skills, and connect with professionals shaping
+cities of tomorrow.
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
             </p>
 
             <div className="cta-actions-professional">
@@ -1086,8 +1241,23 @@ const Home = () => {
             </div>
 
             <p className="cta-note">
+<<<<<<< HEAD
               Sign in to access verified job opportunities, expert forums, join meaningful discussions, and collaborate with 15,000+ professionals
               across the built environment.
+=======
+<<<<<<< HEAD
+              Sign in to access verified job opportunities, expert forums, join meaningful discussions, and collaborate with 15,000+ professionals
+              across the built environment.
+=======
+<<<<<<< HEAD
+              Sign in to access verified job opportunities, expert forums, join meaningful discussions, and collaborate with 15,000+ professionals
+              across the built environment.
+=======
+              Sign in to access verified job opportunities, expert forums, join meaningful discussions, and
+collaborate with 15,000+ professionals across built environment.
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
             </p>
           </div>
         </div>

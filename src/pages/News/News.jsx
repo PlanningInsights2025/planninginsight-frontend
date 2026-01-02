@@ -4,7 +4,15 @@ import { useAuth } from '../../hooks/useAuth';
 import { useNotification } from '../../contexts/NotificationContext';
 import { useApi } from '../../hooks/useApi';
 import { newsroomAPI } from '../../services/api/newsroom';
+<<<<<<< HEAD
 import { Search, Filter, Calendar, User, Eye, MessageSquare, ThumbsUp, Bookmark, Share2, Plus, TrendingUp, Clock, FileText, Video, Lightbulb, Users, Award, ChevronRight, Bell, Star, ArrowRight, Sparkles, Zap, Heart, BookOpen, Edit3, ArrowUp, ChevronUp, X, SlidersHorizontal, MapPin, Building, Truck, Leaf, Map, Briefcase, Home, Trees, Landmark, Scale, Upload, Paperclip, AlertTriangle } from 'lucide-react';
+=======
+<<<<<<< HEAD
+import { Search, Filter, Calendar, User, Eye, MessageSquare, ThumbsUp, Bookmark, Share2, Plus, TrendingUp, Clock, FileText, Video, Lightbulb, Users, Award, ChevronRight, Bell, Star, ArrowRight, Sparkles, Zap, Heart, BookOpen, Edit3, ArrowUp, ChevronUp, X, SlidersHorizontal, MapPin, Building, Truck, Leaf, Map, Briefcase, Home, Trees, Landmark, Scale, Upload, Paperclip, AlertTriangle } from 'lucide-react';
+=======
+import { Search, Filter, Calendar, User, Eye, MessageSquare, ThumbsUp, Bookmark, Share2, Plus, TrendingUp, Clock, FileText, Video, Lightbulb, Users, Award, ChevronRight, Bell, Star, ArrowRight, Sparkles, Zap, Heart, BookOpen, Edit3, ArrowUp, ChevronUp, X, SlidersHorizontal, MapPin, Building, Truck, Leaf, Map, Briefcase, Home, Trees, Landmark, Scale, Upload, Paperclip } from 'lucide-react';
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
 import Loader from '../../components/common/Loader/Loader';
 import './News.css';
 
@@ -57,6 +65,22 @@ const News = () => {
   const [charCount, setCharCount] = useState(0);
   const [contentType, setContentType] = useState('text'); // 'text' or 'file'
   const fileInputRef = useRef(null);
+<<<<<<< HEAD
+=======
+
+  // New Article Form State
+  const [newArticle, setNewArticle] = useState({
+    title: '',
+    category: '',
+    content: '',
+    agreeTerms: false
+  });
+  const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [wordCount, setWordCount] = useState(0);
+  const [charCount, setCharCount] = useState(0);
+  const [contentType, setContentType] = useState('text'); // 'text' or 'file'
+  const fileInputRef = useRef(null);
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
 
   const { execute: fetchArticlesApi } = useApi(newsroomAPI.getArticles);
 
@@ -103,6 +127,10 @@ const News = () => {
 
   const loadArticles = async () => {
     try {
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
       console.log('=== LOADING PUBLISHED ARTICLES ===');
       // Fetch only published articles for public newsroom
       const response = await newsroomAPI.getPublishedArticles();
@@ -121,6 +149,17 @@ const News = () => {
       } else {
         console.log('No articles found in response');
         setArticles([]);
+<<<<<<< HEAD
+=======
+=======
+      const articlesData = await fetchArticlesApi(null, {
+        showError: true,
+        errorMessage: 'Failed to load articles'
+      });
+      if (articlesData) {
+        setArticles(articlesData);
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
       }
     } catch (error) {
       console.error('Error loading articles:', error);
@@ -405,6 +444,10 @@ const News = () => {
   return (
     <div className="news-page">
       <div className="container">
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
         {/* Modification Notification Banner */}
         {isAuthenticated && articlesNeedingModification.length > 0 && (
           <div className="modification-alert-banner">
@@ -427,6 +470,11 @@ const News = () => {
           </div>
         )}
 
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
         {/* Hero Section */}
         <section className="news-hero">
           <div className="news-hero-content">
@@ -659,10 +707,23 @@ const News = () => {
               <Star size={16} />
               Featured Article
             </span>
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
             <Link to={`/news/articles/${featuredArticle._id || featuredArticle.id}`} className="featured-article-card">
               <div className="featured-image-wrapper">
                 <img
                   src={featuredArticle.featuredImage || featuredArticle.image || '/api/placeholder/800/600'}
+<<<<<<< HEAD
+=======
+=======
+            <Link to={`/news/articles/${featuredArticle.id}`} className="featured-article-card">
+              <div className="featured-image-wrapper">
+                <img
+                  src={featuredArticle.image || '/api/placeholder/800/600'}
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
                   alt={featuredArticle.title}
                   className="featured-image"
                 />
@@ -683,7 +744,15 @@ const News = () => {
                 <div className="featured-footer">
                   <div className="author-info-small">
                     <User size={16} />
+<<<<<<< HEAD
                     {featuredArticle.author?.profile?.firstName || featuredArticle.author?.email || 'Anonymous'}
+=======
+<<<<<<< HEAD
+                    {featuredArticle.author?.profile?.firstName || featuredArticle.author?.email || 'Anonymous'}
+=======
+                    {featuredArticle.author?.name || 'Anonymous'}
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
                   </div>
                   <div className="featured-stats">
                     <span>
@@ -845,11 +914,25 @@ const News = () => {
           {filteredArticles.length > 0 ? (
             <div className="articles-grid-modern">
               {filteredArticles.map(article => (
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
                 <article key={article._id || article.id} className="article-card-modern">
                   <Link to={`/news/articles/${article._id || article.id}`} className="article-image-link">
                     <div className="article-image-modern">
                       <img
                         src={article.featuredImage || article.image || '/api/placeholder/400/300'}
+<<<<<<< HEAD
+=======
+=======
+                <article key={article.id} className="article-card-modern">
+                  <Link to={`/news/articles/${article.id}`} className="article-image-link">
+                    <div className="article-image-modern">
+                      <img
+                        src={article.image || '/api/placeholder/400/300'}
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
                         alt={article.title}
                       />
                       {article.type && (
@@ -865,8 +948,18 @@ const News = () => {
                       </span>
                       <div className="article-quick-actions">
                         <button
+<<<<<<< HEAD
                           className={`action-icon ${bookmarkedArticles.has(article._id || article.id) ? 'active' : ''}`}
                           onClick={() => handleBookmark(article._id || article.id)}
+=======
+<<<<<<< HEAD
+                          className={`action-icon ${bookmarkedArticles.has(article._id || article.id) ? 'active' : ''}`}
+                          onClick={() => handleBookmark(article._id || article.id)}
+=======
+                          className={`action-icon ${bookmarkedArticles.has(article.id) ? 'active' : ''}`}
+                          onClick={() => handleBookmark(article.id)}
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
                           aria-label="Bookmark"
                         >
                           <Bookmark size={16} />
@@ -881,7 +974,15 @@ const News = () => {
                       </div>
                     </div>
 
+<<<<<<< HEAD
                     <Link to={`/news/articles/${article._id || article.id}`} className="article-title-modern">
+=======
+<<<<<<< HEAD
+                    <Link to={`/news/articles/${article._id || article.id}`} className="article-title-modern">
+=======
+                    <Link to={`/news/articles/${article.id}`} className="article-title-modern">
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
                       {article.title}
                     </Link>
 
@@ -894,18 +995,41 @@ const News = () => {
                         </div>
                         <div className="author-details-small">
                           <span className="author-name">
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
                             {article.author?.profile?.firstName || article.author?.email || 'Anonymous'}
                           </span>
                           <span className="publish-date-small">
                             {formatRelativeTime(article.publishedAt || article.createdAt)}
+<<<<<<< HEAD
+=======
+=======
+                            {article.author?.name || 'Anonymous'}
+                          </span>
+                          <span className="publish-date-small">
+                            {formatRelativeTime(article.publishedAt)}
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
                           </span>
                         </div>
                       </div>
 
                       <div className="engagement-row">
                         <button
+<<<<<<< HEAD
                           className={`like-btn ${likedArticles.has(article._id || article.id) ? 'liked' : ''}`}
                           onClick={() => handleLike(article._id || article.id)}
+=======
+<<<<<<< HEAD
+                          className={`like-btn ${likedArticles.has(article._id || article.id) ? 'liked' : ''}`}
+                          onClick={() => handleLike(article._id || article.id)}
+=======
+                          className={`like-btn ${likedArticles.has(article.id) ? 'liked' : ''}`}
+                          onClick={() => handleLike(article.id)}
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
                         >
                           <Heart size={16} />
                           {article.likes || 0}

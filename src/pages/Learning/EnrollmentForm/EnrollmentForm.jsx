@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
 import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import "./EnrollmentForm.css";
@@ -8,6 +12,7 @@ export default function EnrollmentForm() {
   const navigate = useNavigate();
   // const { user, isAuthenticated } = useAuth(); // Uncomment when context is ready
   // const { profile } = useUser(); // Uncomment when context is ready
+<<<<<<< HEAD
   
   // Mock user profile data for autofill (replace with actual user data from context)
   const [userProfile] = useState({
@@ -24,6 +29,32 @@ export default function EnrollmentForm() {
     studentId: "STD-2025-001"
   });
   
+=======
+  
+  // Mock user profile data for autofill (replace with actual user data from context)
+  const [userProfile] = useState({
+    firstName: "John",
+    lastName: "Smith",
+    email: "john.smith@example.com",
+    phone: "+1 (555) 123-4567",
+    address: "123 Main Street, Apt 4B",
+    city: "New York",
+    state: "NY",
+    zipCode: "10001",
+    emergencyContactName: "Jane Smith",
+    emergencyContactPhone: "+1 (555) 987-6543",
+    studentId: "STD-2025-001"
+  });
+  
+=======
+import React, { useState } from "react";
+import { useNavigate } from 'react-router-dom';
+import "./EnrollmentForm.css";
+
+export default function EnrollmentForm() {
+  const navigate = useNavigate();
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
   const [formData, setFormData] = useState({
     courseId: "",
     courseTitle: "",
@@ -41,6 +72,10 @@ export default function EnrollmentForm() {
     emergencyContactPhone: "",
     agreeTerms: false
   });
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
   
   // Autofill form with user profile data on mount
   useEffect(() => {
@@ -61,6 +96,11 @@ export default function EnrollmentForm() {
       }));
     }
   }, [userProfile]);
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
   const [paymentMethod, setPaymentMethod] = useState("card");
   const [paymentData, setPaymentData] = useState({
     cardNumber: "",

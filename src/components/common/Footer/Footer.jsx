@@ -40,7 +40,19 @@ const Footer = () => {
              Plan. Learn. Collaborate.
             </p>
             <p className="footer-description-horizontal">
+<<<<<<< HEAD
               <strong>Planning Insights</strong> is a digital knowledge ecosystem for the built environment, designed to
+=======
+<<<<<<< HEAD
+              <strong>Planning Insights</strong> is a digital knowledge ecosystem for the built environment, designed to
+=======
+<<<<<<< HEAD
+              <strong>Planning Insights</strong> is a digital knowledge ecosystem for the built environment, designed to
+=======
+              <strong>Planning Insights</strong> Planning Insights is a digital knowledge ecosystem for the built environment, designed to
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
 connect education, research, and professional practice on a single, integrated platform. We
 enable collaboration among students, educators, researchers, urban planners, architects, {' '}
               <Link to="/about" className="footer-read-more-horizontal">Read more</Link>

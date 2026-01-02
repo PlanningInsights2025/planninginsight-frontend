@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
   import { 
     Edit,
     Mail,
@@ -22,6 +26,27 @@ import { useAuth } from '../../hooks/useAuth'
     AlertTriangle,
     CheckCircle
   } from 'lucide-react'
+<<<<<<< HEAD
+=======
+=======
+import { 
+  Edit,
+  Mail,
+  Phone,
+  MapPin,
+  Globe,
+  Linkedin,
+  Github,
+  Award,
+  Briefcase,
+  GraduationCap,
+  ArrowRight,
+  Share2,
+  Download,
+  ArrowLeft
+} from 'lucide-react'
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
 import './ProfileView.css'
 
 /**
@@ -40,6 +65,10 @@ const ProfileView = () => {
   const [downloadToast, setDownloadToast] = useState(false)
   const [messageToast, setMessageToast] = useState(false)
   const [editToast, setEditToast] = useState(false)
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
   // Role upgrade request feedback
   const [upgradeToast, setUpgradeToast] = useState(false)
   const [upgradeToastMessage, setUpgradeToastMessage] = useState('')
@@ -145,6 +174,11 @@ const ProfileView = () => {
   })
   const [showQuestionViewModal, setShowQuestionViewModal] = useState(false)
   const [viewingQuestion, setViewingQuestion] = useState(null)
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
 
   /**
    * Initialize profile data
@@ -159,7 +193,15 @@ const ProfileView = () => {
       // Mock additional profile data
       setProfile(prev => ({
         ...prev,
+<<<<<<< HEAD
         bio: prev.bio || 'Urban planning work experience with passion for sustainable development',
+=======
+<<<<<<< HEAD
+        bio: prev.bio || 'Urban planning work experience with passion for sustainable development',
+=======
+        bio: prev.bio || 'Urban planning professional with passion for sustainable development',
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
         location: prev.location || 'Mumbai, India',
         phone: prev.phone || '+91 XXXXXXXXXX',
         website: prev.website || 'www.example.com',
@@ -211,6 +253,10 @@ const ProfileView = () => {
             description: 'Assisted in urban design projects and urban planning research'
           }
         ],
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
         projects: [
           {
             title: 'Smart City Traffic Analysis',
@@ -249,14 +295,35 @@ const ProfileView = () => {
             description: 'Recognized for high engagement in community forums.'
           }
         ],
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
         skills: ['Urban Planning', 'GIS', 'Sustainability', 'Project Management', 'Data Analysis', 'Community Engagement'],
         uniqueCode: 'PLAN-20240115-0001'
       }))
     }
 
+<<<<<<< HEAD
     // Force light mode - remove dark mode
     document.documentElement.classList.remove('dark-mode')
     localStorage.setItem('darkMode', 'false')
+=======
+<<<<<<< HEAD
+    // Force light mode - remove dark mode
+    document.documentElement.classList.remove('dark-mode')
+    localStorage.setItem('darkMode', 'false')
+=======
+    // Apply dark mode from localStorage
+    const savedDarkMode = localStorage.getItem('darkMode')
+    if (savedDarkMode === 'true') {
+      document.documentElement.classList.add('dark-mode')
+    } else {
+      document.documentElement.classList.remove('dark-mode')
+    }
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
   }, [isAuthenticated, user, userId])
 
   /**
@@ -341,6 +408,10 @@ ${profile.experience?.map(exp => `- ${exp.position} at ${exp.company} (${new Dat
   }
 
   /**
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
    * Handle make public toggle
    */
   const handleMakePublic = () => {
@@ -439,6 +510,17 @@ ${profile.experience?.map(exp => `- ${exp.position} at ${exp.company} (${new Dat
     
     // Navigate to appropriate page based on sidebar item
     // For write-for-us and others, just change the active state to show content inline
+<<<<<<< HEAD
+=======
+=======
+   * Handle edit profile navigation
+   */
+  const handleEditProfile = () => {
+    setEditToast(true)
+    setTimeout(() => setEditToast(false), 3000)
+    navigate('/profile/edit')
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
   }
 
   if (!isAuthenticated || !user) {
@@ -488,6 +570,10 @@ ${profile.experience?.map(exp => `- ${exp.position} at ${exp.company} (${new Dat
             <h1 className="profile-name">
               {profile.displayName || `${profile.firstName} ${profile.lastName}`}
               {profile.uniqueCode && (
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
                 <span className="unique-code-badge" style={{
                   background: 'linear-gradient(90deg, #6c63ff 0%, #5f2eea 100%)',
                   color: '#fff',
@@ -502,6 +588,12 @@ ${profile.experience?.map(exp => `- ${exp.position} at ${exp.company} (${new Dat
                   verticalAlign: 'middle',
                   lineHeight: '1.2',
                 }}>{profile.uniqueCode}</span>
+<<<<<<< HEAD
+=======
+=======
+                <span className="unique-code-badge">{profile.uniqueCode}</span>
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
               )}
             </h1>
             <p className="profile-bio">{profile.bio}</p>
@@ -530,6 +622,10 @@ ${profile.experience?.map(exp => `- ${exp.position} at ${exp.company} (${new Dat
 
           <div className="profile-actions">
             {isOwnProfile ? (
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
               <>
                 <button 
                   onClick={handleEditProfile}
@@ -565,6 +661,19 @@ ${profile.experience?.map(exp => `- ${exp.position} at ${exp.company} (${new Dat
                 </button>
 
               </>
+<<<<<<< HEAD
+=======
+=======
+              <button 
+                onClick={handleEditProfile}
+                className="btn btn-primary edit-profile-btn"
+                title="Edit your profile"
+              >
+                <Edit size={16} />
+                Edit Profile
+              </button>
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
             ) : (
               <>
                 <button className="btn btn-primary" onClick={handleConnect}>
@@ -575,9 +684,18 @@ ${profile.experience?.map(exp => `- ${exp.position} at ${exp.company} (${new Dat
                 </button>
               </>
             )}
+<<<<<<< HEAD
           </div>
           
           <div className="profile-utility-buttons">
+=======
+<<<<<<< HEAD
+          </div>
+          
+          <div className="profile-utility-buttons">
+=======
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
             <button 
               className="btn btn-outline btn-icon" 
               onClick={handleShare}
@@ -605,6 +723,10 @@ ${profile.experience?.map(exp => `- ${exp.position} at ${exp.company} (${new Dat
    */
   const renderBadges = () => (
     <div className="badges-container">
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
       <h3 style={{ color: '#222', fontWeight: 600 }}>Badges & Achievements</h3>
       <div className="badges-grid">
         {profile.badges?.map((badge) => (
@@ -613,6 +735,19 @@ ${profile.experience?.map(exp => `- ${exp.position} at ${exp.company} (${new Dat
               {badge.icon}
             </div>
             <span className="badge-name" style={{ color: '#333', fontWeight: 500 }}>{badge.name}</span>
+<<<<<<< HEAD
+=======
+=======
+      <h3>Badges & Achievements</h3>
+      <div className="badges-grid">
+        {profile.badges?.map((badge) => (
+          <div key={badge.id} className="badge-item" style={{ borderColor: badge.color }}>
+            <div className="badge-icon" style={{ color: badge.color }}>
+              {badge.icon}
+            </div>
+            <span className="badge-name">{badge.name}</span>
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
           </div>
         ))}
       </div>
@@ -775,6 +910,10 @@ ${profile.experience?.map(exp => `- ${exp.position} at ${exp.company} (${new Dat
   )
 
   /**
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
    * Render recent activity
    */
   const renderRecentActivity = () => (
@@ -2551,6 +2690,11 @@ ${profile.experience?.map(exp => `- ${exp.position} at ${exp.company} (${new Dat
   )
 
   /**
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
    * Render overview tab
    */
   const renderOverviewTab = () => (
@@ -2562,6 +2706,10 @@ ${profile.experience?.map(exp => `- ${exp.position} at ${exp.company} (${new Dat
   )
 
   /**
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
    * Render role upgrade request section (sidebar page)
    */
   const renderRoleUpgradeContent = () => (
@@ -2611,6 +2759,11 @@ ${profile.experience?.map(exp => `- ${exp.position} at ${exp.company} (${new Dat
   )
 
   /**
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
    * Render about tab
    */
   const renderAboutTab = () => (
@@ -2629,6 +2782,10 @@ ${profile.experience?.map(exp => `- ${exp.position} at ${exp.company} (${new Dat
   const renderExperienceTab = () => (
     <div className="tab-content">
       {renderExperience()}
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
     </div>
   )
 
@@ -2637,13 +2794,27 @@ ${profile.experience?.map(exp => `- ${exp.position} at ${exp.company} (${new Dat
    */
   const renderEducationTab = () => (
     <div className="tab-content">
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
       {renderEducation()}
     </div>
   )
 
   return (
+<<<<<<< HEAD
     <>
       <div className="profile-view-page">
+=======
+<<<<<<< HEAD
+    <>
+      <div className="profile-view-page">
+=======
+    <div className="profile-view-page">
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
       {/* Back Button */}
       <button 
         className="back-button"
@@ -2657,6 +2828,10 @@ ${profile.experience?.map(exp => `- ${exp.position} at ${exp.company} (${new Dat
       {/* Profile Header */}
       {renderProfileHeader()}
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
       {/* Main Content with Sidebar */}
       <div className="profile-main-wrapper">
         {/* Sidebar Navigation */}
@@ -2854,4 +3029,44 @@ ${profile.experience?.map(exp => `- ${exp.position} at ${exp.company} (${new Dat
   )
 }
 
+<<<<<<< HEAD
 export default ProfileView
+=======
+export default ProfileView
+=======
+      {/* Profile Tabs and Content */}
+      <div className="profile-view-container">
+        <div className="profile-tabs">
+          <button
+            className={`tab-button ${activeTab === 'overview' ? 'active' : ''}`}
+            onClick={() => setActiveTab('overview')}
+          >
+            Overview
+          </button>
+          <button
+            className={`tab-button ${activeTab === 'about' ? 'active' : ''}`}
+            onClick={() => setActiveTab('about')}
+          >
+            About
+          </button>
+          <button
+            className={`tab-button ${activeTab === 'experience' ? 'active' : ''}`}
+            onClick={() => setActiveTab('experience')}
+          >
+            Experience
+          </button>
+        </div>
+
+        <div className="profile-content">
+          {activeTab === 'overview' && renderOverviewTab()}
+          {activeTab === 'about' && renderAboutTab()}
+          {activeTab === 'experience' && renderExperienceTab()}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default ProfileView
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607

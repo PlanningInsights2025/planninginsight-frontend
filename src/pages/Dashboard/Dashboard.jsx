@@ -37,14 +37,30 @@ const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('overview')
   const [recentActivity, setRecentActivity] = useState([])
   const [showNotificationModal, setShowNotificationModal] = useState(false)
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+  const [showSettingsModal, setShowSettingsModal] = useState(false)
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
   const [notifications, setNotifications] = useState([
     { id: 1, message: 'Your CV has been viewed 5 times', time: '2 hours ago', read: false },
     { id: 2, message: 'New job posting matching your profile', time: '4 hours ago', read: false },
     { id: 3, message: 'Course enrollment confirmed', time: '1 day ago', read: true }
   ])
   const [settings, setSettings] = useState(() => {
+<<<<<<< HEAD
     // Force light mode
     localStorage.setItem('darkMode', 'false')
+=======
+<<<<<<< HEAD
+    // Force light mode
+    localStorage.setItem('darkMode', 'false')
+=======
+    const savedDarkMode = localStorage.getItem('darkMode')
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
     return {
       emailNotifications: true,
       pushNotifications: true,
@@ -52,7 +68,15 @@ const Dashboard = () => {
       courseUpdates: true,
       forumMentions: true,
       articleUpdates: false,
+<<<<<<< HEAD
       darkMode: false,
+=======
+<<<<<<< HEAD
+      darkMode: false,
+=======
+      darkMode: savedDarkMode === 'true',
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
       compactMode: false,
       animationsEnabled: true,
       publicProfile: true,
@@ -84,6 +108,8 @@ const Dashboard = () => {
    * Check if user is first-time and redirect to profile completion
    */
   useEffect(() => {
+    console.log('📊 Dashboard: Auth State:', { isAuthenticated, user: user ? 'exists' : 'null', userEmail: user?.email })
+    
     if (location.state?.firstTime) {
       showNotification('Please complete your profile to get started', 'info')
     }
@@ -96,7 +122,486 @@ const Dashboard = () => {
       // Load user stats and activity (would come from API in real implementation)
       loadUserData()
     }
-  }, [user, location, showNotification])
+  }, [user, location, showNotification, isAuthenticated])
+
+  /**
+   * Update current time every second for timezone display
+   */
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date())
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [])
+
+  /**
+   * Apply dark mode to document
+   */
+  useEffect(() => {
+    if (settings.darkMode) {
+      document.documentElement.classList.add('dark-mode')
+      localStorage.setItem('darkMode', 'true')
+    } else {
+      document.documentElement.classList.remove('dark-mode')
+      localStorage.setItem('darkMode', 'false')
+    }
+  }, [settings.darkMode])
+
+  /**
+   * Check URL params to open settings modal
+   */
+  useEffect(() => {
+    const params = new URLSearchParams(location.search)
+    if (params.get('openSettings') === 'true') {
+      setShowSettingsModal(true)
+      // Clean up URL
+      navigate('/dashboard', { replace: true })
+    }
+  }, [location.search, navigate])
+
+  /**
+   * Show toast notification
+   */
+  const showToastNotification = (message) => {
+    setToastMessage(message)
+    setShowToast(true)
+    setTimeout(() => setShowToast(false), 3000)
+  }
+
+  /**
+   * Handle notification click - navigate to notifications page
+   */
+  const handleNotificationClick = () => {
+    navigate('/notifications')
+    showToastNotification('📬 Opening notifications...')
+  }
+
+  /**
+   * Handle notification read
+   */
+  const markNotificationAsRead = (id) => {
+    setNotifications(notifications.map(notif => 
+      notif.id === id ? { ...notif, read: true } : notif
+    ))
+  }
+
+  /**
+   * Clear all notifications
+   */
+  const clearAllNotifications = () => {
+    setNotifications([])
+    showToastNotification('🗑️ All notifications cleared')
+    setShowNotificationModal(false)
+  }
+
+  /**
+   * Handle settings modal open
+   */
+  const handleSettingsClick = () => {
+    setShowSettingsModal(true)
+  }
+
+  /**
+   * Update settings
+   */
+  const updateSetting = (key) => {
+    setSettings(prev => ({
+      ...prev,
+      [key]: !prev[key]
+    }))
+    showToastNotification(`✓ ${key} updated`)
+  }
+
+  /**
+   * Save settings
+   */
+  const saveSettings = () => {
+    showToastNotification('✓ Settings saved successfully!')
+    setShowSettingsModal(false)
+  }
+
+  /**
+   * Handle password change
+   */
+  const handlePasswordChange = () => {
+    if (!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword) {
+      showToastNotification('⚠️ Please fill all password fields')
+      return
+    }
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      showToastNotification('⚠️ Passwords do not match')
+      return
+    }
+    if (passwordData.newPassword.length < 8) {
+      showToastNotification('⚠️ Password must be at least 8 characters')
+      return
+    }
+    // In real implementation, send to backend
+    showToastNotification('✓ Password changed successfully')
+    setShowPasswordModal(false)
+    setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' })
+  }
+
+  /**
+   * Handle email change
+   */
+  const handleEmailChange = () => {
+    setShowEmailModal(true)
+  }
+
+  /**
+   * Submit email change
+   */
+  const submitEmailChange = () => {
+    if (!newEmail || !newEmail.includes('@')) {
+      showToastNotification('⚠️ Please enter a valid email address')
+      return
+    }
+    showToastNotification('📧 Email change request sent. Check your inbox.')
+    setShowEmailModal(false)
+    setNewEmail('')
+  }
+
+  /**
+   * Handle account deletion
+   */
+  const handleAccountDeletion = () => {
+    if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+      showToastNotification('⚠️ Account deletion initiated. You will receive a confirmation email.')
+    }
+  }
+
+  /**
+   * Handle data export
+   */
+  const handleDataExport = () => {
+    showToastNotification('📥 Preparing your data export. This may take a few minutes.')
+  }
+
+  /**
+   * Get current time in specific timezone
+   */
+  const getTimeInTimezone = (timezone) => {
+    try {
+      return currentTime.toLocaleTimeString('en-US', {
+        timeZone: timezone,
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      })
+    } catch (error) {
+      return ''
+    }
+  }
+
+  /**
+   * Update current time every second for timezone display
+   */
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date())
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [])
+
+  /**
+   * Apply dark mode to document
+   */
+  useEffect(() => {
+    if (settings.darkMode) {
+      document.documentElement.classList.add('dark-mode')
+      localStorage.setItem('darkMode', 'true')
+    } else {
+      document.documentElement.classList.remove('dark-mode')
+      localStorage.setItem('darkMode', 'false')
+    }
+  }, [settings.darkMode])
+
+  /**
+   * Check URL params to open settings modal
+   */
+  useEffect(() => {
+    const params = new URLSearchParams(location.search)
+    if (params.get('openSettings') === 'true') {
+      setShowSettingsModal(true)
+      // Clean up URL
+      navigate('/dashboard', { replace: true })
+    }
+  }, [location.search, navigate])
+
+  /**
+   * Show toast notification
+   */
+  const showToastNotification = (message) => {
+    setToastMessage(message)
+    setShowToast(true)
+    setTimeout(() => setShowToast(false), 3000)
+  }
+
+  /**
+   * Handle notification click - navigate to notifications page
+   */
+  const handleNotificationClick = () => {
+    navigate('/notifications')
+    showToastNotification('📬 Opening notifications...')
+  }
+
+  /**
+   * Handle notification read
+   */
+  const markNotificationAsRead = (id) => {
+    setNotifications(notifications.map(notif => 
+      notif.id === id ? { ...notif, read: true } : notif
+    ))
+  }
+
+  /**
+   * Clear all notifications
+   */
+  const clearAllNotifications = () => {
+    setNotifications([])
+    showToastNotification('🗑️ All notifications cleared')
+    setShowNotificationModal(false)
+  }
+
+  /**
+   * Handle settings modal open
+   */
+  const handleSettingsClick = () => {
+    setShowSettingsModal(true)
+  }
+
+  /**
+   * Update settings
+   */
+  const updateSetting = (key) => {
+    setSettings(prev => ({
+      ...prev,
+      [key]: !prev[key]
+    }))
+    showToastNotification(`✓ ${key} updated`)
+  }
+
+  /**
+   * Save settings
+   */
+  const saveSettings = () => {
+    showToastNotification('✓ Settings saved successfully!')
+    setShowSettingsModal(false)
+  }
+
+  /**
+   * Handle password change
+   */
+  const handlePasswordChange = () => {
+    if (!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword) {
+      showToastNotification('⚠️ Please fill all password fields')
+      return
+    }
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      showToastNotification('⚠️ Passwords do not match')
+      return
+    }
+    if (passwordData.newPassword.length < 8) {
+      showToastNotification('⚠️ Password must be at least 8 characters')
+      return
+    }
+    // In real implementation, send to backend
+    showToastNotification('✓ Password changed successfully')
+    setShowPasswordModal(false)
+    setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' })
+  }
+
+  /**
+   * Handle email change
+   */
+  const handleEmailChange = () => {
+    setShowEmailModal(true)
+  }
+
+  /**
+   * Submit email change
+   */
+  const submitEmailChange = () => {
+    if (!newEmail || !newEmail.includes('@')) {
+      showToastNotification('⚠️ Please enter a valid email address')
+      return
+    }
+    showToastNotification('📧 Email change request sent. Check your inbox.')
+    setShowEmailModal(false)
+    setNewEmail('')
+  }
+
+  /**
+   * Handle account deletion
+   */
+  const handleAccountDeletion = () => {
+    if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+      showToastNotification('⚠️ Account deletion initiated. You will receive a confirmation email.')
+    }
+  }
+
+  /**
+   * Handle data export
+   */
+  const handleDataExport = () => {
+    showToastNotification('📥 Preparing your data export. This may take a few minutes.')
+  }
+
+  /**
+   * Get current time in specific timezone
+   */
+  const getTimeInTimezone = (timezone) => {
+    try {
+      return currentTime.toLocaleTimeString('en-US', {
+        timeZone: timezone,
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      })
+    } catch (error) {
+      return ''
+    }
+  }
+
+  /**
+   * Update current time every second for timezone display
+   */
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date())
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [])
+
+  /**
+   * Apply dark mode to document
+   */
+  useEffect(() => {
+    if (settings.darkMode) {
+      document.documentElement.classList.add('dark-mode')
+      localStorage.setItem('darkMode', 'true')
+    } else {
+      document.documentElement.classList.remove('dark-mode')
+      localStorage.setItem('darkMode', 'false')
+    }
+  }, [settings.darkMode])
+
+  /**
+   * Show toast notification
+   */
+  const showToastNotification = (message) => {
+    setToastMessage(message)
+    setShowToast(true)
+    setTimeout(() => setShowToast(false), 3000)
+  }
+
+  /**
+   * Handle notification click - navigate to notifications page
+   */
+  const handleNotificationClick = () => {
+    navigate('/notifications')
+    showToastNotification('📬 Opening notifications...')
+  }
+
+  /**
+   * Handle notification read
+   */
+  const markNotificationAsRead = (id) => {
+    setNotifications(notifications.map(notif => 
+      notif.id === id ? { ...notif, read: true } : notif
+    ))
+  }
+
+  /**
+   * Clear all notifications
+   */
+  const clearAllNotifications = () => {
+    setNotifications([])
+    showToastNotification('🗑️ All notifications cleared')
+    setShowNotificationModal(false)
+  }
+
+  /**
+   * Handle settings modal open
+   */
+  const handleSettingsClick = () => {
+    navigate('/settings')
+  }
+
+  /**
+   * Handle password change
+   */
+  const handlePasswordChange = () => {
+    if (!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword) {
+      showToastNotification('⚠️ Please fill all password fields')
+      return
+    }
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      showToastNotification('⚠️ Passwords do not match')
+      return
+    }
+    if (passwordData.newPassword.length < 8) {
+      showToastNotification('⚠️ Password must be at least 8 characters')
+      return
+    }
+    // In real implementation, send to backend
+    showToastNotification('✓ Password changed successfully')
+    setShowPasswordModal(false)
+    setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' })
+  }
+
+  /**
+   * Handle email change
+   */
+  const handleEmailChange = () => {
+    setShowEmailModal(true)
+  }
+
+  /**
+   * Submit email change
+   */
+  const submitEmailChange = () => {
+    if (!newEmail || !newEmail.includes('@')) {
+      showToastNotification('⚠️ Please enter a valid email address')
+      return
+    }
+    showToastNotification('📧 Email change request sent. Check your inbox.')
+    setShowEmailModal(false)
+    setNewEmail('')
+  }
+
+  /**
+   * Handle account deletion
+   */
+  const handleAccountDeletion = () => {
+    if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+      showToastNotification('⚠️ Account deletion initiated. You will receive a confirmation email.')
+    }
+  }
+
+  /**
+   * Handle data export
+   */
+  const handleDataExport = () => {
+    showToastNotification('📥 Preparing your data export. This may take a few minutes.')
+  }
+
+  /**
+   * Get current time in specific timezone
+   */
+  const getTimeInTimezone = (timezone) => {
+    try {
+      return currentTime.toLocaleTimeString('en-US', {
+        timeZone: timezone,
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      })
+    } catch (error) {
+      return ''
+    }
+  }
 
   /**
    * Update current time every second for timezone display
@@ -327,8 +832,17 @@ const Dashboard = () => {
     { id: 'jobs', label: 'Jobs', icon: Briefcase, path: '/jobs' },
     { id: 'learning', label: 'Learning', icon: Book, path: '/learning' },
     { id: 'publishing', label: 'Publishing', icon: FileText, path: '/publishing' },
+<<<<<<< HEAD
     { id: 'newsroom', label: 'Newsroom', icon: MessageSquare, path: '/news' },
     { id: 'profile', label: 'Profile', icon: User, path: '/profile-view' },
+=======
+<<<<<<< HEAD
+    { id: 'newsroom', label: 'Newsroom', icon: MessageSquare, path: '/news' },
+    { id: 'profile', label: 'Profile', icon: User, path: '/profile-view' },
+=======
+    { id: 'newsroom', label: 'Newsroom', icon: MessageSquare, path: '/news' }
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
   ]
 
   /**
@@ -662,14 +1176,12 @@ const Dashboard = () => {
     </div>
   )
 
-  if (!isAuthenticated || !user) {
+  // Show loading while checking authentication
+  if (!user) {
     return (
       <div className="dashboard-loading">
         <div className="loading-message">
-          <p>Please log in to access your dashboard.</p>
-          <Link to="/login" className="btn btn-primary">
-            Sign In
-          </Link>
+          <p>Loading dashboard...</p>
         </div>
       </div>
     )
@@ -678,6 +1190,10 @@ const Dashboard = () => {
   return (
     <div className="dashboard">
       {/* Dashboard Header */}
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
       <div className="dashboard-header-new">
         <div className="header-top">
           <button 
@@ -691,25 +1207,76 @@ const Dashboard = () => {
           
           <div className="welcome-section-new">
             <h1>Welcome back, {user.firstName || 'sneha'}!</h1>
+<<<<<<< HEAD
             <p>Here's what's happening with your account today.</p>
           </div>
           
           <div className="header-actions-new">
+=======
+            <p>Here's what's happening with your account today.</p>
+          </div>
+          
+          <div className="header-actions-new">
+=======
+      <div className="dashboard-header">
+        <div className="header-content">
+          <div className="welcome-section">
+            <button 
+              className="back-button"
+              onClick={() => navigate(-1)}
+              title="Go back"
+              aria-label="Go back"
+            >
+              ←
+            </button>
+            <h1>
+              Welcome back, {user.firstName}!
+              {user.uniqueCode && (
+                <span className="user-code">({user.uniqueCode})</span>
+              )}
+            </h1>
+            <p>Here's what's happening with your account today.</p>
+          </div>
+          
+          <div className="header-actions">
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
             <button 
               className="icon-button notification-btn" 
               aria-label="Notifications"
               onClick={handleNotificationClick}
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
               title="View notifications"
             >
               <Bell size={20} />
               {notifications.filter(n => !n.read).length > 0 && (
                 <span className="notification-badge">{notifications.filter(n => !n.read).length}</span>
               )}
+<<<<<<< HEAD
+=======
+=======
+              style={{ cursor: 'pointer' }}
+              title="View notifications"
+            >
+              <Bell size={20} />
+              <span className="notification-badge">{notifications.filter(n => !n.read).length}</span>
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
             </button>
             <button 
               className="icon-button" 
               aria-label="Settings"
               onClick={handleSettingsClick}
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+              style={{ cursor: 'pointer' }}
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
               title="Settings"
             >
               <Settings size={20} />
@@ -726,7 +1293,15 @@ const Dashboard = () => {
               return (
                 <li key={tab.id}>
                   <button
+<<<<<<< HEAD
                     className={`nav-tab-new ${activeTab === tab.id ? 'active' : ''}`}
+=======
+<<<<<<< HEAD
+                    className={`nav-tab-new ${activeTab === tab.id ? 'active' : ''}`}
+=======
+                    className={`nav-tab ${activeTab === tab.id ? 'active' : ''}`}
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
                     onClick={() => {
                       setActiveTab(tab.id)
                       navigate(tab.path)
@@ -743,6 +1318,10 @@ const Dashboard = () => {
       </div>
 
       {/* Dashboard Content */}
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
       <div className="dashboard-content-new">
         <div className="content-wrapper-new">
           {/* Left Side - Main Content */}
@@ -755,6 +1334,48 @@ const Dashboard = () => {
                   <div className="completion-title-new">
                     <User size={20} />
                     <h3>Profile Completion</h3>
+<<<<<<< HEAD
+=======
+=======
+      <div className="dashboard-content">
+        <div className="content-grid">
+          {/* Main Content Area */}
+          <div className="main-content">
+            {/* Profile Completion */}
+            {profileCompletion < 100 && renderProfileCompletion()}
+            
+            {/* Statistics */}
+            {renderStats()}
+            
+            {/* Quick Actions */}
+            {renderQuickActions()}
+          </div>
+          
+          {/* Sidebar */}
+          <div className="sidebar">
+            {/* Recent Activity */}
+            {renderRecentActivity()}
+            
+            {/* Upcoming Events (placeholder) */}
+            <div className="events-card">
+              <div className="card-header">
+                <h3>Upcoming Events</h3>
+                <button
+                  onClick={() => navigate('/learning/events')}
+                  className="calendar-icon-btn"
+                  title="View all events"
+                  aria-label="View all events"
+                >
+                  <Calendar size={18} />
+                </button>
+              </div>
+              <div className="events-list">
+                <div className="event-item">
+                  <div className="event-date">
+                    <span className="day">20</span>
+                    <span className="month">Feb</span>
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
                   </div>
                   <span className="completion-percentage-new">{profileCompletion}%</span>
                 </div>
@@ -834,6 +1455,10 @@ const Dashboard = () => {
                   <div className="stat-label-new">ARTICLES PUBLISHED</div>
                 </div>
               </div>
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
               
               <div 
                 className="stat-card-new"
@@ -1044,6 +1669,26 @@ const Dashboard = () => {
                   <FileText size={18} color="#9ca3af" />
                   <span>Published Author</span>
                 </div>
+=======
+              <div className="achievements-list">
+                {achievementsData.map((achievement) => {
+                  const IconComponent = achievement.icon
+                  return (
+                    <button
+                      key={achievement.id}
+                      className="achievement-item"
+                      onClick={() => navigate(achievement.path)}
+                      title={`Go to ${achievement.title}`}
+                      type="button"
+                    >
+                      <div className={`achievement-icon ${achievement.status}`}>
+                        <IconComponent size={16} />
+                      </div>
+                      <span>{achievement.title}</span>
+                    </button>
+                  )
+                })}
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
               </div>
             </div>
           </div>
@@ -1051,7 +1696,442 @@ const Dashboard = () => {
       </div>
 
       {/* Settings Modal */}
+<<<<<<< HEAD
       {/* Settings Modal removed as we now have a dedicated Settings page */}
+=======
+<<<<<<< HEAD
+      {/* Settings Modal removed as we now have a dedicated Settings page */}
+=======
+      {showSettingsModal && (
+        <div className="modal-overlay" onClick={() => setShowSettingsModal(false)}>
+          <div className="settings-modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="settings-modal-header">
+              <div className="modal-title-section">
+                <Settings size={24} />
+                <h2>Settings</h2>
+              </div>
+              <button className="modal-close" onClick={() => setShowSettingsModal(false)}>
+                ✕
+              </button>
+            </div>
+            
+            <div className="settings-modal-body">
+              <div className="settings-left-section">
+                {/* Profile Completion Card */}
+                <div className="settings-profile-card">
+                  <div className="profile-card-header">
+                    <User size={20} />
+                    <h3>Profile Completion</h3>
+                  </div>
+                  <div className="profile-completion-percentage">{profileCompletion}%</div>
+                  <div className="progress-bar-container">
+                    <div 
+                      className="progress-bar-fill" 
+                      style={{ width: `${profileCompletion}%` }}
+                    ></div>
+                  </div>
+                  <p className="profile-completion-text">
+                    {profileCompletion === 100 
+                      ? 'Your profile is complete! Great job.' 
+                      : 'Complete your profile to unlock all features.'}
+                  </p>
+                  {profileCompletion < 100 && (
+                    <Link 
+                      to="/profile" 
+                      className="btn-complete-profile"
+                      onClick={() => setShowSettingsModal(false)}
+                    >
+                      Complete Profile
+                    </Link>
+                  )}
+                </div>
+
+                {/* Account Security Card */}
+                <div className="settings-security-card">
+                  <h3>Account Security</h3>
+                  <div className="security-status">
+                    <div className="security-item">
+                      <CheckCircle size={16} />
+                      <span>Email Verified</span>
+                    </div>
+                    <div className="security-item">
+                      {settings.twoFactorAuth ? (
+                        <><CheckCircle size={16} /><span>2FA Enabled</span></>
+                      ) : (
+                        <><AlertCircle size={16} /><span>2FA Disabled</span></>
+                      )}
+                    </div>
+                    <div className="security-item">
+                      <CheckCircle size={16} />
+                      <span>Strong Password</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Recent Activity Section */}
+                <div className="settings-activity-section">
+                  <h3>Recent Activity</h3>
+                  <div className="activity-items">
+                    {recentActivity.slice(0, 2).map((activity) => (
+                      <div key={activity.id} className="activity-item-small">
+                        <div className="activity-icon-wrapper">
+                          <Briefcase size={16} />
+                        </div>
+                        <div className="activity-details">
+                          <p className="activity-title">{activity.title}</p>
+                          <p className="activity-subtitle">{activity.description}</p>
+                          <p className="activity-time">{activity.time}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="settings-right-section">
+                {/* Account Management */}
+                <div className="settings-section">
+                  <h3 className="settings-section-title">Account Management</h3>
+                  <div className="settings-options">
+                    <button 
+                      className="setting-action-btn"
+                      onClick={() => setShowPasswordModal(true)}
+                    >
+                      <Settings size={18} />
+                      <div>
+                        <div className="setting-label">Change Password</div>
+                        <div className="setting-description">Update your account password</div>
+                      </div>
+                    </button>
+
+                    <button 
+                      className="setting-action-btn"
+                      onClick={handleEmailChange}
+                    >
+                      <Bell size={18} />
+                      <div>
+                        <div className="setting-label">Change Email</div>
+                        <div className="setting-description">Update your email address</div>
+                      </div>
+                    </button>
+
+                    <div className="setting-option">
+                      <div className="setting-info">
+                        <CheckCircle size={18} />
+                        <div>
+                          <div className="setting-label">Two-Factor Authentication</div>
+                          <div className="setting-description">Add an extra layer of security</div>
+                        </div>
+                      </div>
+                      <label className="toggle-switch">
+                        <input 
+                          type="checkbox" 
+                          checked={settings.twoFactorAuth}
+                          onChange={() => updateSetting('twoFactorAuth')}
+                        />
+                        <span className="toggle-slider"></span>
+                      </label>
+                    </div>
+
+                    <button 
+                      className="setting-action-btn"
+                      onClick={() => setShowSessionsModal(true)}
+                    >
+                      <Clock size={18} />
+                      <div>
+                        <div className="setting-label">Active Sessions</div>
+                        <div className="setting-description">Manage your logged-in devices</div>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Notification Preferences */}
+                <div className="settings-section">
+                  <h3 className="settings-section-title">Notification Preferences</h3>
+                  <div className="settings-options">
+                    <div className="setting-option">
+                      <div className="setting-info">
+                        <Bell size={18} />
+                        <div>
+                          <div className="setting-label">Email Notifications</div>
+                          <div className="setting-description">Receive notifications via email</div>
+                        </div>
+                      </div>
+                      <label className="toggle-switch">
+                        <input 
+                          type="checkbox" 
+                          checked={settings.emailNotifications}
+                          onChange={() => updateSetting('emailNotifications')}
+                        />
+                        <span className="toggle-slider"></span>
+                      </label>
+                    </div>
+
+                    <div className="setting-option">
+                      <div className="setting-info">
+                        <Bell size={18} />
+                        <div>
+                          <div className="setting-label">Push Notifications</div>
+                          <div className="setting-description">Enable browser push notifications</div>
+                        </div>
+                      </div>
+                      <label className="toggle-switch">
+                        <input 
+                          type="checkbox" 
+                          checked={settings.pushNotifications}
+                          onChange={() => updateSetting('pushNotifications')}
+                        />
+                        <span className="toggle-slider"></span>
+                      </label>
+                    </div>
+
+                    <div className="setting-option">
+                      <div className="setting-info">
+                        <Briefcase size={18} />
+                        <div>
+                          <div className="setting-label">Job Alerts</div>
+                          <div className="setting-description">Get notified about new job postings</div>
+                        </div>
+                      </div>
+                      <label className="toggle-switch">
+                        <input 
+                          type="checkbox" 
+                          checked={settings.jobAlerts}
+                          onChange={() => updateSetting('jobAlerts')}
+                        />
+                        <span className="toggle-slider"></span>
+                      </label>
+                    </div>
+
+                    <div className="setting-option">
+                      <div className="setting-info">
+                        <Book size={18} />
+                        <div>
+                          <div className="setting-label">Course Updates</div>
+                          <div className="setting-description">Updates on enrolled courses</div>
+                        </div>
+                      </div>
+                      <label className="toggle-switch">
+                        <input 
+                          type="checkbox" 
+                          checked={settings.courseUpdates}
+                          onChange={() => updateSetting('courseUpdates')}
+                        />
+                        <span className="toggle-slider"></span>
+                      </label>
+                    </div>
+
+                    <div className="setting-option">
+                      <div className="setting-info">
+                        <MessageSquare size={18} />
+                        <div>
+                          <div className="setting-label">Forum Mentions</div>
+                          <div className="setting-description">When someone mentions you in forums</div>
+                        </div>
+                      </div>
+                      <label className="toggle-switch">
+                        <input 
+                          type="checkbox" 
+                          checked={settings.forumMentions}
+                          onChange={() => updateSetting('forumMentions')}
+                        />
+                        <span className="toggle-slider"></span>
+                      </label>
+                    </div>
+
+                    <div className="setting-option">
+                      <div className="setting-info">
+                        <FileText size={18} />
+                        <div>
+                          <div className="setting-label">Article Updates</div>
+                          <div className="setting-description">Newsletter and article publications</div>
+                        </div>
+                      </div>
+                      <label className="toggle-switch">
+                        <input 
+                          type="checkbox" 
+                          checked={settings.articleUpdates}
+                          onChange={() => updateSetting('articleUpdates')}
+                        />
+                        <span className="toggle-slider"></span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Appearance Section */}
+                <div className="settings-section">
+                  <h3 className="settings-section-title">Appearance & Display</h3>
+                  <div className="settings-options">
+                    <div className="setting-option">
+                      <div className="setting-info">
+                        <Settings size={18} />
+                        <div>
+                          <div className="setting-label">Dark Mode</div>
+                          <div className="setting-description">Switch to dark theme</div>
+                        </div>
+                      </div>
+                      <label className="toggle-switch">
+                        <input 
+                          type="checkbox" 
+                          checked={settings.darkMode}
+                          onChange={() => updateSetting('darkMode')}
+                        />
+                        <span className="toggle-slider"></span>
+                      </label>
+                    </div>
+
+                    <div className="setting-option">
+                      <div className="setting-info">
+                        <TrendingUp size={18} />
+                        <div>
+                          <div className="setting-label">Compact Mode</div>
+                          <div className="setting-description">Show more content in less space</div>
+                        </div>
+                      </div>
+                      <label className="toggle-switch">
+                        <input 
+                          type="checkbox" 
+                          checked={settings.compactMode}
+                          onChange={() => updateSetting('compactMode')}
+                        />
+                        <span className="toggle-slider"></span>
+                      </label>
+                    </div>
+
+                    <div className="setting-option">
+                      <div className="setting-info">
+                        <Award size={18} />
+                        <div>
+                          <div className="setting-label">Animations</div>
+                          <div className="setting-description">Enable smooth animations and transitions</div>
+                        </div>
+                      </div>
+                      <label className="toggle-switch">
+                        <input 
+                          type="checkbox" 
+                          checked={settings.animationsEnabled}
+                          onChange={() => updateSetting('animationsEnabled')}
+                        />
+                        <span className="toggle-slider"></span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Privacy & Security Section */}
+                <div className="settings-section">
+                  <h3 className="settings-section-title">Privacy & Security</h3>
+                  <div className="settings-options">
+                    <div className="setting-option">
+                      <div className="setting-info">
+                        <User size={18} />
+                        <div>
+                          <div className="setting-label">Public Profile</div>
+                          <div className="setting-description">Make your profile visible to others</div>
+                        </div>
+                      </div>
+                      <label className="toggle-switch">
+                        <input 
+                          type="checkbox" 
+                          checked={settings.publicProfile}
+                          onChange={() => updateSetting('publicProfile')}
+                        />
+                        <span className="toggle-slider"></span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Language & Region */}
+                <div className="settings-section">
+                  <h3 className="settings-section-title">Language & Region</h3>
+                  <div className="settings-options">
+                    <div className="setting-option-full">
+                      <div className="setting-info">
+                        <Settings size={18} />
+                        <div className="setting-full-width">
+                          <div className="setting-label">Language</div>
+                          <div className="setting-description">Choose your preferred language</div>
+                          <select 
+                            className="setting-select"
+                            value={settings.language}
+                            onChange={(e) => setSettings(prev => ({ ...prev, language: e.target.value }))}
+                          >
+                            <option value="en">English</option>
+                            <option value="hi">हिन्दी (Hindi)</option>
+                            <option value="es">Español (Spanish)</option>
+                            <option value="fr">Français (French)</option>
+                            <option value="de">Deutsch (German)</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="setting-option-full">
+                      <div className="setting-info">
+                        <Clock size={18} />
+                        <div className="setting-full-width">
+                          <div className="setting-label">Timezone</div>
+                          <div className="setting-description">Your local timezone for dates and times</div>
+                          <select 
+                            className="setting-select"
+                            value={settings.timezone}
+                            onChange={(e) => setSettings(prev => ({ ...prev, timezone: e.target.value }))}
+                          >
+                            <option value="Asia/Kolkata">India Standard Time (IST) - {getTimeInTimezone('Asia/Kolkata')}</option>
+                            <option value="America/New_York">Eastern Time (ET) - {getTimeInTimezone('America/New_York')}</option>
+                            <option value="America/Los_Angeles">Pacific Time (PT) - {getTimeInTimezone('America/Los_Angeles')}</option>
+                            <option value="Europe/London">London (GMT) - {getTimeInTimezone('Europe/London')}</option>
+                            <option value="Asia/Dubai">Dubai (GST) - {getTimeInTimezone('Asia/Dubai')}</option>
+                            <option value="Asia/Singapore">Singapore (SGT) - {getTimeInTimezone('Asia/Singapore')}</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Data Management */}
+                <div className="settings-section settings-section-danger">
+                  <h3 className="settings-section-title">Data Management</h3>
+                  <div className="settings-options">
+                    <button 
+                      className="setting-action-btn setting-action-export"
+                      onClick={handleDataExport}
+                    >
+                      <File size={18} />
+                      <div>
+                        <div className="setting-label">Export Your Data</div>
+                        <div className="setting-description">Download a copy of your profile and activity</div>
+                      </div>
+                    </button>
+
+                    <button 
+                      className="setting-action-btn setting-action-delete"
+                      onClick={handleAccountDeletion}
+                    >
+                      <AlertCircle size={18} />
+                      <div>
+                        <div className="setting-label">Delete Account</div>
+                        <div className="setting-description">Permanently remove your account and data</div>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="settings-modal-footer">
+              <button className="btn-modal-cancel" onClick={() => setShowSettingsModal(false)}>Cancel</button>
+              <button className="btn-modal-save" onClick={saveSettings}>Save Settings</button>
+            </div>
+          </div>
+        </div>
+      )}
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
 
       {/* Password Change Modal */}
       {showPasswordModal && (

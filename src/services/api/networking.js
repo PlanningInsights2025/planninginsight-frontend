@@ -2,11 +2,25 @@ import api from './api'
 
 /**
  * Networking API Service
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
  * Handles all networking-related API calls including connections, groups, events, etc.
  */
 
 /**
  * Get connection statistics
+<<<<<<< HEAD
+=======
+=======
+ * Handles all networking-related API calls including connections, stats, and recommendations
+ */
+
+/**
+ * Get user's connection statistics
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
  */
 export const getConnectionStats = async () => {
   try {
@@ -14,6 +28,10 @@ export const getConnectionStats = async () => {
     return response.data
   } catch (error) {
     console.error('Error fetching connection stats:', error)
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
     return {
       success: true,
       stats: {
@@ -21,19 +39,45 @@ export const getConnectionStats = async () => {
         pendingRequests: 0,
         sentRequests: 0
       }
+<<<<<<< HEAD
+=======
+=======
+    // Return mock data as fallback
+    return {
+      connections: 0,
+      pendingRequests: 0,
+      sentRequests: 0
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
     }
   }
 }
 
 /**
+<<<<<<< HEAD
  * Get all networking statistics
  */
 export const getAllNetworkingStats = async () => {
+=======
+<<<<<<< HEAD
+ * Get all networking statistics
+ */
+export const getAllNetworkingStats = async () => {
+=======
+ * Get networking statistics (groups, events, messages)
+ */
+export const getNetworkingStats = async () => {
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
   try {
     const response = await api.get('/networking/stats')
     return response.data
   } catch (error) {
     console.error('Error fetching networking stats:', error)
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
     return {
       success: true,
       stats: {
@@ -57,6 +101,16 @@ export const getUnreadNotificationsCount = async () => {
     return {
       success: true,
       count: 0
+<<<<<<< HEAD
+=======
+=======
+    // Return mock data as fallback
+    return {
+      groups: 0,
+      upcomingEvents: 0,
+      unreadMessages: 0
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
     }
   }
 }
@@ -64,9 +118,21 @@ export const getUnreadNotificationsCount = async () => {
 /**
  * Get all connections
  */
+<<<<<<< HEAD
 export const getConnections = async () => {
   try {
     const response = await api.get('/networking/connections')
+=======
+<<<<<<< HEAD
+export const getConnections = async () => {
+  try {
+    const response = await api.get('/networking/connections')
+=======
+export const getConnections = async (filters = {}) => {
+  try {
+    const response = await api.get('/networking/connections', { params: filters })
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
     return response.data
   } catch (error) {
     console.error('Error fetching connections:', error)
@@ -75,11 +141,38 @@ export const getConnections = async () => {
 }
 
 /**
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+ * Get pending connection requests
+ */
+export const getPendingRequests = async () => {
+  try {
+    const response = await api.get('/networking/connections/pending')
+    return response.data
+  } catch (error) {
+    console.error('Error fetching pending requests:', error)
+    throw error
+  }
+}
+
+/**
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
  * Send connection request
  */
 export const sendConnectionRequest = async (userId) => {
   try {
+<<<<<<< HEAD
     const response = await api.post('/networking/connections/request', { userId })
+=======
+<<<<<<< HEAD
+    const response = await api.post('/networking/connections/request', { userId })
+=======
+    const response = await api.post(`/networking/connections/request/${userId}`)
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
     return response.data
   } catch (error) {
     console.error('Error sending connection request:', error)
@@ -92,7 +185,15 @@ export const sendConnectionRequest = async (userId) => {
  */
 export const acceptConnectionRequest = async (requestId) => {
   try {
+<<<<<<< HEAD
     const response = await api.post(`/networking/connections/accept/${requestId}`)
+=======
+<<<<<<< HEAD
+    const response = await api.post(`/networking/connections/accept/${requestId}`)
+=======
+    const response = await api.put(`/networking/connections/accept/${requestId}`)
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
     return response.data
   } catch (error) {
     console.error('Error accepting connection request:', error)
@@ -105,7 +206,15 @@ export const acceptConnectionRequest = async (requestId) => {
  */
 export const rejectConnectionRequest = async (requestId) => {
   try {
+<<<<<<< HEAD
     const response = await api.post(`/networking/connections/reject/${requestId}`)
+=======
+<<<<<<< HEAD
+    const response = await api.post(`/networking/connections/reject/${requestId}`)
+=======
+    const response = await api.put(`/networking/connections/reject/${requestId}`)
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
     return response.data
   } catch (error) {
     console.error('Error rejecting connection request:', error)
@@ -127,7 +236,41 @@ export const removeConnection = async (connectionId) => {
 }
 
 /**
+<<<<<<< HEAD
  * Get groups
+=======
+<<<<<<< HEAD
+ * Get groups
+=======
+ * Search for professionals
+ */
+export const searchProfessionals = async (searchParams) => {
+  try {
+    const response = await api.get('/networking/search', { params: searchParams })
+    return response.data
+  } catch (error) {
+    console.error('Error searching professionals:', error)
+    throw error
+  }
+}
+
+/**
+ * Get recommended connections
+ */
+export const getRecommendedConnections = async () => {
+  try {
+    const response = await api.get('/networking/recommendations')
+    return response.data
+  } catch (error) {
+    console.error('Error fetching recommendations:', error)
+    return []
+  }
+}
+
+/**
+ * Get user groups
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
  */
 export const getGroups = async () => {
   try {
@@ -140,7 +283,15 @@ export const getGroups = async () => {
 }
 
 /**
+<<<<<<< HEAD
  * Join group
+=======
+<<<<<<< HEAD
+ * Join group
+=======
+ * Join a group
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
  */
 export const joinGroup = async (groupId) => {
   try {
@@ -153,7 +304,15 @@ export const joinGroup = async (groupId) => {
 }
 
 /**
+<<<<<<< HEAD
  * Leave group
+=======
+<<<<<<< HEAD
+ * Leave group
+=======
+ * Leave a group
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
  */
 export const leaveGroup = async (groupId) => {
   try {
@@ -166,11 +325,25 @@ export const leaveGroup = async (groupId) => {
 }
 
 /**
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
  * Get events
  */
 export const getEvents = async () => {
   try {
     const response = await api.get('/networking/events')
+<<<<<<< HEAD
+=======
+=======
+ * Get networking events
+ */
+export const getEvents = async (filters = {}) => {
+  try {
+    const response = await api.get('/networking/events', { params: filters })
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
     return response.data
   } catch (error) {
     console.error('Error fetching events:', error)
@@ -186,12 +359,24 @@ export const rsvpEvent = async (eventId, status) => {
     const response = await api.post(`/networking/events/${eventId}/rsvp`, { status })
     return response.data
   } catch (error) {
+<<<<<<< HEAD
     console.error('Error RSVPing to event:', error)
+=======
+<<<<<<< HEAD
+    console.error('Error RSVPing to event:', error)
+=======
+    console.error('Error RSVP to event:', error)
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
     throw error
   }
 }
 
 /**
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
  * Search users
  */
 export const searchUsers = async (query) => {
@@ -201,10 +386,28 @@ export const searchUsers = async (query) => {
   } catch (error) {
     console.error('Error searching users:', error)
     throw error
+<<<<<<< HEAD
+=======
+=======
+ * Get unread messages count
+ */
+export const getUnreadMessagesCount = async () => {
+  try {
+    const response = await api.get('/networking/messages/unread/count')
+    return response.data
+  } catch (error) {
+    console.error('Error fetching unread messages count:', error)
+    return { count: 0 }
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
   }
 }
 
 /**
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
  * Get notifications
  */
 export const getNotifications = async (filter = 'all', limit = 50, page = 1) => {
@@ -440,3 +643,39 @@ export const createEvent = async (eventData) => {
   }
 }
 
+<<<<<<< HEAD
+=======
+=======
+ * Get unread notifications count
+ */
+export const getUnreadNotificationsCount = async () => {
+  try {
+    const response = await api.get('/networking/notifications/unread/count')
+    return response.data
+  } catch (error) {
+    console.error('Error fetching unread notifications count:', error)
+    return { count: 0 }
+  }
+}
+
+export default {
+  getConnectionStats,
+  getNetworkingStats,
+  getConnections,
+  getPendingRequests,
+  sendConnectionRequest,
+  acceptConnectionRequest,
+  rejectConnectionRequest,
+  removeConnection,
+  searchProfessionals,
+  getRecommendedConnections,
+  getGroups,
+  joinGroup,
+  leaveGroup,
+  getEvents,
+  rsvpEvent,
+  getUnreadMessagesCount,
+  getUnreadNotificationsCount
+}
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607

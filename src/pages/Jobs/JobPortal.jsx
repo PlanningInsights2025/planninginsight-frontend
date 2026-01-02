@@ -56,6 +56,11 @@ const JobPortal = () => {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [showScrollTop, setShowScrollTop] = useState(false);
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
 
   // Scroll to top handler
   const scrollToTop = () => {
@@ -70,6 +75,24 @@ const JobPortal = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+<<<<<<< HEAD
+=======
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+
+  // Scroll to top handler
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Track scroll position to show/hide button
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 300);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
 
   // Load jobs from localStorage and sync with Recruiter portal
   useEffect(() => {
@@ -663,6 +686,66 @@ const ApplicationModal = ({ job, userProfile, onClose, onSubmit }) => {
     }
     setErrors(newErrors);
   };
+<<<<<<< HEAD
+=======
+
+  // Handle full name with validation - only letters and spaces
+  const handleFullNameChange = (value) => {
+    // Remove any character that is not a letter or space
+    const processedValue = value.replace(/[^a-zA-Z\s]/g, '');
+    setFullName(processedValue);
+    
+    // Real-time validation
+    let newErrors = { ...errors };
+    if (value !== processedValue && value.length > 0) {
+      newErrors.fullName = 'Only letters and spaces are allowed';
+    } else if (processedValue.length > 0 && processedValue.length < 3) {
+      newErrors.fullName = 'Full name must be at least 3 characters';
+    } else if (processedValue.length >= 3) {
+      delete newErrors.fullName;
+    }
+    setErrors(newErrors);
+  };
+
+  // Handle email with validation
+  const handleEmailChange = (value) => {
+    setEmail(value);
+    
+    // Real-time validation
+    let newErrors = { ...errors };
+    if (value.length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+      newErrors.email = 'Please enter a valid email address';
+    } else if (value.length > 0) {
+      delete newErrors.email;
+    }
+    setErrors(newErrors);
+  };
+
+  // Handle phone with validation - only numbers, 10 digits
+  const handlePhoneChange = (value) => {
+    // Remove all non-digit characters
+    const processedValue = value.replace(/\D/g, '');
+    
+    // Limit to 10 digits
+    const limitedValue = processedValue.substring(0, 10);
+    setPhone(limitedValue);
+    
+    // Real-time validation
+    let newErrors = { ...errors };
+    if (value !== processedValue && value.length > 0) {
+      newErrors.phone = 'Only numbers are allowed (10 digits required)';
+    } else if (limitedValue.length > 0 && limitedValue.length < 10) {
+      newErrors.phone = 'Phone number must be exactly 10 digits';
+    } else if (limitedValue.length === 10) {
+      if (!/^[6-9]/.test(limitedValue)) {
+        newErrors.phone = 'Phone number must start with 6, 7, 8, or 9';
+      } else {
+        delete newErrors.phone;
+      }
+    }
+    setErrors(newErrors);
+  };
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
 
   const validate = () => {
     const e = {};

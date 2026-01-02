@@ -58,18 +58,32 @@ function AppLayout({ children }) {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin');
 
+<<<<<<< HEAD
   return (
     <div className="app">
       {/* Header - Hidden on all admin routes */}
       {!isAdminRoute && <Header />}
+=======
+return (
+  <div className="app">
+    {/* Header - Hidden on all admin routes */}
+    {!isAdminRoute && <Header />}
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
 
       {/* Main Content Area */}
       <main className="main-content">
         {children}
+<<<<<<< HEAD
       </main>
 
       {/* Footer - Hidden on all admin routes */}
       {!isAdminRoute && <Footer />}
+=======
+</main>
+
+{/* Footer - Hidden on all admin routes */}
+{!isAdminRoute && <Footer />}
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
     </div>
   );
 }
@@ -92,6 +106,7 @@ function App() {
                   <Route path="/about" element={<About />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/signup" element={<Signup />} />
+<<<<<<< HEAD
                   <Route path="/auth/forgot-password" element={<ForgotPassword />} />
 
                   {/* Admin Login - Separate Route */}
@@ -119,8 +134,37 @@ function App() {
                   <Route path="/settings" element={<Settings />} />
                   <Route path="/notifications" element={<Notifications />} />
                   <Route path="/my-articles" element={<MyArticles />} />
+=======
+<Route path="/auth/forgot-password" element={<ForgotPassword />} />
 
-                    {/* Job Portal */}
+{/* Admin Login - Separate Route */}
+<Route path="/admin/login" element={<AdminLogin />} />
+
+{/* Admin Routes - Protected */}
+<Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
+<Route 
+  path="/admin/*" 
+  element={
+    <ProtectedAdminRoute>
+      <Admin />
+    </ProtectedAdminRoute>
+  } 
+/>
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+
+{/* Dashboard */}
+<Route path="/dashboard" element={<Dashboard />} />
+<Route path="/profile" element={<Profile />} />
+<Route path="/profile-view" element={<ProfileView />} />
+<Route path="/instructor" element={<Instructor />} />
+<Route path="/recruiter" element={<Recruiter />} />
+<Route path="/editor" element={<Editor />} />
+<Route path="/cv-generator" element={<CVGenerator />} />
+<Route path="/settings" element={<Settings />} />
+<Route path="/notifications" element={<Notifications />} />
+<Route path="/my-articles" element={<MyArticles />} />
+
+{/* Job Portal */}
                     <Route path="/jobs" element={<JobPortal />} />
                     <Route path="/jobs/:id" element={<JobDetail />} />
 
