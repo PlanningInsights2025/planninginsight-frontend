@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import "./EnrollmentForm.css";
@@ -24,6 +25,14 @@ export default function EnrollmentForm() {
     studentId: "STD-2025-001"
   });
   
+=======
+import React, { useState } from "react";
+import { useNavigate } from 'react-router-dom';
+import "./EnrollmentForm.css";
+
+export default function EnrollmentForm() {
+  const navigate = useNavigate();
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
   const [formData, setFormData] = useState({
     courseId: "",
     courseTitle: "",
@@ -41,6 +50,7 @@ export default function EnrollmentForm() {
     emergencyContactPhone: "",
     agreeTerms: false
   });
+<<<<<<< HEAD
   
   // Autofill form with user profile data on mount
   useEffect(() => {
@@ -61,6 +71,8 @@ export default function EnrollmentForm() {
       }));
     }
   }, [userProfile]);
+=======
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
   const [paymentMethod, setPaymentMethod] = useState("card");
   const [paymentData, setPaymentData] = useState({
     cardNumber: "",

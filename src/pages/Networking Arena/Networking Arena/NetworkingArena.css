@@ -1,17 +1,15 @@
 /* Networking Arena Main Styles - Planning Insights Theme */
 
 .networking-arena {
-  min-height: calc(100vh - 80px); /* Account for main-content padding */
+  min-height: 100vh;
   background: linear-gradient(135deg, #BDD337 0%, #A4A2CD 50%, #524393 100%);
   background-size: 200% 200%;
   animation: gradientShift 15s ease infinite;
-  padding-top: 0; /* Remove extra padding since main-content already has it */
+  padding-top: 72px;
   padding-bottom: 2rem;
   position: relative;
   overflow-x: hidden;
   z-index: 1;
-  margin-top: -80px; /* Offset the main-content padding */
-  padding-top: 80px; /* Add it back for internal content */
 }
 
 /* Animated background gradient */

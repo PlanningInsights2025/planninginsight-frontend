@@ -54,18 +54,39 @@ export const AuthProvider = ({ children }) => {
   const checkAuthStatus = async () => {
     try {
       const token = localStorage.getItem('authToken')
+      console.log('[AuthContext] Checking auth status, token exists:', !!token)
       if (token) {
-        const userData = await authAPI.getCurrentUser()
-        setUser(userData)
-        setIsAuthenticated(true)
+        // Try to get user data from backend
+        try {
+          console.log('[AuthContext] Fetching user data from /auth/me...')
+          const userData = await authAPI.getCurrentUser()
+          console.log('[AuthContext] User data received:', userData)
+          setUser(userData)
+          setIsAuthenticated(true)
+        } catch (error) {
+          console.error('[AuthContext] Failed to get user from token:', error.response?.data || error.message)
+          // Token might be invalid, clear it
+          localStorage.removeItem('authToken')
+          setUser(null)
+          setIsAuthenticated(false)
+        }
         return
       }
+      console.log('[AuthContext] No token found')
     } catch (error) {
-      console.error('Auth check failed:', error)
+      console.error('[AuthContext] Auth check failed:', error)
       localStorage.removeItem('authToken')
-    } finally {
-      // leave loading state to onAuthChanged handler where appropriate
     }
+    setUser(null)
+    setIsAuthenticated(false)
+  }
+
+<<<<<<< HEAD
+  // Manual auth state setter for custom login flows
+  const setAuthState = (userData) => {
+    console.log('🔐 AuthContext: Setting auth state manually', userData)
+    setUser(userData)
+    setIsAuthenticated(true)
   }
 
   // Manual auth state setter for custom login flows
@@ -76,7 +97,21 @@ export const AuthProvider = ({ children }) => {
   }
 
   const login = async (email, password) => {
+=======
+  const login = async (emailOrUserData, password) => {
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
     try {
+      // If first parameter is an object, it means we're updating context with user data
+      if (typeof emailOrUserData === 'object' && emailOrUserData !== null) {
+        const userData = emailOrUserData;
+        console.log('Updating auth context with user data:', userData);
+        setUser(userData);
+        setIsAuthenticated(true);
+        return { success: true, user: userData };
+      }
+      
+      // Otherwise, proceed with Firebase email/password login
+      const email = emailOrUserData;
       const fbUser = await signInWithEmail(email, password)
       const displayName = fbUser.displayName || ''
       const [firstName, ...rest] = displayName.split(' ')
@@ -93,7 +128,7 @@ export const AuthProvider = ({ children }) => {
       setIsAuthenticated(true)
       return { success: true, user: mapped }
     } catch (error) {
-      console.error('Firebase login error', error)
+      console.error('Login error', error)
       return { 
         success: false, 
         error: error.message || 'Login failed' 
@@ -228,11 +263,61 @@ export const AuthProvider = ({ children }) => {
   const verifyOTP = async (email, otp) => {
     try {
       const response = await authAPI.verifyOTP(email, otp)
-      return { success: true, data: response }
-    } catch (error) {
+      // Backend returns { success: true, message: "...", data: { resetToken: "..." } }
+      if (response.success && response.data?.resetToken) {
+        return { 
+          success: true, 
+          data: { 
+            token: response.data.resetToken 
+          } 
+        }
+      }
       return { 
         success: false, 
-        error: error.response?.data?.message || 'OTP verification failed' 
+        error: response.message || 'OTP verification failed' 
+      }
+    } catch (error) {
+      console.error('Verify OTP error:', error)
+      return { 
+        success: false, 
+        error: error.response?.data?.message || error.message || 'OTP verification failed' 
+      }
+    }
+  }
+
+  const forgotPassword = async (email) => {
+    try {
+      const response = await authAPI.forgotPassword(email)
+      // Backend returns { success: true, message: "..." }
+      if (response.success) {
+        return { success: true, data: response }
+      }
+      return { success: false, error: response.message || 'Failed to send reset code' }
+    } catch (error) {
+      console.error('Forgot password error:', error)
+      return { 
+        success: false, 
+        error: error.response?.data?.message || error.message || 'Failed to send reset code' 
+      }
+    }
+  }
+
+  const resetPassword = async (token, newPassword) => {
+    try {
+      // Backend expects { resetToken, newPassword }
+      const response = await authAPI.resetPassword(token, newPassword)
+      if (response.success) {
+        return { success: true, data: response }
+      }
+      return { 
+        success: false, 
+        error: response.message || 'Password reset failed' 
+      }
+    } catch (error) {
+      console.error('Reset password error:', error)
+      return { 
+        success: false, 
+        error: error.response?.data?.message || error.message || 'Password reset failed' 
       }
     }
   }
@@ -246,10 +331,22 @@ export const AuthProvider = ({ children }) => {
     logout,
     requestOTP,
     verifyOTP,
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
     requestSignupOTP,
     verifySignupOTP,
     checkAuthStatus,
     setAuthState
+<<<<<<< HEAD
+=======
+=======
+    forgotPassword,
+    resetPassword,
+    checkAuthStatus
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
   }
 
   return (

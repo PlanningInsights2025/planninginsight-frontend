@@ -1,6 +1,7 @@
 /* Course Detail Page Styles */
 
 .course-detail-page {
+<<<<<<< HEAD
   padding: 1rem 0;
   min-height: 100vh;
   background: #f8fafc;
@@ -14,12 +15,28 @@
   padding: 0 1.5rem;
   box-sizing: border-box;
   width: 100%;
+=======
+  padding: 2.5rem 0;
+  min-height: 100vh;
+  background: #f8fafc;
+}
+
+.course-detail-page .container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
 }
 
 .course-detail-content {
   display: grid;
+<<<<<<< HEAD
   grid-template-columns: minmax(0, 2fr) minmax(280px, 360px);
   gap: 2rem;
+=======
+  grid-template-columns: 1fr 400px;
+  gap: 2.5rem;
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
   align-items: start;
   max-width: 100%;
   box-sizing: border-box;
@@ -78,6 +95,7 @@
 /* Course Header */
 .course-header {
   background: white;
+<<<<<<< HEAD
   padding: 2rem;
   border-radius: 1rem;
   border: 1px solid #f1f5f9;
@@ -88,6 +106,17 @@
 
 .back-navigation {
   margin-bottom: 1rem;
+=======
+  padding: 2.5rem;
+  border-radius: 1rem;
+  border: 1px solid #f1f5f9;
+  margin-bottom: 2.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.back-navigation {
+  margin-bottom: 2rem;
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
 }
 
 .back-button {
@@ -507,7 +536,11 @@
 
 .curriculum-section {
   background: white;
+<<<<<<< HEAD
   border-radius: 0.75rem;
+=======
+  border-radius: 0.5rem;
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
   border: 1px solid #e2e8f0;
   overflow: hidden;
   transition: all 0.3s ease;
@@ -525,7 +558,10 @@
   padding: 1.5rem;
   background: #1e293b;
   border-bottom: 1px solid #e2e8f0;
+<<<<<<< HEAD
   transition: background 0.3s ease;
+=======
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
 }
 
 .section-header h3 {
@@ -550,6 +586,7 @@
   align-items: center;
   padding: 1rem;
   border-bottom: 1px solid #e2e8f0;
+<<<<<<< HEAD
   transition: all 0.2s ease;
   cursor: pointer;
 }
@@ -557,6 +594,8 @@
 .lesson-item:hover {
   background: #f8fafc;
   padding-left: 1.25rem;
+=======
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
 }
 
 .lesson-item:last-child {
@@ -1021,6 +1060,20 @@
   text-decoration: line-through !important;
 }
 
+/* Scoped override: ensure original price is darker on Course Detail page */
+.course-detail-page .pricing .original-price {
+  color: #0f172a !important;
+  text-decoration: line-through !important;
+  font-size: 1.125rem !important;
+}
+
+/* Scoped override: make original price slightly larger and darker */
+.course-detail-page .original-price {
+  font-size: 1.25rem !important;
+  color: #0f172a !important;
+  text-decoration: line-through !important;
+}
+
 .enrollment-info {
   margin-top: 1rem;
   padding-top: 1rem;
@@ -1372,6 +1425,7 @@
   .features-card {
     padding: 1rem;
   }
+<<<<<<< HEAD
 
   .pricing h3 {
     font-size: 1.5rem;
@@ -1427,6 +1481,8 @@
   .similar-course-card {
     padding: 1rem;
   }
+=======
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
 }
 
 /* ===== User-supplied small overrides for Course Detail view ===== */
@@ -1478,6 +1534,7 @@
   background: #A9A2CD !important;
   color: #0f172a !important;
   border: 1px solid var(--border-color) !important;
+<<<<<<< HEAD
   transition: all 0.2s ease !important;
   cursor: pointer !important;
 }
@@ -1485,11 +1542,14 @@
 .course-detail-page .icon-button:hover {
   background: #9289c0 !important;
   transform: scale(1.05) !important;
+=======
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
 }
 .course-detail-page .btn-primary {
   background: #524393 !important;
   color: #ffffff !important;
   border: 2px solid #0f172a !important;
+<<<<<<< HEAD
   transition: all 0.3s ease !important;
   font-weight: 600 !important;
   padding: 0.75rem 1.5rem !important;
@@ -1508,6 +1568,8 @@
   background: #3f3470 !important;
   transform: translateY(-1px) !important;
   box-shadow: 0 4px 12px rgba(82, 67, 147, 0.3) !important;
+=======
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
 }
 .course-detail-page .feature-item svg,
 .course-detail-page .objective-item svg {
@@ -1552,12 +1614,20 @@
 }
 .course-detail-page .course-header {
   background: #C0BABC !important;
+<<<<<<< HEAD
   padding: 1.75rem !important;
   border-radius: 1rem !important;
   border: 1px solid #f1f5f9 !important;
   margin-bottom: 1.5rem !important;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
   transition: box-shadow 0.3s ease !important;
+=======
+  padding: 2.5rem !important;
+  border-radius: 1rem !important;
+  border: 1px solid #f1f5f9 !important;
+  margin-bottom: 2.5rem !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1) !important;
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
 }
 .course-detail-page .course-meta-overview {
   display: grid !important;

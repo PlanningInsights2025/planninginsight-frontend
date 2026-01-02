@@ -1774,6 +1774,7 @@ textarea.form-input-modern {
 
   .news-page {
     padding: 1.5rem 0 3rem;
+<<<<<<< HEAD
   }
 
   .modification-alert-banner {
@@ -1789,6 +1790,8 @@ textarea.form-input-modern {
   .modification-alert-banner .alert-btn {
     width: 100%;
     justify-content: center;
+=======
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
   }
 
   .news-hero {

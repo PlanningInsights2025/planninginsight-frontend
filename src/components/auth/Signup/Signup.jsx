@@ -26,7 +26,15 @@ export default function Signup() {
   });
 
   const navigate = useNavigate();
+<<<<<<< HEAD
   const { requestSignupOTP, verifySignupOTP, checkAuthStatus } = useAuth()
+=======
+<<<<<<< HEAD
+  const { requestSignupOTP, verifySignupOTP, checkAuthStatus } = useAuth()
+=======
+  const { signup, login, checkAuthStatus } = useAuth()
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
   const { showNotification } = useNotification()
 
   const handleChange = (e) => {

@@ -68,15 +68,23 @@
   width: 40px;
   height: 40px;
   padding: 0;
+<<<<<<< HEAD
   background: #ffffff;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   color: #6b7280;
+=======
+  background: rgba(15, 23, 42, 0.6);
+  border: 1.5px solid rgba(71, 85, 105, 0.5);
+  border-radius: 8px;
+  color: #e2e8f0;
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
   font-size: 1.2rem;
   font-weight: 400;
   cursor: pointer;
   transition: all 0.2s ease;
   outline: none;
+<<<<<<< HEAD
   flex-shrink: 0;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
@@ -102,6 +110,37 @@
 
 .back-button:active {
   background: #f3f4f6;
+=======
+  position: absolute;
+  top: 1.5rem;
+  left: 1.5rem;
+  z-index: 100;
+  backdrop-filter: blur(10px);
+}
+
+.dark-mode .back-button {
+  background: rgba(15, 23, 42, 0.8);
+  border-color: rgba(71, 85, 105, 0.6);
+  color: #f1f5f9;
+}
+
+.back-button:hover {
+  background: rgba(15, 23, 42, 0.8);
+  border-color: rgba(100, 116, 139, 0.8);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.dark-mode .back-button:hover {
+  background: rgba(30, 41, 59, 0.9);
+  border-color: rgba(100, 116, 139, 0.8);
+  color: #ffffff;
+}
+
+.back-button:active {
+  background: rgba(15, 23, 42, 0.9);
+  transform: translateY(0);
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
 }
 
 .dark-mode .back-button:active {
@@ -163,6 +202,7 @@
   width: 44px;
   height: 44px;
   padding: 0;
+<<<<<<< HEAD
   border: 2px solid #c4b5fd !important;
   border-radius: 12px;
   background: #ffffff !important;
@@ -200,6 +240,44 @@
 
 .dark-mode .icon-button:active {
   box-shadow: 0 2px 8px rgba(129, 140, 248, 0.2) !important;
+=======
+  border: 2px solid transparent;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.05) 100%);
+  color: var(--primary-color);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.12);
+}
+
+.dark-mode .icon-button {
+  background: #334155;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  color: #a5b4fc;
+  border-color: #475569;
+}
+
+.icon-button:hover {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.12) 100%);
+  border-color: var(--primary-color);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.2);
+}
+
+.dark-mode .icon-button:hover {
+  background: #475569;
+  border-color: #818cf8;
+  box-shadow: 0 6px 16px rgba(129, 140, 248, 0.3);
+}
+
+.icon-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.12);
+}
+
+.dark-mode .icon-button:active {
+  box-shadow: 0 2px 8px rgba(129, 140, 248, 0.2);
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
 }
 
 .notification-badge {

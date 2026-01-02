@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import { Users, MessageCircle, Calendar, Briefcase, Award, TrendingUp, Search, Bell, Settings, ChevronUp } from 'lucide-react';
+import { Users, MessageCircle, Video, Calendar, Briefcase, Award, TrendingUp, Search, Bell, Settings, ChevronUp } from 'lucide-react';
 import './NetworkingArena.css';
 import { useAuth } from '@/contexts/AuthContext';
+<<<<<<<< HEAD:src/pages/Networking Arena/Networking Arena/Networking Arena/Networking Arena/NetworkingArena.jsx
 import * as networkingAPI from '@/services/api/networking';
 import toast from 'react-hot-toast';
 
@@ -17,22 +17,37 @@ import JobPostings from '@/components/networkingArena/JobPostings/JobPostings';
 import RecruiterDashboard from '@/components/networkingArena/RecruiterDashboard/RecruiterDashboard';
 import NotificationCenter from '@/components/networkingArena/NotificationCenter/NotificationCenter';
 import PremiumFeatures from '@/components/networkingArena/PremiumFeatures/PremiumFeatures';
+import VideoCallModal from '@/components/networkingArena/VideoCallModal/VideoCallModal';
 import AdvancedSearch from '@/components/networkingArena/AdvancedSearch/AdvancedSearch';
+========
+
+// Import Components
+import ProfileSection from '@/components/networkingArena/networkingArena/networkingArena/ProfileSection/ProfileSection';
+import ConnectionsPanel from '@/components/networkingArena/networkingArena/networkingArena/ConnectionsPanel/ConnectionsPanel';
+import MessagingCenter from '@/components/networkingArena/networkingArena/networkingArena/MessagingCenter/MessagingCenter';
+import FeedSection from '@/components/networkingArena/networkingArena/networkingArena/FeedSection/FeedSection';
+import GroupsPanel from '@/components/networkingArena/networkingArena/networkingArena/GroupsPanel/GroupsPanel';
+import EventsSection from '@/components/networkingArena/networkingArena/networkingArena/EventsSection/EventsSection';
+import JobPostings from '@/components/networkingArena/networkingArena/networkingArena/JobPostings/JobPostings';
+import RecruiterDashboard from '@/components/networkingArena/networkingArena/networkingArena/RecruiterDashboard/RecruiterDashboard';
+import NotificationCenter from '@/components/networkingArena/networkingArena/networkingArena/NotificationCenter/NotificationCenter';
+import PremiumFeatures from '@/components/networkingArena/networkingArena/networkingArena/PremiumFeatures/PremiumFeatures';
+import VideoCallModal from '@/components/networkingArena/networkingArena/networkingArena/VideoCallModal/VideoCallModal';
+import AdvancedSearch from '@/components/networkingArena/networkingArena/networkingArena/AdvancedSearch/AdvancedSearch';
+>>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3:src/pages/Networking Arena/Networking Arena/Networking Arena/NetworkingArena.jsx
 
 const NetworkingArena = () => {
   const { user } = useAuth();
-  const location = useLocation();
-  const [activeTab, setActiveTab] = useState(location.state?.activeTab || 'feed');
+  const [activeTab, setActiveTab] = useState('feed');
   const [showMessaging, setShowMessaging] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showVideoCall, setShowVideoCall] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [userRole, setUserRole] = useState('professional'); // professional, recruiter, premium
   const [unreadMessages, setUnreadMessages] = useState(0);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [messageUserId, setMessageUserId] = useState(null);
-  const [hasError, setHasError] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
   const [connectionStats, setConnectionStats] = useState({
     connections: 0,
     pendingRequests: 0,
@@ -50,22 +65,6 @@ const NetworkingArena = () => {
     name: user?.displayName || user?.firstName + ' ' + (user?.lastName || '') || 'User',
     avatar: user?.photoURL || '/api/placeholder/40/40'
   };
-
-  // Catch any rendering errors
-  useEffect(() => {
-    console.log('NetworkingArena mounted');
-    console.log('User:', user);
-    console.log('Current User:', currentUser);
-    
-    // Add a simple test to ensure component is working
-    try {
-      document.title = 'Networking Arena - Planning Insights';
-    } catch (error) {
-      console.error('Error in useEffect:', error);
-      setHasError(true);
-      setErrorMessage(error.message);
-    }
-  }, []);
 
   useEffect(() => {
     // Initialize user data and settings
@@ -157,62 +156,21 @@ const NetworkingArena = () => {
   ];
 
   const renderContent = () => {
-    try {
-      switch (activeTab) {
-        case 'feed':
-          return <FeedSection userRole={userRole} currentUser={currentUser} />;
-        case 'connections':
-          return <ConnectionsPanel onOpenMessaging={handleOpenMessaging} />;
-        case 'groups':
-          return <GroupsPanel />;
-        case 'events':
-          return <EventsSection />;
-        case 'jobs':
-          return <JobPostings userRole={userRole} />;
-        default:
-          return <FeedSection userRole={userRole} currentUser={currentUser} />;
-      }
-    } catch (error) {
-      console.error('Error rendering content:', error);
-      return <div style={{ padding: '20px', textAlign: 'center' }}>
-        <h3>Something went wrong</h3>
-        <p>{error.message}</p>
-      </div>;
+    switch (activeTab) {
+      case 'feed':
+        return <FeedSection userRole={userRole} currentUser={currentUser} />;
+      case 'connections':
+        return <ConnectionsPanel onOpenMessaging={handleOpenMessaging} />;
+      case 'groups':
+        return <GroupsPanel />;
+      case 'events':
+        return <EventsSection />;
+      case 'jobs':
+        return <JobPostings userRole={userRole} />;
+      default:
+        return <FeedSection userRole={userRole} />;
     }
   };
-
-  if (hasError) {
-    return <div style={{ 
-      padding: '100px 20px', 
-      textAlign: 'center', 
-      background: 'white', 
-      minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center'
-    }}>
-      <h2 style={{ color: '#524393', marginBottom: '1rem' }}>Networking Arena - Loading Error</h2>
-      <p style={{ color: '#666' }}>{errorMessage || 'Please refresh the page or try again later.'}</p>
-      <button 
-        onClick={() => window.location.reload()}
-        style={{
-          marginTop: '1rem',
-          padding: '0.5rem 1rem',
-          background: '#524393',
-          color: 'white',
-          border: 'none',
-          borderRadius: '6px',
-          cursor: 'pointer'
-        }}
-      >
-        Refresh Page
-      </button>
-    </div>;
-  }
-
-  // Log render
-  console.log('Rendering NetworkingArena - activeTab:', activeTab);
 
   return (
     <div className="networking-arena">
@@ -243,6 +201,16 @@ const NetworkingArena = () => {
                 <span className="notification-badge">{unreadNotifications}</span>
               )}
             </button>
+<<<<<<<< HEAD:src/pages/Networking Arena/Networking Arena/Networking Arena/Networking Arena/NetworkingArena.jsx
+========
+
+            {userRole !== 'professional' && (
+              <div className="user-role-badge">
+                {userRole === 'premium' && <Award size={16} className="premium-icon" />}
+                {userRole === 'recruiter' && <Briefcase size={16} className="recruiter-icon" />}
+              </div>
+            )}
+>>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3:src/pages/Networking Arena/Networking Arena/Networking Arena/NetworkingArena.jsx
           </div>
         </div>
       </div>
@@ -354,6 +322,12 @@ const NetworkingArena = () => {
         <NotificationCenter 
           onClose={() => setShowNotifications(false)}
           setUnreadCount={setUnreadNotifications}
+        />
+      )}
+
+      {showVideoCall && (
+        <VideoCallModal 
+          onClose={() => setShowVideoCall(false)}
         />
       )}
 

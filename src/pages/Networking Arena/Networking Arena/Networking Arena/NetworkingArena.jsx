@@ -2,6 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Users, MessageCircle, Video, Calendar, Briefcase, Award, TrendingUp, Search, Bell, Settings, ChevronUp } from 'lucide-react';
 import './NetworkingArena.css';
 import { useAuth } from '@/contexts/AuthContext';
+<<<<<<< HEAD
+=======
+<<<<<<<< HEAD:src/pages/Networking Arena/Networking Arena/Networking Arena/Networking Arena/NetworkingArena.jsx
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
 import * as networkingAPI from '@/services/api/networking';
 import toast from 'react-hot-toast';
 
@@ -18,6 +22,25 @@ import NotificationCenter from '@/components/networkingArena/NotificationCenter/
 import PremiumFeatures from '@/components/networkingArena/PremiumFeatures/PremiumFeatures';
 import VideoCallModal from '@/components/networkingArena/VideoCallModal/VideoCallModal';
 import AdvancedSearch from '@/components/networkingArena/AdvancedSearch/AdvancedSearch';
+<<<<<<< HEAD
+=======
+========
+
+// Import Components
+import ProfileSection from '@/components/networkingArena/networkingArena/networkingArena/ProfileSection/ProfileSection';
+import ConnectionsPanel from '@/components/networkingArena/networkingArena/networkingArena/ConnectionsPanel/ConnectionsPanel';
+import MessagingCenter from '@/components/networkingArena/networkingArena/networkingArena/MessagingCenter/MessagingCenter';
+import FeedSection from '@/components/networkingArena/networkingArena/networkingArena/FeedSection/FeedSection';
+import GroupsPanel from '@/components/networkingArena/networkingArena/networkingArena/GroupsPanel/GroupsPanel';
+import EventsSection from '@/components/networkingArena/networkingArena/networkingArena/EventsSection/EventsSection';
+import JobPostings from '@/components/networkingArena/networkingArena/networkingArena/JobPostings/JobPostings';
+import RecruiterDashboard from '@/components/networkingArena/networkingArena/networkingArena/RecruiterDashboard/RecruiterDashboard';
+import NotificationCenter from '@/components/networkingArena/networkingArena/networkingArena/NotificationCenter/NotificationCenter';
+import PremiumFeatures from '@/components/networkingArena/networkingArena/networkingArena/PremiumFeatures/PremiumFeatures';
+import VideoCallModal from '@/components/networkingArena/networkingArena/networkingArena/VideoCallModal/VideoCallModal';
+import AdvancedSearch from '@/components/networkingArena/networkingArena/networkingArena/AdvancedSearch/AdvancedSearch';
+>>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3:src/pages/Networking Arena/Networking Arena/Networking Arena/NetworkingArena.jsx
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
 
 const NetworkingArena = () => {
   const { user } = useAuth();
@@ -184,6 +207,19 @@ const NetworkingArena = () => {
                 <span className="notification-badge">{unreadNotifications}</span>
               )}
             </button>
+<<<<<<< HEAD
+=======
+<<<<<<<< HEAD:src/pages/Networking Arena/Networking Arena/Networking Arena/Networking Arena/NetworkingArena.jsx
+========
+
+            {userRole !== 'professional' && (
+              <div className="user-role-badge">
+                {userRole === 'premium' && <Award size={16} className="premium-icon" />}
+                {userRole === 'recruiter' && <Briefcase size={16} className="recruiter-icon" />}
+              </div>
+            )}
+>>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3:src/pages/Networking Arena/Networking Arena/Networking Arena/NetworkingArena.jsx
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
           </div>
         </div>
       </div>
