@@ -22,11 +22,8 @@ import Signup from './pages/Auth/Signup';
 import ForgotPassword from './pages/Auth/ForgotPassword';
 import Dashboard from './pages/Dashboard/Dashboard';
 import Profile from './pages/Dashboard/Profile';
-<<<<<<< HEAD
 import ProfileView from './pages/Dashboard/ProfileView';
 import MyArticles from './pages/Dashboard/MyArticles';
-=======
->>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
 import Jobs from './pages/Jobs/Jobs';
 import JobPortal from './pages/Jobs/JobPortal';
 import JobDetail from './pages/Jobs/JobDetail';
@@ -42,7 +39,6 @@ import ArticleDetail from './pages/News/ArticleDetail';
 import Forum from './pages/Forum/Forum';
 import ForumCreate from './pages/Forum/ForumCreate';
 import ForumThreadDetail from './pages/Forum/ForumThreadDetail';
-<<<<<<< HEAD
 import NetworkingArena from './pages/Networking Arena/NetworkingArena';
 import Instructor from './pages/Instructor/Instructor';
 import Recruiter from './pages/Recruiter/Recruiter';
@@ -51,14 +47,6 @@ import CVGenerator from './pages/CVGenerator/CVGenerator';
 import Settings from './pages/Settings/Settings';
 import Notifications from './pages/Notifications/Notifications';
 import Admin from './pages/Admin/Admin/AdminNew';
-=======
-<<<<<<< HEAD
-import NetworkingArena from './pages/Networking Arena/Networking Arena/NetworkingArena';
-=======
-import NetworkingArena from './pages/Networking Arena/Networking Arena/Networking Arena/NetworkingArena';
->>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
-import Admin from './pages/Admin/Admin';
->>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
 
 // Styles
 import './App.css';
@@ -70,26 +58,18 @@ function AppLayout({ children }) {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin');
 
-  return (
-    <div className="app">
-<<<<<<< HEAD
-      {/* Header - Hidden on all admin routes */}
-=======
-      {/* Header - Hidden on admin routes */}
->>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
-      {!isAdminRoute && <Header />}
+return (
+  <div className="app">
+    {/* Header - Hidden on all admin routes */}
+    {!isAdminRoute && <Header />}
 
       {/* Main Content Area */}
       <main className="main-content">
         {children}
-      </main>
+</main>
 
-<<<<<<< HEAD
-      {/* Footer - Hidden on all admin routes */}
-=======
-      {/* Footer - Hidden on admin routes */}
->>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
-      {!isAdminRoute && <Footer />}
+{/* Footer - Hidden on all admin routes */}
+{!isAdminRoute && <Footer />}
     </div>
   );
 }
@@ -112,56 +92,35 @@ function App() {
                   <Route path="/about" element={<About />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/signup" element={<Signup />} />
-                  <Route path="/auth/forgot-password" element={<ForgotPassword />} />
+<Route path="/auth/forgot-password" element={<ForgotPassword />} />
 
-<<<<<<< HEAD
-                  {/* Admin Login - Separate Route */}
-                  <Route path="/admin/login" element={<AdminLogin />} />
+{/* Admin Login - Separate Route */}
+<Route path="/admin/login" element={<AdminLogin />} />
 
-                  {/* Admin Routes - Protected */}
-                  <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
-                  <Route 
-                    path="/admin/*" 
-                    element={
-                      <ProtectedAdminRoute>
-                        <Admin />
-                      </ProtectedAdminRoute>
-                    } 
-                  />
+{/* Admin Routes - Protected */}
+<Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
+<Route 
+  path="/admin/*" 
+  element={
+    <ProtectedAdminRoute>
+      <Admin />
+    </ProtectedAdminRoute>
+  } 
+/>
 
-                  {/* Dashboard */}
-                  <Route path="/dashboard" element={<Dashboard />} />
-                  <Route path="/profile" element={<Profile />} />
-                  <Route path="/profile-view" element={<ProfileView />} />
-                  <Route path="/instructor" element={<Instructor />} />
-                  <Route path="/recruiter" element={<Recruiter />} />
-                  <Route path="/editor" element={<Editor />} />
-                  <Route path="/cv-generator" element={<CVGenerator />} />
-                  <Route path="/settings" element={<Settings />} />
-                  <Route path="/notifications" element={<Notifications />} />
-                  <Route path="/my-articles" element={<MyArticles />} />
-=======
-<<<<<<< HEAD
-                {/* Main Content Area */}
-                <main className="main-content">
-                  <Routes>
-                    {/* Public Routes */}
-                    <Route path="/" element={<Home />} />
-                    <Route path="/about" element={<About />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/signup" element={<Signup />} />
+{/* Dashboard */}
+<Route path="/dashboard" element={<Dashboard />} />
+<Route path="/profile" element={<Profile />} />
+<Route path="/profile-view" element={<ProfileView />} />
+<Route path="/instructor" element={<Instructor />} />
+<Route path="/recruiter" element={<Recruiter />} />
+<Route path="/editor" element={<Editor />} />
+<Route path="/cv-generator" element={<CVGenerator />} />
+<Route path="/settings" element={<Settings />} />
+<Route path="/notifications" element={<Notifications />} />
+<Route path="/my-articles" element={<MyArticles />} />
 
-                    {/* Dashboard */}
-                    <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="/profile" element={<Profile />} />
-=======
-                  {/* Dashboard */}
-                  <Route path="/dashboard" element={<Dashboard />} />
-                  <Route path="/profile" element={<Profile />} />
->>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
->>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
-
-                    {/* Job Portal */}
+{/* Job Portal */}
                     <Route path="/jobs" element={<JobPortal />} />
                     <Route path="/jobs/:id" element={<JobDetail />} />
 
