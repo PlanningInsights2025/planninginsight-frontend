@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useParams, useNavigate, Link } from 'react-router-dom'
+import { useParams, useNavigate, Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
 import { useNotification } from '../../contexts/NotificationContext'
 import { useApi } from '../../hooks/useApi'
@@ -33,6 +33,7 @@ import Loader from '../../components/common/Loader/Loader'
 const CourseDetail = () => {
   const { id } = useParams()
   const navigate = useNavigate()
+  const location = useLocation()
   const { isAuthenticated, user } = useAuth()
   const { showNotification } = useNotification()
   
@@ -65,7 +66,51 @@ const CourseDetail = () => {
     try {
       setLoading(true)
       
-      // Fetch course details
+      // Check if course data was passed via navigation state first
+      const passedCourse = location.state?.course
+      if (passedCourse) {
+        // Use the course data passed from the Learning page
+        const mockCourseData = {
+          ...passedCourse,
+          description: 'This comprehensive course covers the fundamentals of smart city planning, sustainable development, and innovative urban technologies. You\'ll learn from industry experts and work on real-world case studies.',
+          enrollments: 2500,
+          reviewCount: 245,
+          originalFees: passedCourse.fees > 0 ? passedCourse.fees + 1000 : 0,
+          nextSession: '2024-01-15',
+          courseType: passedCourse.type === 'live' ? 'live' : passedCourse.type === 'recorded' ? 'recorded' : 'offline',
+          location: passedCourse.location,
+          category: 'Urban Planning',
+          earlyBird: true
+        }
+        setCourse(mockCourseData)
+        
+        // Mock similar courses (generate unique ids so suggestions change per course and exclude the current one)
+        const baseSimilar = [
+          { title: 'Advanced GIS for Urban Planning', instructor: 'Prof. Sarah Chen', rating: 4.6, fees: 3499 },
+          { title: 'Sustainable Urban Development', instructor: 'Dr. Michael Rodriguez', rating: 4.4, fees: 2799 },
+          { title: 'IoT Applications in Smart Cities', instructor: 'Dr. Raj Patel', rating: 4.7, fees: 3999 }
+        ]
+        const generated = baseSimilar
+          .map((s, i) => ({ id: `${passedCourse.id}-sim-${i+1}`, ...s, image: null }))
+          .filter(s => s.id !== passedCourse.id)
+        setSimilarCourses(generated)
+        
+        // Scroll to top so newly loaded course details are visible
+        try { window.scrollTo({ top: 0, behavior: 'smooth' }) } catch(e) { window.scrollTo(0,0) }
+        
+        // Mock reviews
+        setReviews([
+          { id: 1, reviewerName: 'Alex Johnson', rating: 5, comment: 'Excellent course! Very comprehensive and practical.', date: '2024-01-10' },
+          { id: 2, reviewerName: 'Priya Sharma', rating: 4, comment: 'Good content, but could use more hands-on exercises.', date: '2024-01-08' },
+          { id: 3, reviewerName: 'David Chen', rating: 5, comment: 'Outstanding instructor and well-structured curriculum.', date: '2024-01-05' }
+        ])
+        
+        loadInstructorInfo(mockCourseData.instructorId || 'instructor-1')
+        setLoading(false)
+        return
+      }
+      
+      // Fallback to API fetch if no course data in state
       const courseData = await fetchCourseApi(id, {
         showError: true,
         errorMessage: 'Failed to load course details'
@@ -76,7 +121,8 @@ const CourseDetail = () => {
         
         // Fetch similar courses
         const similarCoursesData = await fetchSimilarCoursesApi(id)
-        setSimilarCourses(similarCoursesData || [])
+        // Ensure suggestions don't include the current course
+        setSimilarCourses((similarCoursesData || []).filter(sc => sc.id !== id))
         
         // Fetch reviews
         const reviewsData = await fetchReviewsApi(id)
@@ -85,6 +131,8 @@ const CourseDetail = () => {
         // Fetch instructor info (would come from API in real implementation)
         loadInstructorInfo(courseData.instructorId)
       }
+      // Scroll to top after loading from API
+      try { window.scrollTo({ top: 0, behavior: 'smooth' }) } catch(e) { window.scrollTo(0,0) }
     } catch (error) {
       // Error handled by useApi hook
     } finally {
@@ -123,7 +171,7 @@ const CourseDetail = () => {
   const handleEnroll = () => {
     if (!isAuthenticated) {
       showNotification('Please sign in to enroll in this course', 'info')
-      navigate('/login', { state: { from: `/learning/courses/${id}/enroll` } })
+      navigate('/login', { state: { from: `/learning/enroll`, course } })
       return
     }
     // Navigate to the full enrollment page and pass the course
@@ -279,13 +327,13 @@ const CourseDetail = () => {
               )}
             </div>
             
-            <button 
+            {/* <button 
               className="btn btn-primary btn-large"
               onClick={handleEnroll}
             >
               <Book size={20} />
               Enroll Now
-            </button>
+            </button> */}
           </div>
         ) : (
           <div className="login-prompt">
@@ -331,66 +379,87 @@ const CourseDetail = () => {
    */
   const renderOverviewTab = () => (
     <div className="tab-content">
+      {/* Course Video Section */}
+      {course.videoUrl && (
+        <div className="course-video-section" style={{marginBottom: '2rem'}}>
+          <h2>Course Preview</h2>
+          <div style={{position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden', borderRadius: '8px', marginTop: '1rem', backgroundColor: '#000'}}>
+            {course.videoUrl.includes('youtube.com') || course.videoUrl.includes('youtu.be') ? (
+              <iframe
+                src={course.videoUrl.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/')}
+                style={{position: 'absolute', top: 0, left: 0, width: '100%', height: '100%'}}
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                title="Course Preview"
+              />
+            ) : course.videoUrl.includes('vimeo.com') ? (
+              <iframe
+                src={course.videoUrl.replace('vimeo.com/', 'player.vimeo.com/video/')}
+                style={{position: 'absolute', top: 0, left: 0, width: '100%', height: '100%'}}
+                frameBorder="0"
+                allow="autoplay; fullscreen; picture-in-picture"
+                allowFullScreen
+                title="Course Preview"
+              />
+            ) : (
+              <video 
+                controls 
+                style={{position: 'absolute', top: 0, left: 0, width: '100%', height: '100%'}}
+              >
+                <source src={course.videoUrl} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            )}
+          </div>
+        </div>
+      )}
+
       <div className="course-description">
         <h2>About This Course</h2>
         <p>{course.description}</p>
       </div>
 
-      <div className="learning-objectives">
-        <h3>What You'll Learn</h3>
-        <div className="objectives-grid">
-          <div className="objective-item">
-            <CheckCircle size={16} />
-            <span>Understand smart city planning principles</span>
-          </div>
-          <div className="objective-item">
-            <CheckCircle size={16} />
-            <span>Implement IoT solutions for urban development</span>
-          </div>
-          <div className="objective-item">
-            <CheckCircle size={16} />
-            <span>Analyze urban data for decision making</span>
-          </div>
-          <div className="objective-item">
-            <CheckCircle size={16} />
-            <span>Develop sustainable urban development strategies</span>
+      {(course.objectives && course.objectives.length > 0) && (
+        <div className="learning-objectives">
+          <h3>What You'll Learn</h3>
+          <div className="objectives-grid">
+            {course.objectives.map((objective, index) => (
+              <div key={index} className="objective-item">
+                <CheckCircle size={16} />
+                <span>{objective}</span>
+              </div>
+            ))}
           </div>
         </div>
-      </div>
+      )}
 
-      <div className="course-features">
-        <h3>Course Features</h3>
-        <div className="features-grid">
-          <div className="feature-item">
-            <PlayCircle size={24} />
-            <div>
-              <h4>Video Content</h4>
-              <p>{course.duration * 4} hours of on-demand video</p>
-            </div>
-          </div>
-          <div className="feature-item">
-            <Download size={24} />
-            <div>
-              <h4>Resources</h4>
-              <p>Downloadable resources and exercises</p>
-            </div>
-          </div>
-          <div className="feature-item">
-            <FileText size={24} />
-            <div>
-              <h4>Certificate</h4>
-              <p>Certificate of completion</p>
-            </div>
-          </div>
-          <div className="feature-item">
-            <Clock size={24} />
-            <div>
-              <h4>Lifetime Access</h4>
-              <p>Full lifetime access to course materials</p>
-            </div>
+      {(course.features && course.features.length > 0) && (
+        <div className="course-features">
+          <h3>Course Features</h3>
+          <div className="features-grid">
+            {course.features.map((feature, index) => (
+              <div key={index} className="feature-item">
+                <CheckCircle size={24} />
+                <div>
+                  <p>{feature}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
-      </div>
+      )}
+
+      {(course.requirements && course.requirements.length > 0) && (
+        <div className="course-requirements" style={{marginTop: '2rem'}}>
+          <h3>Requirements</h3>
+          <ul style={{listStyle: 'disc', paddingLeft: '1.5rem', color: '#4b5563'}}>
+            {course.requirements.map((req, index) => (
+              <li key={index} style={{marginBottom: '0.5rem'}}>{req}</li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {course.tags && course.tags.length > 0 && (
         <div className="course-tags">
@@ -417,37 +486,89 @@ const CourseDetail = () => {
         <div className="curriculum-stats">
           <span>{course.duration * 4} hours of content</span>
           <span>{course.duration} weeks</span>
-          <span>{course.duration * 2} lessons</span>
+          <span>{(course.curriculum && course.curriculum.length > 0) ? course.curriculum.length : (course.syllabus && course.syllabus.length > 0) ? course.syllabus.length : course.duration * 2} modules</span>
         </div>
       </div>
 
       <div className="curriculum-sections">
-        {[1, 2, 3, 4, 5, 6].map((week) => (
-          <div key={week} className="curriculum-section">
-            <div className="section-header">
-              <h3>Week {week}: {getWeekTitle(week)}</h3>
-              <span>{week * 4 - 3}-{week * 4} hours</span>
-            </div>
-            <div className="section-lessons">
-              {[1, 2, 3, 4].map((lesson) => (
-                <div key={lesson} className="lesson-item">
-                  <div className="lesson-info">
-                    <PlayCircle size={16} />
-                    <span>Lesson {lesson}: {getLessonTitle(week, lesson)}</span>
+        {(course.curriculum && course.curriculum.length > 0) ? (
+          // Display structured curriculum with modules and lessons
+          course.curriculum.map((module, index) => (
+            <div key={index} className="curriculum-section">
+              <div className="section-header">
+                <h3>{module.title || `Module ${index + 1}`}</h3>
+                <span>{module.lessons?.length || 0} lessons</span>
+              </div>
+              <div className="section-lessons">
+                {module.lessons && module.lessons.map((lesson, lessonIndex) => (
+                  <div key={lessonIndex} className="lesson-item">
+                    <div className="lesson-info">
+                      <PlayCircle size={16} />
+                      <span>{lesson.title}</span>
+                    </div>
+                    <div className="lesson-duration">{lesson.duration || '30 min'}</div>
                   </div>
-                  <div className="lesson-duration">45 min</div>
-                </div>
-              ))}
-              <div className="lesson-item assignment">
-                <div className="lesson-info">
-                  <FileText size={16} />
-                  <span>Weekly Assignment</span>
-                </div>
-                <div className="lesson-duration">1 hour</div>
+                ))}
               </div>
             </div>
-          </div>
-        ))}
+          ))
+        ) : (course.syllabus && course.syllabus.length > 0) ? (
+          // Display simple syllabus
+          course.syllabus.map((module, index) => (
+            <div key={index} className="curriculum-section">
+              <div className="section-header">
+                <h3>{module}</h3>
+                <span>{Math.floor(Math.random() * 2) + 2}-{Math.floor(Math.random() * 2) + 4} hours</span>
+              </div>
+              <div className="section-lessons">
+                {[1, 2, 3].map((lesson) => (
+                  <div key={lesson} className="lesson-item">
+                    <div className="lesson-info">
+                      <PlayCircle size={16} />
+                      <span>Lesson {lesson}</span>
+                    </div>
+                    <div className="lesson-duration">{30 + lesson * 5} min</div>
+                  </div>
+                ))}
+                <div className="lesson-item assignment">
+                  <div className="lesson-info">
+                    <FileText size={16} />
+                    <span>Assignment</span>
+                  </div>
+                  <div className="lesson-duration">1 hour</div>
+                </div>
+              </div>
+            </div>
+          ))
+        ) : (
+          // Default curriculum
+          [1, 2, 3, 4, 5, 6].map((week) => (
+            <div key={week} className="curriculum-section">
+              <div className="section-header">
+                <h3>Week {week}: {getWeekTitle(week)}</h3>
+                <span>{week * 4 - 3}-{week * 4} hours</span>
+              </div>
+              <div className="section-lessons">
+                {[1, 2, 3, 4].map((lesson) => (
+                  <div key={lesson} className="lesson-item">
+                    <div className="lesson-info">
+                      <PlayCircle size={16} />
+                      <span>Lesson {lesson}: {getLessonTitle(week, lesson)}</span>
+                    </div>
+                    <div className="lesson-duration">45 min</div>
+                  </div>
+                ))}
+                <div className="lesson-item assignment">
+                  <div className="lesson-info">
+                    <FileText size={16} />
+                    <span>Weekly Assignment</span>
+                  </div>
+                  <div className="lesson-duration">1 hour</div>
+                </div>
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </div>
   )
@@ -627,7 +748,19 @@ const CourseDetail = () => {
       <h2>Similar Courses You Might Like</h2>
       <div className="similar-courses-grid">
         {similarCourses.slice(0, 3).map(similarCourse => (
-          <div key={similarCourse.id} className="similar-course-card">
+          <div
+            key={similarCourse.id}
+            className="similar-course-card"
+            role="link"
+            tabIndex={0}
+            onClick={() => navigate(`/learning/courses/${similarCourse.id}`, { state: { course: similarCourse } })}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+                e.preventDefault()
+                navigate(`/learning/courses/${similarCourse.id}`, { state: { course: similarCourse } })
+              }
+            }}
+          >
             <div className="similar-course-image">
               {similarCourse.image ? (
                 <img src={similarCourse.image} alt={similarCourse.title} />
@@ -653,12 +786,13 @@ const CourseDetail = () => {
             </div>
             
             <div className="similar-course-actions">
-              <Link 
-                to={`/learning/courses/${similarCourse.id}`}
+              <button
+                type="button"
                 className="btn btn-outline btn-small"
+                onClick={(e) => { e.stopPropagation(); navigate(`/learning/courses/${similarCourse.id}`, { state: { course: similarCourse } }) }}
               >
                 View Details
-              </Link>
+              </button>
             </div>
           </div>
         ))}
@@ -732,12 +866,6 @@ const CourseDetail = () => {
               <div className="quick-enroll-card">
                 <div className="card-content">
                   <h3>Ready to Start Learning?</h3>
-                  <div className="pricing">
-                    <span className="price">{formatPrice(course.fees)}</span>
-                    {course.originalFees > course.fees && (
-                      <span className="original-price">₹{course.originalFees.toLocaleString()}</span>
-                    )}
-                  </div>
                   <button 
                     className="btn btn-primary w-full"
                     onClick={handleEnroll}

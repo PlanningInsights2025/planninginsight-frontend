@@ -67,18 +67,68 @@ const ApplicationForm = ({ job, isOpen, onClose, onSuccess }) => {
    * Handle input changes
    */
   const handleInputChange = (field, value) => {
+    let processedValue = value
+    let newErrors = { ...errors }
+    
+    // Real-time validation for full name - only allow letters and spaces
+    if (field === 'fullName') {
+      // Remove any character that is not a letter or space
+      processedValue = value.replace(/[^a-zA-Z\s]/g, '')
+      
+      // Validate: show error if invalid characters attempted or if too short
+      if (value.length > 0 && processedValue !== value) {
+        newErrors.fullName = 'Only letters and spaces are allowed'
+      } else if (processedValue.length > 0 && processedValue.length < 3) {
+        newErrors.fullName = 'Full name must be at least 3 characters'
+      } else if (processedValue.length >= 3) {
+        delete newErrors.fullName
+      }
+      
+      value = processedValue
+    }
+    
+    // Real-time validation for phone - only allow digits
+    if (field === 'phone') {
+      // Remove all non-digit characters
+      processedValue = value.replace(/\D/g, '')
+      
+      // Limit to 10 digits
+      if (processedValue.length > 10) {
+        processedValue = processedValue.substring(0, 10)
+      }
+      
+      // Validate: show error if invalid characters attempted or wrong length
+      if (value.length > 0 && processedValue !== value) {
+        newErrors.phone = 'Only numbers are allowed (10 digits required)'
+      } else if (processedValue.length > 0 && processedValue.length < 10) {
+        newErrors.phone = 'Phone number must be exactly 10 digits'
+      } else if (processedValue.length === 10) {
+        // Check if starts with 6-9
+        if (!/^[6-9]/.test(processedValue)) {
+          newErrors.phone = 'Phone number must start with 6, 7, 8, or 9'
+        } else {
+          delete newErrors.phone
+        }
+      }
+      
+      value = processedValue
+    }
+    
+    // Email validation
+    if (field === 'email') {
+      if (value.length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+        newErrors.email = 'Please enter a valid email address'
+      } else if (value.length > 0) {
+        delete newErrors.email
+      }
+    }
+    
+    setErrors(newErrors)
+    
     setFormData(prev => ({
       ...prev,
       [field]: value
     }))
-    
-    // Clear error when user starts typing
-    if (errors[field]) {
-      setErrors(prev => ({
-        ...prev,
-        [field]: ''
-      }))
-    }
   }
 
   /**
@@ -255,10 +305,12 @@ const ApplicationForm = ({ job, isOpen, onClose, onSuccess }) => {
           <label className="form-label">Full Name *</label>
           <input
             type="text"
+            name="fullName"
             className={`form-input ${errors.fullName ? 'error' : ''}`}
             value={formData.fullName}
             onChange={(e) => handleInputChange('fullName', e.target.value)}
-            placeholder="Your full name"
+            placeholder="Enter your full name (letters only)"
+            required
           />
           {errors.fullName && <span className="error-message">{errors.fullName}</span>}
         </div>
@@ -267,10 +319,12 @@ const ApplicationForm = ({ job, isOpen, onClose, onSuccess }) => {
           <label className="form-label">Email *</label>
           <input
             type="email"
+            name="email"
             className={`form-input ${errors.email ? 'error' : ''}`}
             value={formData.email}
             onChange={(e) => handleInputChange('email', e.target.value)}
             placeholder="you@example.com"
+            required
           />
           {errors.email && <span className="error-message">{errors.email}</span>}
         </div>
@@ -279,10 +333,14 @@ const ApplicationForm = ({ job, isOpen, onClose, onSuccess }) => {
           <label className="form-label">Phone *</label>
           <input
             type="tel"
+            name="phone"
             className={`form-input ${errors.phone ? 'error' : ''}`}
             value={formData.phone}
             onChange={(e) => handleInputChange('phone', e.target.value)}
-            placeholder="Mobile number"
+            placeholder="10-digit mobile number"
+            maxLength="10"
+            inputMode="numeric"
+            required
           />
           {errors.phone && <span className="error-message">{errors.phone}</span>}
         </div>
@@ -318,15 +376,23 @@ const ApplicationForm = ({ job, isOpen, onClose, onSuccess }) => {
           Your Cover Letter *
           <span className="char-count">
             {formData.coverLetter.length}/1000 characters
+            {formData.coverLetter.length > 0 && formData.coverLetter.length < 100 && (
+              <span style={{color: '#ef4444', marginLeft: '8px'}}>
+                (Min 100 characters)
+              </span>
+            )}
           </span>
         </label>
         <textarea
+          name="coverLetter"
           value={formData.coverLetter}
           onChange={(e) => handleInputChange('coverLetter', e.target.value)}
           className={`form-input ${errors.coverLetter ? 'error' : ''}`}
           placeholder="Write a compelling cover letter that highlights your qualifications and enthusiasm for this role..."
           rows="8"
+          minLength="100"
           maxLength="1000"
+          required
         />
         {errors.coverLetter && (
           <span className="error-message">{errors.coverLetter}</span>
@@ -383,13 +449,15 @@ const ApplicationForm = ({ job, isOpen, onClose, onSuccess }) => {
                 <DollarSign size={16} />
                 <input
                   type="text"
+                  name="expectedCTC"
                   value={formData.expectedCTC}
                   onChange={(e) => {
                     const value = e.target.value.replace(/\D/g, '')
                     handleInputChange('expectedCTC', value)
                   }}
                   className={`form-input ${errors.expectedCTC ? 'error' : ''}`}
-                  placeholder="Enter expected salary"
+                  placeholder="Enter expected salary (min ₹1,00,000)"
+                  required
                 />
               </div>
             </label>
@@ -411,12 +479,14 @@ const ApplicationForm = ({ job, isOpen, onClose, onSuccess }) => {
                 <Calendar size={16} />
                 <input
                   type="number"
+                  name="noticePeriod"
                   value={formData.noticePeriod}
                   onChange={(e) => handleInputChange('noticePeriod', e.target.value)}
                   className={`form-input ${errors.noticePeriod ? 'error' : ''}`}
-                  placeholder="Enter notice period"
+                  placeholder="Enter notice period (0-180 days)"
                   min="0"
-                  max="90"
+                  max="180"
+                  required
                 />
               </div>
             </label>
