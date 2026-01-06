@@ -39,6 +39,16 @@ import Forum from './pages/Forum/Forum';
 import ForumCreate from './pages/Forum/ForumCreate';
 import ForumThreadDetail from './pages/Forum/ForumThreadDetail';
 import NetworkingArena from './pages/Networking Arena/NetworkingArena';
+<<<<<<< HEAD
+=======
+import ProfileView from './pages/Dashboard/ProfileView';
+import Instructor from './pages/Instructor/Instructor';
+import Recruiter from './pages/Recruiter/Recruiter';
+import Editor from './pages/Editor/Editor';
+import CVGenerator from './pages/CVGenerator/CVGenerator';
+import Settings from './pages/Settings/Settings';
+import Notifications from './pages/Notifications/Notifications';
+>>>>>>> d407dac660c41680e4e8832e1966544b3e5b6249
 import Admin from './pages/Admin/Admin/AdminNew';
 
 // Styles
@@ -83,6 +93,7 @@ function App() {
                   {/* Public Routes */}
                   <Route path="/" element={<Home />} />
                   <Route path="/about" element={<About />} />
+<<<<<<< HEAD
                   <Route path="/login" element={<Login />} />
                   <Route path="/signup" element={<Signup />} />
                   <Route path="/auth/forgot-password" element={<ForgotPassword />} />
@@ -105,8 +116,39 @@ function App() {
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/profile" element={<Profile />} />
                   <Route path="/my-articles" element={<MyArticles />} />
+=======
+<Route path="/login" element={<Login />} />
+<Route path="/signup" element={<Signup />} />
+<Route path="/auth/forgot-password" element={<ForgotPassword />} />
 
-                    {/* Job Portal */}
+{/* Admin Login - Separate Route */}
+<Route path="/admin/login" element={<AdminLogin />} />
+
+{/* Admin Routes - Protected */}
+<Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
+<Route 
+  path="/admin/*" 
+  element={
+    <ProtectedAdminRoute>
+      <Admin />
+    </ProtectedAdminRoute>
+  } 
+/>
+>>>>>>> d407dac660c41680e4e8832e1966544b3e5b6249
+
+{/* Dashboard */}
+<Route path="/dashboard" element={<Dashboard />} />
+<Route path="/profile" element={<Profile />} />
+<Route path="/profile-view" element={<ProfileView />} />
+<Route path="/instructor" element={<Instructor />} />
+<Route path="/recruiter" element={<Recruiter />} />
+<Route path="/editor" element={<Editor />} />
+<Route path="/cv-generator" element={<CVGenerator />} />
+<Route path="/settings" element={<Settings />} />
+<Route path="/notifications" element={<Notifications />} />
+<Route path="/my-articles" element={<MyArticles />} />
+
+{/* Job Portal */}
                     <Route path="/jobs" element={<JobPortal />} />
                     <Route path="/jobs/:id" element={<JobDetail />} />
 

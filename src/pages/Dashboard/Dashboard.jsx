@@ -19,8 +19,17 @@ import {
   AlertCircle,
   File,
   Sparkles,
+<<<<<<< HEAD
   ChevronRight,
   Edit3
+=======
+<<<<<<< HEAD
+  ChevronRight,
+  Edit3
+=======
+  ChevronRight
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
+>>>>>>> d407dac660c41680e4e8832e1966544b3e5b6249
 } from 'lucide-react'
 
 /**
@@ -38,14 +47,46 @@ const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('overview')
   const [recentActivity, setRecentActivity] = useState([])
   const [showNotificationModal, setShowNotificationModal] = useState(false)
+<<<<<<< HEAD
   const [showSettingsModal, setShowSettingsModal] = useState(false)
+=======
+<<<<<<< HEAD
+  const [showSettingsModal, setShowSettingsModal] = useState(false)
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+  const [showSettingsModal, setShowSettingsModal] = useState(false)
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
+>>>>>>> d407dac660c41680e4e8832e1966544b3e5b6249
   const [notifications, setNotifications] = useState([
     { id: 1, message: 'Your CV has been viewed 5 times', time: '2 hours ago', read: false },
     { id: 2, message: 'New job posting matching your profile', time: '4 hours ago', read: false },
     { id: 3, message: 'Course enrollment confirmed', time: '1 day ago', read: true }
   ])
   const [settings, setSettings] = useState(() => {
+<<<<<<< HEAD
     const savedDarkMode = localStorage.getItem('darkMode')
+=======
+<<<<<<< HEAD
+    const savedDarkMode = localStorage.getItem('darkMode')
+=======
+<<<<<<< HEAD
+    // Force light mode
+    localStorage.setItem('darkMode', 'false')
+=======
+<<<<<<< HEAD
+    // Force light mode
+    localStorage.setItem('darkMode', 'false')
+=======
+    const savedDarkMode = localStorage.getItem('darkMode')
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
+>>>>>>> d407dac660c41680e4e8832e1966544b3e5b6249
     return {
       emailNotifications: true,
       pushNotifications: true,
@@ -53,7 +94,23 @@ const Dashboard = () => {
       courseUpdates: true,
       forumMentions: true,
       articleUpdates: false,
+<<<<<<< HEAD
       darkMode: savedDarkMode === 'true',
+=======
+<<<<<<< HEAD
+      darkMode: savedDarkMode === 'true',
+=======
+<<<<<<< HEAD
+      darkMode: false,
+=======
+<<<<<<< HEAD
+      darkMode: false,
+=======
+      darkMode: savedDarkMode === 'true',
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
+>>>>>>> d407dac660c41680e4e8832e1966544b3e5b6249
       compactMode: false,
       animationsEnabled: true,
       publicProfile: true,
@@ -80,7 +137,14 @@ const Dashboard = () => {
   })
   const [toastMessage, setToastMessage] = useState('')
   const [showToast, setShowToast] = useState(false)
+<<<<<<< HEAD
   const [articlesNeedingModification, setArticlesNeedingModification] = useState([])
+=======
+<<<<<<< HEAD
+  const [articlesNeedingModification, setArticlesNeedingModification] = useState([])
+=======
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
+>>>>>>> d407dac660c41680e4e8832e1966544b3e5b6249
 
   /**
    * Check if user is first-time and redirect to profile completion
@@ -271,6 +335,460 @@ const Dashboard = () => {
       return ''
     }
   }
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+
+  /**
+   * Update current time every second for timezone display
+   */
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date())
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [])
+
+  /**
+   * Apply dark mode to document
+   */
+  useEffect(() => {
+    if (settings.darkMode) {
+      document.documentElement.classList.add('dark-mode')
+      localStorage.setItem('darkMode', 'true')
+    } else {
+      document.documentElement.classList.remove('dark-mode')
+      localStorage.setItem('darkMode', 'false')
+    }
+  }, [settings.darkMode])
+
+  /**
+   * Check URL params to open settings modal
+   */
+  useEffect(() => {
+    const params = new URLSearchParams(location.search)
+    if (params.get('openSettings') === 'true') {
+      setShowSettingsModal(true)
+      // Clean up URL
+      navigate('/dashboard', { replace: true })
+    }
+  }, [location.search, navigate])
+
+  /**
+   * Show toast notification
+   */
+  const showToastNotification = (message) => {
+    setToastMessage(message)
+    setShowToast(true)
+    setTimeout(() => setShowToast(false), 3000)
+  }
+
+  /**
+   * Handle notification click - navigate to notifications page
+   */
+  const handleNotificationClick = () => {
+    navigate('/notifications')
+    showToastNotification('📬 Opening notifications...')
+  }
+
+  /**
+   * Handle notification read
+   */
+  const markNotificationAsRead = (id) => {
+    setNotifications(notifications.map(notif => 
+      notif.id === id ? { ...notif, read: true } : notif
+    ))
+  }
+
+  /**
+   * Clear all notifications
+   */
+  const clearAllNotifications = () => {
+    setNotifications([])
+    showToastNotification('🗑️ All notifications cleared')
+    setShowNotificationModal(false)
+  }
+
+  /**
+   * Handle settings modal open
+   */
+  const handleSettingsClick = () => {
+    setShowSettingsModal(true)
+  }
+
+  /**
+   * Update settings
+   */
+  const updateSetting = (key) => {
+    setSettings(prev => ({
+      ...prev,
+      [key]: !prev[key]
+    }))
+    showToastNotification(`✓ ${key} updated`)
+  }
+
+  /**
+   * Save settings
+   */
+  const saveSettings = () => {
+    showToastNotification('✓ Settings saved successfully!')
+    setShowSettingsModal(false)
+  }
+
+  /**
+   * Handle password change
+   */
+  const handlePasswordChange = () => {
+    if (!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword) {
+      showToastNotification('⚠️ Please fill all password fields')
+      return
+    }
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      showToastNotification('⚠️ Passwords do not match')
+      return
+    }
+    if (passwordData.newPassword.length < 8) {
+      showToastNotification('⚠️ Password must be at least 8 characters')
+      return
+    }
+    // In real implementation, send to backend
+    showToastNotification('✓ Password changed successfully')
+    setShowPasswordModal(false)
+    setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' })
+  }
+
+  /**
+   * Handle email change
+   */
+  const handleEmailChange = () => {
+    setShowEmailModal(true)
+  }
+
+  /**
+   * Submit email change
+   */
+  const submitEmailChange = () => {
+    if (!newEmail || !newEmail.includes('@')) {
+      showToastNotification('⚠️ Please enter a valid email address')
+      return
+    }
+    showToastNotification('📧 Email change request sent. Check your inbox.')
+    setShowEmailModal(false)
+    setNewEmail('')
+  }
+
+  /**
+   * Handle account deletion
+   */
+  const handleAccountDeletion = () => {
+    if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+      showToastNotification('⚠️ Account deletion initiated. You will receive a confirmation email.')
+    }
+  }
+
+  /**
+   * Handle data export
+   */
+  const handleDataExport = () => {
+    showToastNotification('📥 Preparing your data export. This may take a few minutes.')
+  }
+
+  /**
+   * Get current time in specific timezone
+   */
+  const getTimeInTimezone = (timezone) => {
+    try {
+      return currentTime.toLocaleTimeString('en-US', {
+        timeZone: timezone,
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      })
+    } catch (error) {
+      return ''
+    }
+  }
+
+  /**
+   * Update current time every second for timezone display
+   */
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date())
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [])
+
+  /**
+   * Apply dark mode to document
+   */
+  useEffect(() => {
+    if (settings.darkMode) {
+      document.documentElement.classList.add('dark-mode')
+      localStorage.setItem('darkMode', 'true')
+    } else {
+      document.documentElement.classList.remove('dark-mode')
+      localStorage.setItem('darkMode', 'false')
+    }
+  }, [settings.darkMode])
+
+  /**
+   * Show toast notification
+   */
+  const showToastNotification = (message) => {
+    setToastMessage(message)
+    setShowToast(true)
+    setTimeout(() => setShowToast(false), 3000)
+  }
+
+  /**
+   * Handle notification click - navigate to notifications page
+   */
+  const handleNotificationClick = () => {
+    navigate('/notifications')
+    showToastNotification('📬 Opening notifications...')
+  }
+
+  /**
+   * Handle notification read
+   */
+  const markNotificationAsRead = (id) => {
+    setNotifications(notifications.map(notif => 
+      notif.id === id ? { ...notif, read: true } : notif
+    ))
+  }
+
+  /**
+   * Clear all notifications
+   */
+  const clearAllNotifications = () => {
+    setNotifications([])
+    showToastNotification('🗑️ All notifications cleared')
+    setShowNotificationModal(false)
+  }
+
+  /**
+   * Handle settings modal open
+   */
+  const handleSettingsClick = () => {
+    navigate('/settings')
+  }
+
+  /**
+   * Handle password change
+   */
+  const handlePasswordChange = () => {
+    if (!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword) {
+      showToastNotification('⚠️ Please fill all password fields')
+      return
+    }
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      showToastNotification('⚠️ Passwords do not match')
+      return
+    }
+    if (passwordData.newPassword.length < 8) {
+      showToastNotification('⚠️ Password must be at least 8 characters')
+      return
+    }
+    // In real implementation, send to backend
+    showToastNotification('✓ Password changed successfully')
+    setShowPasswordModal(false)
+    setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' })
+  }
+
+  /**
+   * Handle email change
+   */
+  const handleEmailChange = () => {
+    setShowEmailModal(true)
+  }
+
+  /**
+   * Submit email change
+   */
+  const submitEmailChange = () => {
+    if (!newEmail || !newEmail.includes('@')) {
+      showToastNotification('⚠️ Please enter a valid email address')
+      return
+    }
+    showToastNotification('📧 Email change request sent. Check your inbox.')
+    setShowEmailModal(false)
+    setNewEmail('')
+  }
+
+  /**
+   * Handle account deletion
+   */
+  const handleAccountDeletion = () => {
+    if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+      showToastNotification('⚠️ Account deletion initiated. You will receive a confirmation email.')
+    }
+  }
+
+  /**
+   * Handle data export
+   */
+  const handleDataExport = () => {
+    showToastNotification('📥 Preparing your data export. This may take a few minutes.')
+  }
+
+  /**
+   * Get current time in specific timezone
+   */
+  const getTimeInTimezone = (timezone) => {
+    try {
+      return currentTime.toLocaleTimeString('en-US', {
+        timeZone: timezone,
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      })
+    } catch (error) {
+      return ''
+    }
+  }
+
+  /**
+   * Update current time every second for timezone display
+   */
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date())
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [])
+
+  /**
+   * Apply dark mode to document
+   */
+  useEffect(() => {
+    if (settings.darkMode) {
+      document.documentElement.classList.add('dark-mode')
+      localStorage.setItem('darkMode', 'true')
+    } else {
+      document.documentElement.classList.remove('dark-mode')
+      localStorage.setItem('darkMode', 'false')
+    }
+  }, [settings.darkMode])
+
+  /**
+   * Show toast notification
+   */
+  const showToastNotification = (message) => {
+    setToastMessage(message)
+    setShowToast(true)
+    setTimeout(() => setShowToast(false), 3000)
+  }
+
+  /**
+   * Handle notification click - navigate to notifications page
+   */
+  const handleNotificationClick = () => {
+    navigate('/notifications')
+    showToastNotification('📬 Opening notifications...')
+  }
+
+  /**
+   * Handle notification read
+   */
+  const markNotificationAsRead = (id) => {
+    setNotifications(notifications.map(notif => 
+      notif.id === id ? { ...notif, read: true } : notif
+    ))
+  }
+
+  /**
+   * Clear all notifications
+   */
+  const clearAllNotifications = () => {
+    setNotifications([])
+    showToastNotification('🗑️ All notifications cleared')
+    setShowNotificationModal(false)
+  }
+
+  /**
+   * Handle settings modal open
+   */
+  const handleSettingsClick = () => {
+    navigate('/settings')
+  }
+
+  /**
+   * Handle password change
+   */
+  const handlePasswordChange = () => {
+    if (!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword) {
+      showToastNotification('⚠️ Please fill all password fields')
+      return
+    }
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      showToastNotification('⚠️ Passwords do not match')
+      return
+    }
+    if (passwordData.newPassword.length < 8) {
+      showToastNotification('⚠️ Password must be at least 8 characters')
+      return
+    }
+    // In real implementation, send to backend
+    showToastNotification('✓ Password changed successfully')
+    setShowPasswordModal(false)
+    setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' })
+  }
+
+  /**
+   * Handle email change
+   */
+  const handleEmailChange = () => {
+    setShowEmailModal(true)
+  }
+
+  /**
+   * Submit email change
+   */
+  const submitEmailChange = () => {
+    if (!newEmail || !newEmail.includes('@')) {
+      showToastNotification('⚠️ Please enter a valid email address')
+      return
+    }
+    showToastNotification('📧 Email change request sent. Check your inbox.')
+    setShowEmailModal(false)
+    setNewEmail('')
+  }
+
+  /**
+   * Handle account deletion
+   */
+  const handleAccountDeletion = () => {
+    if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+      showToastNotification('⚠️ Account deletion initiated. You will receive a confirmation email.')
+    }
+  }
+
+  /**
+   * Handle data export
+   */
+  const handleDataExport = () => {
+    showToastNotification('📥 Preparing your data export. This may take a few minutes.')
+  }
+
+  /**
+   * Get current time in specific timezone
+   */
+  const getTimeInTimezone = (timezone) => {
+    try {
+      return currentTime.toLocaleTimeString('en-US', {
+        timeZone: timezone,
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      })
+    } catch (error) {
+      return ''
+    }
+  }
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
+>>>>>>> d407dac660c41680e4e8832e1966544b3e5b6249
 
   /**
    * Simulate loading user data from API
@@ -375,7 +893,25 @@ const Dashboard = () => {
     { id: 'jobs', label: 'Jobs', icon: Briefcase, path: '/jobs' },
     { id: 'learning', label: 'Learning', icon: Book, path: '/learning' },
     { id: 'publishing', label: 'Publishing', icon: FileText, path: '/publishing' },
+<<<<<<< HEAD
     { id: 'newsroom', label: 'Newsroom', icon: MessageSquare, path: '/news' }
+=======
+<<<<<<< HEAD
+    { id: 'newsroom', label: 'Newsroom', icon: MessageSquare, path: '/news' }
+=======
+<<<<<<< HEAD
+    { id: 'newsroom', label: 'Newsroom', icon: MessageSquare, path: '/news' },
+    { id: 'profile', label: 'Profile', icon: User, path: '/profile-view' },
+=======
+<<<<<<< HEAD
+    { id: 'newsroom', label: 'Newsroom', icon: MessageSquare, path: '/news' },
+    { id: 'profile', label: 'Profile', icon: User, path: '/profile-view' },
+=======
+    { id: 'newsroom', label: 'Newsroom', icon: MessageSquare, path: '/news' }
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
+>>>>>>> d407dac660c41680e4e8832e1966544b3e5b6249
   ]
 
   /**
@@ -709,14 +1245,12 @@ const Dashboard = () => {
     </div>
   )
 
-  if (!isAuthenticated || !user) {
+  // Show loading while checking authentication
+  if (!user) {
     return (
       <div className="dashboard-loading">
         <div className="loading-message">
-          <p>Please log in to access your dashboard.</p>
-          <Link to="/login" className="btn btn-primary">
-            Sign In
-          </Link>
+          <p>Loading dashboard...</p>
         </div>
       </div>
     )
@@ -725,6 +1259,34 @@ const Dashboard = () => {
   return (
     <div className="dashboard">
       {/* Dashboard Header */}
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+      <div className="dashboard-header-new">
+        <div className="header-top">
+          <button 
+            className="back-button"
+            onClick={() => navigate(-1)}
+            title="Go back"
+            aria-label="Go back"
+          >
+            ←
+          </button>
+          
+          <div className="welcome-section-new">
+            <h1>Welcome back, {user.firstName || 'sneha'}!</h1>
+<<<<<<< HEAD
+            <p>Here's what's happening with your account today.</p>
+          </div>
+          
+          <div className="header-actions-new">
+=======
+            <p>Here's what's happening with your account today.</p>
+          </div>
+          
+          <div className="header-actions-new">
+=======
       <div className="dashboard-header">
         <div className="header-content">
           <div className="welcome-section">
@@ -746,21 +1308,72 @@ const Dashboard = () => {
           </div>
           
           <div className="header-actions">
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
+>>>>>>> d407dac660c41680e4e8832e1966544b3e5b6249
             <button 
               className="icon-button notification-btn" 
               aria-label="Notifications"
               onClick={handleNotificationClick}
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> d407dac660c41680e4e8832e1966544b3e5b6249
               style={{ cursor: 'pointer' }}
               title="View notifications"
             >
               <Bell size={20} />
               <span className="notification-badge">{notifications.filter(n => !n.read).length}</span>
+<<<<<<< HEAD
+=======
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+              title="View notifications"
+            >
+              <Bell size={20} />
+              {notifications.filter(n => !n.read).length > 0 && (
+                <span className="notification-badge">{notifications.filter(n => !n.read).length}</span>
+              )}
+<<<<<<< HEAD
+=======
+=======
+              style={{ cursor: 'pointer' }}
+              title="View notifications"
+            >
+              <Bell size={20} />
+              <span className="notification-badge">{notifications.filter(n => !n.read).length}</span>
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
+>>>>>>> d407dac660c41680e4e8832e1966544b3e5b6249
             </button>
             <button 
               className="icon-button" 
               aria-label="Settings"
               onClick={handleSettingsClick}
+<<<<<<< HEAD
               style={{ cursor: 'pointer' }}
+=======
+<<<<<<< HEAD
+              style={{ cursor: 'pointer' }}
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+              style={{ cursor: 'pointer' }}
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
+>>>>>>> d407dac660c41680e4e8832e1966544b3e5b6249
               title="Settings"
             >
               <Settings size={20} />
@@ -768,16 +1381,30 @@ const Dashboard = () => {
           </div>
         </div>
         
-        {/* Dashboard Navigation */}
-        <nav className="dashboard-nav">
-          <ul className="nav-tabs">
+        {/* Dashboard Navigation Tabs */}
+        <nav className="dashboard-nav-new">
+          <ul className="nav-tabs-new">
             {dashboardTabs.map((tab) => {
               const IconComponent = tab.icon
               
               return (
-                <li key={tab.id} className="nav-item">
+                <li key={tab.id}>
                   <button
+<<<<<<< HEAD
+                    className={`nav-tab-new ${activeTab === tab.id ? 'active' : ''}`}
+=======
+<<<<<<< HEAD
+                    className={`nav-tab-new ${activeTab === tab.id ? 'active' : ''}`}
+=======
                     className={`nav-tab ${activeTab === tab.id ? 'active' : ''}`}
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
+>>>>>>> d407dac660c41680e4e8832e1966544b3e5b6249
                     onClick={() => {
                       setActiveTab(tab.id)
                       navigate(tab.path)
@@ -794,6 +1421,25 @@ const Dashboard = () => {
       </div>
 
       {/* Dashboard Content */}
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+      <div className="dashboard-content-new">
+        <div className="content-wrapper-new">
+          {/* Left Side - Main Content */}
+          <div className="main-section-new">
+            {/* Profile Completion and Stats Row */}
+            <div className="top-section-new">
+              {/* Profile Completion */}
+              <div className="profile-completion-new">
+                <div className="completion-header-new">
+                  <div className="completion-title-new">
+                    <User size={20} />
+                    <h3>Profile Completion</h3>
+<<<<<<< HEAD
+=======
+=======
       <div className="dashboard-content">
         <div className="content-grid">
           {/* Main Content Area */}
@@ -854,34 +1500,308 @@ const Dashboard = () => {
                   <div className="event-date">
                     <span className="day">20</span>
                     <span className="month">Feb</span>
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
                   </div>
-                  <div className="event-content">
-                    <div className="event-title">Urban Planning Webinar</div>
-                    <div className="event-time">2:00 PM - 3:30 PM</div>
+                  <span className="completion-percentage-new">{profileCompletion}%</span>
+                </div>
+                
+                <div className="progress-bar-new">
+                  <div 
+                    className="progress-fill-new" 
+                    style={{ width: `${profileCompletion}%` }}
+                  ></div>
+                </div>
+                
+                <p className="completion-message-new">
+                  {profileCompletion === 100 ? (
+                    <>
+                      <CheckCircle size={16} />
+                      Your profile is complete!
+                    </>
+                  ) : (
+                    <>
+                      <AlertCircle size={16} />
+                      Complete your profile to unlock all features.
+                    </>
+                  )}
+                </p>
+                
+                {profileCompletion < 100 && (
+                  <Link to="/profile" className="btn-complete-profile">
+                    Complete Profile
+                  </Link>
+                )}
+              </div>
+              
+              {/* Statistics Grid */}
+              <div className="stats-grid-new">
+                <div 
+                  className="stat-card-new"
+                  onClick={() => navigate('/jobs')}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <div className="stat-icon-new">
+                    <Briefcase size={24} color="#2563eb" />
+                  </div>
+                  <div className="stat-info-new">
+                    <div className="stat-number-new">{stats.jobsApplied}</div>
+                    <div className="stat-label-new">JOBS APPLIED</div>
                   </div>
                 </div>
-                <div className="event-item">
-                  <div className="event-date">
-                    <span className="day">25</span>
-                    <span className="month">Feb</span>
+                
+                <div 
+                  className="stat-card-new"
+                  onClick={() => navigate('/learning')}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <div className="stat-icon-new">
+                    <Book size={24} color="#059669" />
                   </div>
-                  <div className="event-content">
-                    <div className="event-title">Course Submission Deadline</div>
-                    <div className="event-time">11:59 PM</div>
+                  <div className="stat-info-new">
+                    <div className="stat-number-new">{stats.coursesEnrolled}</div>
+                    <div className="stat-label-new">COURSES ENROLLED</div>
                   </div>
                 </div>
               </div>
-              <Link to="/learning/events" className="btn btn-outline btn-small w-full">
-                View All Events
-              </Link>
             </div>
             
-            {/* Achievements (placeholder) */}
-            <div className="achievements-card">
-              <div className="card-header">
-                <h3>Achievements</h3>
-                <Award size={18} />
+            {/* Second Row - Stats */}
+            <div className="stats-row-new">
+              <div 
+                className="stat-card-new"
+                onClick={() => navigate('/publishing')}
+                style={{ cursor: 'pointer' }}
+              >
+                <div className="stat-icon-new">
+                  <FileText size={24} color="#dc2626" />
+                </div>
+                <div className="stat-info-new">
+                  <div className="stat-number-new">{stats.articlesPublished}</div>
+                  <div className="stat-label-new">ARTICLES PUBLISHED</div>
+                </div>
               </div>
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+              
+              <div 
+                className="stat-card-new"
+                onClick={() => navigate('/forum')}
+                style={{ cursor: 'pointer' }}
+              >
+                <div className="stat-icon-new">
+                  <MessageSquare size={24} color="#ea580c" />
+                </div>
+                <div className="stat-info-new">
+                  <div className="stat-number-new">{stats.forumPosts}</div>
+                  <div className="stat-label-new">FORUM POSTS</div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Quick Actions Section */}
+            <div className="quick-actions-new">
+              <h3>Quick Actions</h3>
+              <div className="quick-actions-grid">
+                {/* CV Generator Card */}
+                <div className="quick-action-card" onClick={() => navigate('/cv-generator')} style={{ cursor: 'pointer' }}>
+                  <div className="qa-header">
+                    <div className="qa-icon-wrapper" style={{ backgroundColor: 'rgba(99, 102, 241, 0.1)' }}>
+                      <File size={24} color="#6366f1" />
+                    </div>
+                    <button className="qa-arrow">
+                      <ChevronRight size={16} />
+                    </button>
+                  </div>
+                  <h4 className="qa-title">CV Generator</h4>
+                  <p className="qa-description">Create professional CVs</p>
+                  <div className="qa-footer">
+                    <span className="qa-info">✨ Multiple templates</span>
+                    <span className="qa-stat">5+ designs</span>
+                  </div>
+                </div>
+
+                {/* Browse Jobs Card */}
+                <div className="quick-action-card" onClick={() => navigate('/jobs')} style={{ cursor: 'pointer' }}>
+                  <div className="qa-header">
+                    <div className="qa-icon-wrapper" style={{ backgroundColor: 'rgba(5, 150, 105, 0.1)' }}>
+                      <Briefcase size={24} color="#059669" />
+                    </div>
+                    <button className="qa-arrow">
+                      <ChevronRight size={16} />
+                    </button>
+                  </div>
+                  <h4 className="qa-title">Browse Jobs</h4>
+                  <p className="qa-description">Find your next opportunity</p>
+                  <div className="qa-footer">
+                    <span className="qa-info">✨ Active listings</span>
+                    <span className="qa-stat">500+ jobs</span>
+                  </div>
+                </div>
+
+                {/* Explore Courses Card */}
+                <div className="quick-action-card" onClick={() => navigate('/learning')} style={{ cursor: 'pointer' }}>
+                  <div className="qa-header">
+                    <div className="qa-icon-wrapper" style={{ backgroundColor: 'rgba(220, 38, 38, 0.1)' }}>
+                      <Book size={24} color="#dc2626" />
+                    </div>
+                    <button className="qa-arrow">
+                      <ChevronRight size={16} />
+                    </button>
+                  </div>
+                  <h4 className="qa-title">Explore Courses</h4>
+                  <p className="qa-description">Enhance your skills</p>
+                  <div className="qa-footer">
+                    <span className="qa-info">✨ Get certified</span>
+                    <span className="qa-stat">50+ courses</span>
+                  </div>
+                </div>
+
+                {/* Write Article Card */}
+                <div className="quick-action-card" onClick={() => navigate('/publishing')} style={{ cursor: 'pointer' }}>
+                  <div className="qa-header">
+                    <div className="qa-icon-wrapper" style={{ backgroundColor: 'rgba(124, 58, 237, 0.1)' }}>
+                      <FileText size={24} color="#7c3aed" />
+                    </div>
+                    <button className="qa-arrow">
+                      <ChevronRight size={16} />
+                    </button>
+                  </div>
+                  <h4 className="qa-title">Write Article</h4>
+                  <p className="qa-description">Share your insights</p>
+                  <div className="qa-footer">
+                    <span className="qa-info">✨ Build reputation</span>
+                    <span className="qa-stat">Publishing</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Right Side - Activity and Events */}
+          <div className="sidebar-new">
+            {/* Recent Activity */}
+            <div className="recent-activity-new">
+              <div className="card-header-new">
+                <h3>Recent Activity</h3>
+                <button 
+                  className="view-all-link"
+                  onClick={() => navigate('/notifications')}
+                >
+                  View All
+                </button>
+              </div>
+              
+              <div className="activity-list-new">
+                {recentActivity.length > 0 ? recentActivity.map((activity) => {
+                  const IconComponent = activity.icon
+                  
+                  return (
+                    <div 
+                      key={activity.id} 
+                      className="activity-item-new"
+                      onClick={() => {
+                        const pathMap = {
+                          'job_application': '/jobs',
+                          'course_enrollment': '/learning',
+                          'article_published': '/publishing',
+                          'forum_post': '/forum'
+                        }
+                        navigate(pathMap[activity.type] || '/dashboard')
+                      }}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <div 
+                        className="activity-icon-new"
+                        style={{ backgroundColor: `${activity.color}20` }}
+                      >
+                        <IconComponent size={20} color={activity.color} />
+                      </div>
+                      
+                      <div className="activity-content-new">
+                        <div className="activity-title-new">{activity.title}</div>
+                        <div className="activity-description-new">{activity.description}</div>
+                        <div className="activity-time-new">
+                          {formatDate(activity.timestamp)}
+                        </div>
+                      </div>
+                    </div>
+                  )
+                }) : (
+                  <div className="empty-activity">
+                    <p>No recent activity</p>
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            {/* Upcoming Events */}
+            <div className="upcoming-events-new">
+              <div className="card-header-new">
+                <h3 style={{cursor: 'pointer'}} onClick={() => navigate('/networking-arena', { state: { activeTab: 'events' } })}>Upcoming Events</h3>
+                <button
+                  onClick={() => navigate('/networking-arena', { state: { activeTab: 'events' } })}
+                  className="icon-link-btn"
+                  title="View all events"
+                >
+                  <Calendar size={18} color="#2563eb" />
+                </button>
+              </div>
+              <div className="events-list-new">
+                <div className="event-item-new">
+                  <div className="event-date-box">
+                    <div className="event-day">20</div>
+                    <div className="event-month">FEB</div>
+                  </div>
+                  <div className="event-details">
+                    <div className="event-title-new">Urban Planning Webinar</div>
+                    <div className="event-time-new">2:00 PM - 3:30 PM</div>
+                  </div>
+                </div>
+                <div className="event-item-new">
+                  <div className="event-date-box">
+                    <div className="event-day">25</div>
+                    <div className="event-month">FEB</div>
+                  </div>
+                  <div className="event-details">
+                    <div className="event-title-new">Course Submission Deadline</div>
+                    <div className="event-time-new">11:59 PM</div>
+                  </div>
+                </div>
+              </div>
+              <button className="view-all-events-btn" onClick={() => navigate('/networking-arena', { state: { activeTab: 'events' } })}>
+                View All Events
+              </button>
+            </div>
+
+            {/* Achievements */}
+            <div className="achievements-new">
+              <div className="card-header-new">
+                <h3>Achievements</h3>
+                <Award size={18} color="#6b7280" />
+              </div>
+              <div className="achievements-list-new">
+                <div className="achievement-item-new completed">
+                  <CheckCircle size={18} color="#10b981" />
+                  <span>Profile Completer</span>
+                </div>
+                <div className="achievement-item-new pending">
+                  <Book size={18} color="#f59e0b" />
+                  <span>First Course</span>
+                </div>
+                <div className="achievement-item-new locked">
+                  <FileText size={18} color="#9ca3af" />
+                  <span>Published Author</span>
+                </div>
+=======
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
+>>>>>>> d407dac660c41680e4e8832e1966544b3e5b6249
               <div className="achievements-list">
                 {achievementsData.map((achievement) => {
                   const IconComponent = achievement.icon
@@ -900,6 +1820,13 @@ const Dashboard = () => {
                     </button>
                   )
                 })}
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
+>>>>>>> d407dac660c41680e4e8832e1966544b3e5b6249
               </div>
             </div>
           </div>
@@ -907,6 +1834,18 @@ const Dashboard = () => {
       </div>
 
       {/* Settings Modal */}
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+      {/* Settings Modal removed as we now have a dedicated Settings page */}
+=======
+<<<<<<< HEAD
+      {/* Settings Modal removed as we now have a dedicated Settings page */}
+=======
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
+>>>>>>> d407dac660c41680e4e8832e1966544b3e5b6249
       {showSettingsModal && (
         <div className="modal-overlay" onClick={() => setShowSettingsModal(false)}>
           <div className="settings-modal-content" onClick={(e) => e.stopPropagation()}>
@@ -1335,6 +2274,14 @@ const Dashboard = () => {
           </div>
         </div>
       )}
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
+>>>>>>> d407dac660c41680e4e8832e1966544b3e5b6249
 
       {/* Password Change Modal */}
       {showPasswordModal && (

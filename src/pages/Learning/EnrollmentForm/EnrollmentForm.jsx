@@ -1,9 +1,75 @@
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> d407dac660c41680e4e8832e1966544b3e5b6249
 import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import "./EnrollmentForm.css";
 
 export default function EnrollmentForm() {
   const navigate = useNavigate();
+<<<<<<< HEAD
+=======
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+import React, { useState, useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
+import "./EnrollmentForm.css";
+// import { useAuth } from '../../../contexts/AuthContext';
+// import { useUser } from '../../../contexts/UserContext';
+
+export default function EnrollmentForm() {
+  const navigate = useNavigate();
+  // const { user, isAuthenticated } = useAuth(); // Uncomment when context is ready
+  // const { profile } = useUser(); // Uncomment when context is ready
+<<<<<<< HEAD
+  
+  // Mock user profile data for autofill (replace with actual user data from context)
+  const [userProfile] = useState({
+    firstName: "John",
+    lastName: "Smith",
+    email: "john.smith@example.com",
+    phone: "+1 (555) 123-4567",
+    address: "123 Main Street, Apt 4B",
+    city: "New York",
+    state: "NY",
+    zipCode: "10001",
+    emergencyContactName: "Jane Smith",
+    emergencyContactPhone: "+1 (555) 987-6543",
+    studentId: "STD-2025-001"
+  });
+  
+=======
+  
+  // Mock user profile data for autofill (replace with actual user data from context)
+  const [userProfile] = useState({
+    firstName: "John",
+    lastName: "Smith",
+    email: "john.smith@example.com",
+    phone: "+1 (555) 123-4567",
+    address: "123 Main Street, Apt 4B",
+    city: "New York",
+    state: "NY",
+    zipCode: "10001",
+    emergencyContactName: "Jane Smith",
+    emergencyContactPhone: "+1 (555) 987-6543",
+    studentId: "STD-2025-001"
+  });
+  
+=======
+import React, { useState } from "react";
+import { useNavigate } from 'react-router-dom';
+import "./EnrollmentForm.css";
+
+export default function EnrollmentForm() {
+  const navigate = useNavigate();
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
+>>>>>>> d407dac660c41680e4e8832e1966544b3e5b6249
   const [formData, setFormData] = useState({
     courseId: "",
     courseTitle: "",
@@ -21,6 +87,41 @@ export default function EnrollmentForm() {
     emergencyContactPhone: "",
     agreeTerms: false
   });
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+  
+  // Autofill form with user profile data on mount
+  useEffect(() => {
+    if (userProfile) {
+      setFormData(prev => ({
+        ...prev,
+        firstName: userProfile.firstName || prev.firstName,
+        lastName: userProfile.lastName || prev.lastName,
+        email: userProfile.email || prev.email,
+        phone: userProfile.phone || prev.phone,
+        address: userProfile.address || prev.address,
+        city: userProfile.city || prev.city,
+        state: userProfile.state || prev.state,
+        zipCode: userProfile.zipCode || prev.zipCode,
+        studentId: userProfile.studentId || prev.studentId,
+        emergencyContactName: userProfile.emergencyContactName || prev.emergencyContactName,
+        emergencyContactPhone: userProfile.emergencyContactPhone || prev.emergencyContactPhone
+      }));
+    }
+  }, [userProfile]);
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
+>>>>>>> d407dac660c41680e4e8832e1966544b3e5b6249
   const [paymentMethod, setPaymentMethod] = useState("card");
   const [paymentData, setPaymentData] = useState({
     cardNumber: "",

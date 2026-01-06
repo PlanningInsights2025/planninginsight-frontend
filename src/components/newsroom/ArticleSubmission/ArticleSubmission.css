@@ -24,9 +24,25 @@
 }
 
 .submission-layout {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 2rem;
+}
+
+/* Sidebar Modules at Top - Vertical layout */
+.editor-sidebar-top {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+/* On smaller screens, make it single column */
+@media (max-width: 768px) {
+  .editor-sidebar-top {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Editor Main */
@@ -34,6 +50,7 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  width: 100%;
 }
 
 .editor-card {
@@ -816,4 +833,28 @@
   .sidebar-card {
     padding: 1rem;
   }
+}
+/* Sidebar Actions */
+.sidebar-actions {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.sidebar-actions .btn-secondary,
+.sidebar-actions .btn-primary {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.sidebar-actions .full-width {
+  min-width: auto;
 }

@@ -1,4 +1,11 @@
 import React, { useState, useEffect } from 'react';
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+import { useLocation } from 'react-router-dom';
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
+>>>>>>> d407dac660c41680e4e8832e1966544b3e5b6249
 import { Users, MessageCircle, Calendar, Briefcase, Award, TrendingUp, Search, Bell, Settings, ChevronUp } from 'lucide-react';
 import './NetworkingArena.css';
 import { useAuth } from '@/contexts/AuthContext';
@@ -20,7 +27,8 @@ import AdvancedSearch from '@/components/networkingArena/AdvancedSearch/Advanced
 
 const NetworkingArena = () => {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState('feed');
+  const location = useLocation();
+  const [activeTab, setActiveTab] = useState(location.state?.activeTab || 'feed');
   const [showMessaging, setShowMessaging] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
