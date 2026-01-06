@@ -752,23 +752,8 @@ body {
 
 .autoscroll-wrapper::before,
 .autoscroll-wrapper::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 150px;
-  z-index: 2;
-  pointer-events: none;
-}
-
-.autoscroll-wrapper::before {
-  left: 0;
-  background: linear-gradient(to right, var(--surface-color) 0%, transparent 100%);
-}
-
-.autoscroll-wrapper::after {
-  right: 0;
-  background: linear-gradient(to left, var(--surface-color) 0%, transparent 100%);
+  /* Remove side fade overlays on autoscroll to avoid blurred/faded edges */
+  display: none;
 }
 
 .autoscroll-track {
@@ -1133,23 +1118,8 @@ body {
 
 .jobs-autoscroll-wrapper::before,
 .jobs-autoscroll-wrapper::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 150px;
-  z-index: 2;
-  pointer-events: none;
-}
-
-.jobs-autoscroll-wrapper::before {
-  left: 0;
-  background: linear-gradient(to right, white 0%, transparent 100%);
-}
-
-.jobs-autoscroll-wrapper::after {
-  right: 0;
-  background: linear-gradient(to left, white 0%, transparent 100%);
+  /* Remove side fade overlays on jobs carousel to show full card edges */
+  display: none;
 }
 
 .jobs-autoscroll-track {
@@ -1294,23 +1264,8 @@ body {
 
 .courses-autoscroll-wrapper::before,
 .courses-autoscroll-wrapper::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 150px;
-  z-index: 2;
-  pointer-events: none;
-}
-
-.courses-autoscroll-wrapper::before {
-  left: 0;
-  background: linear-gradient(to right, var(--surface-color) 0%, transparent 100%);
-}
-
-.courses-autoscroll-wrapper::after {
-  right: 0;
-  background: linear-gradient(to left, var(--surface-color) 0%, transparent 100%);
+  /* Remove side fade overlays on courses carousel to show full card edges */
+  display: none;
 }
 
 .courses-autoscroll-track {
@@ -2078,5 +2033,358 @@ body {
 
   * {
     box-shadow: none !important;
+  }
+}
+/* ==========================================
+   USER POINTS LEADERBOARD CARD & MODAL
+   ========================================== */
+
+/* Clickable Leaderboard Card */
+.leaderboard-card-clickable {
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.leaderboard-card-clickable:hover {
+  transform: translateY(-12px) scale(1.05);
+  box-shadow: 0 20px 40px rgba(251, 191, 36, 0.4);
+}
+
+/* Leaderboard Modal Overlay */
+.leaderboard-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  animation: fadeIn 0.3s ease;
+}
+
+/* Leaderboard Modal Container */
+.leaderboard-modal-container {
+  background: white;
+  border-radius: var(--radius-2xl);
+  max-width: 700px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  animation: slideUp 0.4s ease;
+  box-shadow: var(--shadow-2xl);
+}
+
+/* Modal Close Button */
+.leaderboard-modal-close {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all var(--transition-base);
+  box-shadow: var(--shadow-md);
+}
+
+.leaderboard-modal-close:hover {
+  background: var(--danger-color);
+  color: white;
+  transform: rotate(90deg);
+}
+
+/* Modal Header */
+.leaderboard-modal-header {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  padding: 3rem 2rem 2rem;
+  text-align: center;
+  color: white;
+  position: relative;
+}
+
+.leaderboard-modal-icon {
+  width: 80px;
+  height: 80px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-xl);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.leaderboard-modal-header h2 {
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+}
+
+.leaderboard-modal-header p {
+  font-size: 1.125rem;
+  opacity: 0.95;
+}
+
+/* Modal Body */
+.leaderboard-modal-body {
+  padding: 2rem;
+}
+
+/* Leaderboard List */
+.leaderboard-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+/* Leaderboard Item */
+.leaderboard-item {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1.25rem 1.5rem;
+  background: var(--surface-color);
+  border-radius: var(--radius-xl);
+  border: 2px solid var(--border-color);
+  transition: all var(--transition-base);
+}
+
+.leaderboard-item:hover {
+  transform: translateX(8px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--primary-color);
+}
+
+/* Top 3 Special Styling */
+.leaderboard-item.rank-1 {
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.15), rgba(245, 158, 11, 0.1));
+  border-color: #fbbf24;
+}
+
+.leaderboard-item.rank-2 {
+  background: linear-gradient(135deg, rgba(192, 192, 192, 0.15), rgba(169, 169, 169, 0.1));
+  border-color: #c0c0c0;
+}
+
+.leaderboard-item.rank-3 {
+  background: linear-gradient(135deg, rgba(205, 127, 50, 0.15), rgba(184, 115, 51, 0.1));
+  border-color: #cd7f32;
+}
+
+/* Rank Display */
+.leaderboard-rank {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.rank-number {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text-secondary);
+}
+
+/* User Avatar */
+.leaderboard-avatar {
+  width: 56px;
+  height: 56px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-md);
+  border: 3px solid white;
+}
+
+/* User Info */
+.leaderboard-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.leaderboard-info h4 {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-badge {
+  display: inline-block;
+  background: var(--primary-color);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Points Display */
+.leaderboard-points {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: white;
+  padding: 0.625rem 1.25rem;
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-sm);
+  flex-shrink: 0;
+}
+
+.leaderboard-points span {
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+/* Your Rank Section */
+.your-rank-section {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 2px solid var(--border-color);
+}
+
+.your-rank-section h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+}
+
+.your-rank-card {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(16, 185, 129, 0.1));
+  border-radius: var(--radius-xl);
+  border: 2px solid var(--primary-color);
+}
+
+.your-rank-avatar {
+  width: 64px;
+  height: 64px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  box-shadow: var(--shadow-md);
+  border: 3px solid var(--primary-color);
+}
+
+.your-rank-info h4 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.375rem;
+}
+
+.your-rank-info p {
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* Modal Footer */
+.leaderboard-modal-footer {
+  padding: 1.5rem 2rem;
+  border-top: 2px solid var(--border-color);
+  display: flex;
+  justify-content: center;
+}
+
+/* Responsive Styles for Leaderboard */
+@media (max-width: 768px) {
+  .leaderboard-modal-container {
+    max-width: 100%;
+    max-height: 95vh;
+  }
+
+  .leaderboard-modal-header {
+    padding: 2.5rem 1.5rem 1.5rem;
+  }
+
+  .leaderboard-modal-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .leaderboard-modal-body {
+    padding: 1.5rem;
+  }
+
+  .leaderboard-item {
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .leaderboard-rank {
+    width: 40px;
+    height: 40px;
+  }
+
+  .leaderboard-avatar {
+    width: 48px;
+    height: 48px;
+    font-size: 1.75rem;
+  }
+
+  .leaderboard-info h4 {
+    font-size: 1rem;
+  }
+
+  .leaderboard-points {
+    padding: 0.5rem 1rem;
+  }
+
+  .leaderboard-points span {
+    font-size: 1rem;
+  }
+
+  .your-rank-card {
+    padding: 1.25rem;
+    gap: 1rem;
+  }
+
+  .your-rank-avatar {
+    width: 56px;
+    height: 56px;
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .leaderboard-item {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .leaderboard-points {
+    width: 100%;
+    justify-content: center;
   }
 }

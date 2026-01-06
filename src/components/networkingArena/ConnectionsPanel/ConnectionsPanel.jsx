@@ -1,146 +1,127 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { UserPlus, UserCheck, UserX, Users, Search, Filter, TrendingUp, Briefcase } from 'lucide-react';
 import './ConnectionsPanel.css';
 import UserProfileModal from '../UserProfileModal/UserProfileModal';
+import * as networkingAPI from '@/services/api/networking';
+import toast from 'react-hot-toast';
 
 const ConnectionsPanel = ({ onOpenMessaging }) => {
   const [activeTab, setActiveTab] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedUser, setSelectedUser] = useState(null);
   const [showProfileModal, setShowProfileModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Mock data for connections
-  const [connections, setConnections] = useState([
-    {
-      id: 1,
-      name: 'Sarah Johnson',
-      title: 'Product Manager',
-      company: 'Google',
-      mutualConnections: 12,
-      avatar: '/api/placeholder/60/60',
-      connected: true,
-      isFollowing: false,
-      industry: 'Technology'
-    },
-    {
-      id: 2,
-      name: 'Michael Chen',
-      title: 'Data Scientist',
-      company: 'Amazon',
-      mutualConnections: 8,
-      avatar: '/api/placeholder/60/60',
-      connected: true,
-      isFollowing: true,
-      industry: 'Technology'
-    },
-    {
-      id: 3,
-      name: 'Emily Rodriguez',
-      title: 'UX Designer',
-      company: 'Apple',
-      mutualConnections: 15,
-      avatar: '/api/placeholder/60/60',
-      connected: true,
-      isFollowing: false,
-      industry: 'Design'
-    }
-  ]);
+  // Real data from backend
+  const [connections, setConnections] = useState([]);
+  const [pendingRequests, setPendingRequests] = useState([]);
+  const [suggestions, setSuggestions] = useState([]);
 
-  const [pendingRequests, setPendingRequests] = useState([
-    {
-      id: 4,
-      name: 'David Kim',
-      title: 'Full Stack Developer',
-      company: 'Microsoft',
-      mutualConnections: 5,
-      avatar: '/api/placeholder/60/60',
-      requestDate: '2 days ago'
-    },
-    {
-      id: 5,
-      name: 'Lisa Anderson',
-      title: 'Marketing Manager',
-      company: 'Adobe',
-      mutualConnections: 9,
-      avatar: '/api/placeholder/60/60',
-      requestDate: '1 week ago'
-    }
-  ]);
+  useEffect(() => {
+    // Fetch all data on component mount
+    fetchAllData();
+  }, []);
 
-  const [suggestions, setSuggestions] = useState([
-    {
-      id: 6,
-      name: 'James Wilson',
-      title: 'Software Engineer',
-      company: 'Netflix',
-      mutualConnections: 18,
-      avatar: '/api/placeholder/60/60',
-      reason: 'Works in similar industry',
-      skills: ['React', 'Node.js'],
-      isFollowing: false,
-      connected: false
-    },
-    {
-      id: 7,
-      name: 'Anna Martinez',
-      title: 'Business Analyst',
-      company: 'Tesla',
-      mutualConnections: 7,
-      avatar: '/api/placeholder/60/60',
-      reason: 'Mutual connections with Sarah Johnson',
-      skills: ['Data Analysis', 'SQL'],
-      isFollowing: false,
-      connected: false
-    },
-    {
-      id: 8,
-      name: 'Robert Taylor',
-      title: 'DevOps Engineer',
-      company: 'Spotify',
-      mutualConnections: 11,
-      avatar: '/api/placeholder/60/60',
-      reason: 'Similar skills and background',
-      skills: ['AWS', 'Docker'],
-      isFollowing: false,
-      connected: false
-    }
-  ]);
-
-  const handleAcceptRequest = (id) => {
-    console.log('Accepted request:', id);
-    
-    // Find the request
-    const request = pendingRequests.find(req => req.id === id);
-    
-    if (request) {
-      // Add to connections
-      const newConnection = {
-        ...request,
-        connected: true,
-        isFollowing: false,
-        industry: 'Technology'
-      };
-      
-      setConnections(prevConnections => [...prevConnections, newConnection]);
-      
-      // Remove from pending requests
-      setPendingRequests(prevRequests => 
-        prevRequests.filter(req => req.id !== id)
-      );
+  const fetchAllData = async () => {
+    setIsLoading(true);
+    try {
+      await Promise.all([
+        fetchConnections(),
+        fetchPendingRequests(),
+        fetchSuggestions()
+      ]);
+    } catch (error) {
+      console.error('Error fetching networking data:', error);
+      toast.error('Failed to load networking data');
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleRejectRequest = (id) => {
-    console.log('Rejected request:', id);
-    
-    // Remove from pending requests
-    setPendingRequests(prevRequests => 
-      prevRequests.filter(req => req.id !== id)
-    );
+  const fetchConnections = async () => {
+    try {
+      const response = await networkingAPI.getMyConnections();
+      if (response.success) {
+        setConnections(response.connections || []);
+      }
+    } catch (error) {
+      console.error('Error fetching connections:', error);
+    }
   };
 
-  const handleSendRequest = (id) => {
-    console.log('Sent connection request to:', id);
+  const fetchPendingRequests = async () => {
+    try {
+      const response = await networkingAPI.getPendingRequests();
+      if (response.success) {
+        setPendingRequests(response.requests || []);
+      }
+    } catch (error) {
+      console.error('Error fetching pending requests:', error);
+    }
+  };
+
+  const fetchSuggestions = async () => {
+    try {
+      const response = await networkingAPI.getSuggestions(10);
+      if (response.success) {
+        setSuggestions(response.suggestions || []);
+      }
+    } catch (error) {
+      console.error('Error fetching suggestions:', error);
+    }
+  };
+
+  const handleAcceptRequest = async (requestId) => {
+    try {
+      const response = await networkingAPI.acceptConnectionRequest(requestId);
+      
+      if (response.success) {
+        toast.success('Connection request accepted!');
+        
+        // Refresh data
+        await fetchConnections();
+        await fetchPendingRequests();
+      }
+    } catch (error) {
+      console.error('Error accepting request:', error);
+      toast.error('Failed to accept connection request');
+    }
+  };
+
+  const handleRejectRequest = async (requestId) => {
+    try {
+      const response = await networkingAPI.rejectConnectionRequest(requestId);
+      
+      if (response.success) {
+        toast.success('Connection request declined');
+        
+        // Remove from pending requests
+        setPendingRequests(prevRequests => 
+          prevRequests.filter(req => req.id !== requestId)
+        );
+      }
+    } catch (error) {
+      console.error('Error rejecting request:', error);
+      toast.error('Failed to decline connection request');
+    }
+  };
+
+  const handleSendRequest = async (userId) => {
+    try {
+      const response = await networkingAPI.sendConnectionRequest(userId, 'connection');
+      
+      if (response.success) {
+        toast.success('Connection request sent!');
+        
+        // Remove from suggestions
+        setSuggestions(prevSuggestions => 
+          prevSuggestions.filter(sugg => sugg.userId !== userId)
+        );
+      }
+    } catch (error) {
+      console.error('Error sending request:', error);
+      toast.error(error.response?.data?.message || 'Failed to send connection request');
+    }
   };
 
   const handleViewProfile = (user) => {
@@ -148,83 +129,56 @@ const ConnectionsPanel = ({ onOpenMessaging }) => {
     setShowProfileModal(true);
   };
 
-  const handleFollow = (userId) => {
-    console.log('Following user:', userId);
-    
-    // Check if user is in suggestions
-    const userInSuggestions = suggestions.find(sugg => sugg.id === userId);
-    
-    if (userInSuggestions && !userInSuggestions.connected) {
-      // Move from suggestions to connections
-      const newConnection = {
-        ...userInSuggestions,
-        isFollowing: true,
-        connected: true
-      };
+  const handleFollow = async (userId) => {
+    try {
+      const response = await networkingAPI.sendConnectionRequest(userId, 'follow');
       
-      setConnections(prevConnections => [...prevConnections, newConnection]);
-      setSuggestions(prevSuggestions => 
-        prevSuggestions.filter(sugg => sugg.id !== userId)
-      );
-    } else {
-      // Update existing connections
-      setConnections(prevConnections => 
-        prevConnections.map(conn => 
-          conn.id === userId ? { ...conn, isFollowing: true } : conn
-        )
-      );
-      // Update suggestions
-      setSuggestions(prevSuggestions => 
-        prevSuggestions.map(sugg => 
-          sugg.id === userId ? { ...sugg, isFollowing: true } : sugg
-        )
-      );
-    }
-    
-    // Update selected user if modal is open
-    if (selectedUser && selectedUser.id === userId) {
-      setSelectedUser({ ...selectedUser, isFollowing: true, connected: true });
+      if (response.success) {
+        toast.success('Now following user');
+        
+        // Refresh connections
+        await fetchConnections();
+        
+        // Remove from suggestions if present
+        setSuggestions(prevSuggestions => 
+          prevSuggestions.filter(sugg => sugg.userId !== userId)
+        );
+        
+        // Update selected user if modal is open
+        if (selectedUser && selectedUser.userId === userId) {
+          setSelectedUser({ ...selectedUser, isFollowing: true, connected: true });
+        }
+      }
+    } catch (error) {
+      console.error('Error following user:', error);
+      toast.error('Failed to follow user');
     }
   };
 
-  const handleUnfollow = (userId) => {
-    console.log('Unfollowing user:', userId);
-    
-    // Find the connection
-    const connection = connections.find(conn => conn.id === userId);
-    
-    if (connection) {
-      // Move back to suggestions and remove from connections
-      const newSuggestion = {
-        ...connection,
-        isFollowing: false,
-        connected: false,
-        reason: 'Previously connected'
-      };
+  const handleUnfollow = async (connectionId) => {
+    try {
+      const response = await networkingAPI.removeConnection(connectionId);
       
-      setConnections(prevConnections => 
-        prevConnections.filter(conn => conn.id !== userId)
-      );
-      setSuggestions(prevSuggestions => 
-        [...prevSuggestions, newSuggestion]
-      );
-    } else {
-      // Update suggestions
-      setSuggestions(prevSuggestions => 
-        prevSuggestions.map(sugg => 
-          sugg.id === userId ? { ...sugg, isFollowing: false } : sugg
-        )
-      );
-    }
-    
-    // Update selected user if modal is open
-    if (selectedUser && selectedUser.id === userId) {
-      setSelectedUser({ ...selectedUser, isFollowing: false, connected: false });
+      if (response.success) {
+        toast.success('Unfollowed user');
+        
+        // Refresh data
+        await fetchConnections();
+        await fetchSuggestions();
+        
+        // Update selected user if modal is open
+        if (selectedUser) {
+          setSelectedUser({ ...selectedUser, isFollowing: false, connected: false });
+        }
+      }
+    } catch (error) {
+      console.error('Error unfollowing user:', error);
+      toast.error('Failed to unfollow user');
     }
   };
 
-  const handleConnect = (userId) => {
-    console.log('Connecting with user:', userId);
+  const handleConnect = async (userId) => {
+    await handleSendRequest(userId);
     setShowProfileModal(false);
   };
 
@@ -244,6 +198,17 @@ const ConnectionsPanel = ({ onOpenMessaging }) => {
     conn.company.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  if (isLoading) {
+    return (
+      <div className="connections-panel">
+        <div className="loading-container">
+          <div className="spinner"></div>
+          <p>Loading networking data...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="connections-panel">
       {/* Header */}
@@ -255,31 +220,6 @@ const ConnectionsPanel = ({ onOpenMessaging }) => {
         <p className="connections-subtitle">
           Manage your professional connections and grow your network
         </p>
-      </div>
-
-      {/* Stats */}
-      <div className="connection-stats">
-        <div className="stat-card">
-          <UserCheck size={24} />
-          <div className="stat-content">
-            <span className="stat-number">{connections.length}</span>
-            <span className="stat-label">Connections</span>
-          </div>
-        </div>
-        <div className="stat-card">
-          <UserPlus size={24} />
-          <div className="stat-content">
-            <span className="stat-number">{pendingRequests.length}</span>
-            <span className="stat-label">Pending Requests</span>
-          </div>
-        </div>
-        <div className="stat-card">
-          <TrendingUp size={24} />
-          <div className="stat-content">
-            <span className="stat-number">{suggestions.length}</span>
-            <span className="stat-label">Suggestions</span>
-          </div>
-        </div>
       </div>
 
       {/* Navigation Tabs */}
@@ -327,129 +267,169 @@ const ConnectionsPanel = ({ onOpenMessaging }) => {
       <div className="connections-content">
         {activeTab === 'all' && (
           <div className="connections-grid">
-            {filteredConnections.map((connection) => (
-              <div key={connection.id} className="connection-card">
-                <img src={connection.avatar} alt={connection.name} className="connection-avatar" />
-                <div className="connection-info">
-                  <h3>{connection.name}</h3>
-                  <p className="connection-title">{connection.title}</p>
-                  <p className="connection-company">
-                    <Briefcase size={14} />
-                    {connection.company}
-                  </p>
-                  <p className="mutual-connections">
-                    {connection.mutualConnections} mutual connections
-                  </p>
-                </div>
-                <div className="connection-actions">
-                  <button 
-                    className={`btn-follow ${connection.isFollowing ? 'following' : ''}`}
-                    onClick={() => connection.isFollowing ? handleUnfollow(connection.id) : handleFollow(connection.id)}
-                  >
-                    {connection.isFollowing ? (
-                      <>
-                        <UserCheck size={14} />
-                        Following
-                      </>
-                    ) : (
-                      <>
-                        <UserPlus size={14} />
-                        Follow
-                      </>
-                    )}
-                  </button>
-                  <button 
-                    className="btn-message"
-                    onClick={() => handleMessage(connection.id)}
-                  >
-                    Message
-                  </button>
-                  <button 
-                    className="btn-view-profile"
-                    onClick={() => handleViewProfile(connection)}
-                  >
-                    View Profile
-                  </button>
-                </div>
+            {filteredConnections.length === 0 ? (
+              <div className="empty-state">
+                <Users size={48} />
+                <h3>No Connections Yet</h3>
+                <p>Start building your network by connecting with professionals</p>
+                <button 
+                  className="btn-primary"
+                  onClick={() => setActiveTab('suggestions')}
+                >
+                  Find People to Connect
+                </button>
               </div>
-            ))}
+            ) : (
+              filteredConnections.map((connection) => (
+                <div key={connection.id} className="connection-card">
+                  <img src={connection.avatar} alt={connection.name} className="connection-avatar" />
+                  <div className="connection-info">
+                    <h3>{connection.name}</h3>
+                    <p className="connection-title">{connection.title}</p>
+                    <p className="connection-company">
+                      <Briefcase size={14} />
+                      {connection.company}
+                    </p>
+                    {connection.mutualConnections > 0 && (
+                      <p className="mutual-connections">
+                        {connection.mutualConnections} mutual connections
+                      </p>
+                    )}
+                  </div>
+                  <div className="connection-actions">
+                    <button 
+                      className={`btn-follow ${connection.isFollowing ? 'following' : ''}`}
+                      onClick={() => connection.isFollowing ? handleUnfollow(connection.id) : handleFollow(connection.userId)}
+                    >
+                      {connection.isFollowing ? (
+                        <>
+                          <UserCheck size={14} />
+                          Following
+                        </>
+                      ) : (
+                        <>
+                          <UserPlus size={14} />
+                          Follow
+                        </>
+                      )}
+                    </button>
+                    <button 
+                      className="btn-message"
+                      onClick={() => handleMessage(connection.userId)}
+                    >
+                      Message
+                    </button>
+                    <button 
+                      className="btn-view-profile"
+                      onClick={() => handleViewProfile(connection)}
+                    >
+                      View Profile
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         )}
 
         {activeTab === 'requests' && (
           <div className="requests-list">
-            {pendingRequests.map((request) => (
-              <div key={request.id} className="request-card">
-                <img src={request.avatar} alt={request.name} className="request-avatar" />
-                <div className="request-info">
-                  <h3>{request.name}</h3>
-                  <p className="request-title">{request.title}</p>
-                  <p className="request-company">{request.company}</p>
-                  <p className="mutual-connections">
-                    {request.mutualConnections} mutual connections
-                  </p>
-                  <p className="request-date">{request.requestDate}</p>
-                </div>
-                <div className="request-actions">
-                  <button
-                    className="btn-accept"
-                    onClick={() => handleAcceptRequest(request.id)}
-                  >
-                    <UserCheck size={16} />
-                    Accept
-                  </button>
-                  <button
-                    className="btn-reject"
-                    onClick={() => handleRejectRequest(request.id)}
-                  >
-                    <UserX size={16} />
-                    Decline
-                  </button>
-                </div>
+            {pendingRequests.length === 0 ? (
+              <div className="empty-state">
+                <UserPlus size={48} />
+                <h3>No Pending Requests</h3>
+                <p>You don't have any connection requests at the moment</p>
               </div>
-            ))}
+            ) : (
+              pendingRequests.map((request) => (
+                <div key={request.id} className="request-card">
+                  <img src={request.avatar} alt={request.name} className="request-avatar" />
+                  <div className="request-info">
+                    <h3>{request.name}</h3>
+                    <p className="request-title">{request.title}</p>
+                    <p className="request-company">{request.company}</p>
+                    {request.mutualConnections > 0 && (
+                      <p className="mutual-connections">
+                        {request.mutualConnections} mutual connections
+                      </p>
+                    )}
+                    <p className="request-date">
+                      {new Date(request.requestDate).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <div className="request-actions">
+                    <button
+                      className="btn-accept"
+                      onClick={() => handleAcceptRequest(request.id)}
+                    >
+                      <UserCheck size={16} />
+                      Accept
+                    </button>
+                    <button
+                      className="btn-reject"
+                      onClick={() => handleRejectRequest(request.id)}
+                    >
+                      <UserX size={16} />
+                      Decline
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         )}
 
         {activeTab === 'suggestions' && (
           <div className="suggestions-grid">
-            {suggestions.map((suggestion) => (
-              <div key={suggestion.id} className="suggestion-card">
-                <img src={suggestion.avatar} alt={suggestion.name} className="suggestion-avatar" />
-                <div className="suggestion-info">
-                  <h3>{suggestion.name}</h3>
-                  <p className="suggestion-title">{suggestion.title}</p>
-                  <p className="suggestion-company">{suggestion.company}</p>
-                  <p className="suggestion-reason">
-                    <TrendingUp size={14} />
-                    {suggestion.reason}
-                  </p>
-                  <p className="mutual-connections">
-                    {suggestion.mutualConnections} mutual connections
-                  </p>
-                  <div className="suggestion-skills">
-                    {suggestion.skills.map((skill, idx) => (
-                      <span key={idx} className="skill-tag">{skill}</span>
-                    ))}
+            {suggestions.length === 0 ? (
+              <div className="empty-state">
+                <TrendingUp size={48} />
+                <h3>No Suggestions Available</h3>
+                <p>Check back later for new connection suggestions</p>
+              </div>
+            ) : (
+              suggestions.map((suggestion) => (
+                <div key={suggestion.id} className="suggestion-card">
+                  <img src={suggestion.avatar} alt={suggestion.name} className="suggestion-avatar" />
+                  <div className="suggestion-info">
+                    <h3>{suggestion.name}</h3>
+                    <p className="suggestion-title">{suggestion.title}</p>
+                    <p className="suggestion-company">{suggestion.company}</p>
+                    <p className="suggestion-reason">
+                      <TrendingUp size={14} />
+                      {suggestion.reason}
+                    </p>
+                    {suggestion.mutualConnections > 0 && (
+                      <p className="mutual-connections">
+                        {suggestion.mutualConnections} mutual connections
+                      </p>
+                    )}
+                    {suggestion.skills && suggestion.skills.length > 0 && (
+                      <div className="suggestion-skills">
+                        {suggestion.skills.map((skill, idx) => (
+                          <span key={idx} className="skill-tag">{skill}</span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  <div className="suggestion-actions">
+                    <button
+                      className="btn-connect"
+                      onClick={() => handleSendRequest(suggestion.userId)}
+                    >
+                      <UserPlus size={16} />
+                      Connect
+                    </button>
+                    <button
+                      className="btn-view-profile-small"
+                      onClick={() => handleViewProfile(suggestion)}
+                    >
+                      View Profile
+                    </button>
                   </div>
                 </div>
-                <div className="suggestion-actions">
-                  <button
-                    className="btn-connect"
-                    onClick={() => handleSendRequest(suggestion.id)}
-                  >
-                    <UserPlus size={16} />
-                    Connect
-                  </button>
-                  <button
-                    className="btn-view-profile-small"
-                    onClick={() => handleViewProfile(suggestion)}
-                  >
-                    View Profile
-                  </button>
-                </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         )}
       </div>

@@ -15,6 +15,12 @@ api.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
+    
+    // If sending FormData, remove Content-Type to let browser set it with boundary
+    if (config.data instanceof FormData) {
+      delete config.headers['Content-Type']
+    }
+    
     return config
   },
   (error) => Promise.reject(error)
@@ -24,8 +30,12 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('authToken')
-      window.location.href = '/login'
+      // Only redirect to login if we're not already there
+      const currentPath = window.location.pathname
+      if (!currentPath.includes('/login')) {
+        localStorage.removeItem('authToken')
+        window.location.href = '/login'
+      }
     }
     return Promise.reject(error)
   }

@@ -41,10 +41,6 @@ const GroupDetailsModal = ({ isOpen, onClose, group, isJoined }) => {
           Back to Groups
         </button>
 
-        <button className="close-btn" onClick={onClose}>
-          <X size={24} />
-        </button>
-
         {/* Group Header */}
         <div className="group-details-header">
           <img src={group.image} alt={group.name} className="group-header-image" />

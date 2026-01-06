@@ -1,0 +1,40 @@
+/* Profile Page Styles */
+
+.profile-page-wrapper {
+  position: relative;
+  min-height: calc(100vh - 120px);
+}
+
+/* Back Button */
+.profile-page-wrapper .back-button {
+  position: absolute;
+  top: 2rem;
+  left: 2.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  background: transparent;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  color: #6b7280;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 10;
+}
+
+.profile-page-wrapper .back-button:hover {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: #3b82f6;
+  color: #3b82f6;
+  transform: translateX(-4px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+}
+
+.profile-page-wrapper .back-button:active {
+  transform: translateX(-2px);
+  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.15);
+}

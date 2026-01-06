@@ -16,7 +16,7 @@ import {
   Eye
 } from 'lucide-react'
 import Loader from '../../components/common/Loader/Loader'
-import './jobportal.css'
+import './JobPortal.css'
 
 /**
  * Job Portal Main Page
