@@ -22,10 +22,6 @@ import Signup from './pages/Auth/Signup';
 import ForgotPassword from './pages/Auth/ForgotPassword';
 import Dashboard from './pages/Dashboard/Dashboard';
 import Profile from './pages/Dashboard/Profile';
-<<<<<<< HEAD
-=======
-import ProfileView from './pages/Dashboard/ProfileView';
->>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
 import MyArticles from './pages/Dashboard/MyArticles';
 import Jobs from './pages/Jobs/Jobs';
 import JobPortal from './pages/Jobs/JobPortal';
@@ -43,15 +39,13 @@ import Forum from './pages/Forum/Forum';
 import ForumCreate from './pages/Forum/ForumCreate';
 import ForumThreadDetail from './pages/Forum/ForumThreadDetail';
 import NetworkingArena from './pages/Networking Arena/NetworkingArena';
-<<<<<<< HEAD
-=======
+import ProfileView from './pages/Dashboard/ProfileView';
 import Instructor from './pages/Instructor/Instructor';
 import Recruiter from './pages/Recruiter/Recruiter';
 import Editor from './pages/Editor/Editor';
 import CVGenerator from './pages/CVGenerator/CVGenerator';
 import Settings from './pages/Settings/Settings';
 import Notifications from './pages/Notifications/Notifications';
->>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
 import Admin from './pages/Admin/Admin/AdminNew';
 
 // Styles
@@ -64,44 +58,18 @@ function AppLayout({ children }) {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin');
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
   return (
     <div className="app">
       {/* Header - Hidden on all admin routes */}
       {!isAdminRoute && <Header />}
-<<<<<<< HEAD
-=======
-=======
-return (
-  <div className="app">
-    {/* Header - Hidden on all admin routes */}
-    {!isAdminRoute && <Header />}
->>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
->>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
 
       {/* Main Content Area */}
       <main className="main-content">
         {children}
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
       </main>
 
       {/* Footer - Hidden on all admin routes */}
       {!isAdminRoute && <Footer />}
-<<<<<<< HEAD
-=======
-=======
-</main>
-
-{/* Footer - Hidden on all admin routes */}
-{!isAdminRoute && <Footer />}
->>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
->>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
     </div>
   );
 }
@@ -122,48 +90,8 @@ function App() {
                   {/* Public Routes */}
                   <Route path="/" element={<Home />} />
                   <Route path="/about" element={<About />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/signup" element={<Signup />} />
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
-                  <Route path="/auth/forgot-password" element={<ForgotPassword />} />
-
-                  {/* Admin Login - Separate Route */}
-                  <Route path="/admin/login" element={<AdminLogin />} />
-
-                  {/* Admin Routes - Protected */}
-                  <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
-                  <Route 
-                    path="/admin/*" 
-                    element={
-                      <ProtectedAdminRoute>
-                        <Admin />
-                      </ProtectedAdminRoute>
-                    } 
-                  />
-<<<<<<< HEAD
-
-                  {/* Dashboard */}
-                  <Route path="/dashboard" element={<Dashboard />} />
-                  <Route path="/profile" element={<Profile />} />
-                  <Route path="/my-articles" element={<MyArticles />} />
-=======
->>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
-
-                  {/* Dashboard */}
-                  <Route path="/dashboard" element={<Dashboard />} />
-                  <Route path="/profile" element={<Profile />} />
-                  <Route path="/profile-view" element={<ProfileView />} />
-                  <Route path="/instructor" element={<Instructor />} />
-                  <Route path="/recruiter" element={<Recruiter />} />
-                  <Route path="/editor" element={<Editor />} />
-                  <Route path="/cv-generator" element={<CVGenerator />} />
-                  <Route path="/settings" element={<Settings />} />
-                  <Route path="/notifications" element={<Notifications />} />
-                  <Route path="/my-articles" element={<MyArticles />} />
-=======
+<Route path="/login" element={<Login />} />
+<Route path="/signup" element={<Signup />} />
 <Route path="/auth/forgot-password" element={<ForgotPassword />} />
 
 {/* Admin Login - Separate Route */}
@@ -179,7 +107,6 @@ function App() {
     </ProtectedAdminRoute>
   } 
 />
->>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
 
 {/* Dashboard */}
 <Route path="/dashboard" element={<Dashboard />} />
