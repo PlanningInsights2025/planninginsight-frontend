@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { signInWithGoogle } from "../../../services/api/firebaseAuth";
-import { useAuth } from '../../../hooks/useAuth'
-import { useNotification } from '../../../contexts/NotificationContext'
+import { useAuth } from '../../../hooks/useAuth';
+import { useNotification } from '../../../contexts/NotificationContext';
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({ email: "", password: "", rememberMe: false });
+  const [error, setError] = useState('');
   const navigate = useNavigate();
   const { login } = useAuth()
   const { showNotification } = useNotification()
@@ -17,36 +18,117 @@ export default function Login() {
     setFormData({ ...formData, [name]: type === "checkbox" ? checked : value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    ;(async () => {
-      setLoading(true)
-      try {
-        const response = await login(formData.email, formData.password)
-        if (response.success) {
-          showNotification('Signed in successfully', 'success')
-          navigate('/dashboard')
-        } else {
-          showNotification(response.error || 'Login failed', 'error')
-        }
-      } catch (err) {
-        console.error('Login error', err)
-        showNotification(err?.message || 'Login failed', 'error')
-      } finally {
-        setLoading(false)
+    setError('');
+    setLoading(true);
+
+    try {
+      const endpoint = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api'}/auth/login`;
+
+      const payload = {
+        email: formData.email,
+        password: formData.password,
+        rememberMe: formData.rememberMe,
+      };
+
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.message || 'Invalid credentials');
+        showNotification(data.message || 'Login failed', 'error');
+        setLoading(false);
+        return;
       }
-    })()
+
+      // Success
+      if (data.token || data.data?.token) {
+        const token = data.token || data.data.token;
+        localStorage.setItem('authToken', token);
+      }
+
+      // Update auth context with user data
+      if (data.data?.user) {
+        const userData = {
+          id: data.data.user.id,
+          email: data.data.user.email,
+          role: data.data.user.role,
+          firstName: data.data.user.profile?.firstName || '',
+          lastName: data.data.user.profile?.lastName || '',
+          displayName: `${data.data.user.profile?.firstName || ''} ${data.data.user.profile?.lastName || ''}`.trim(),
+          photoURL: data.data.user.profile?.photoURL || null
+        };
+        await login(userData);
+      }
+
+      showNotification('Signed in successfully', 'success');
+      
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 100);
+
+    } catch (err) {
+      console.error('Login error:', err);
+      setError('Something went wrong. Please try again.');
+      showNotification(err?.message || 'Login failed', 'error');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleGoogleSignIn = async () => {
     try {
+      setLoading(true);
       const user = await signInWithGoogle()
-      console.log('Google sign-in user:', user)
+      console.log('✅ Google sign-in successful:', user)
+      
+      // Call backend to get JWT token
+      try {
+        console.log('🔄 Calling backend for JWT token...')
+        const apiUrl = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api'}/auth/google-login`
+        console.log('Backend URL:', apiUrl)
+        
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            uid: user.uid,
+            email: user.email,
+            displayName: user.displayName,
+            photoURL: user.photoURL
+          })
+        });
+        
+        const data = await response.json();
+        console.log('Backend response:', data)
+        
+        if (response.ok && data.token) {
+          localStorage.setItem('authToken', data.token);
+          console.log('✅ JWT token stored successfully')
+        } else {
+          console.error('❌ Backend did not return token:', data)
+        }
+      } catch (backendError) {
+        console.error('❌ Backend token fetch failed:', backendError);
+        showNotification('Warning: Backend authentication failed. Some features may be limited.', 'warning')
+      }
+      
       showNotification('Signed in with Google', 'success')
       navigate('/dashboard')
     } catch (err) {
       console.error('Google sign-in error', err)
       showNotification(err?.message || 'Google sign-in failed', 'error')
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -387,20 +469,6 @@ export default function Login() {
             box-shadow: 0 8px 20px rgba(234, 67, 53, 0.3);
           }
           
-          .social-facebook:hover {
-            background: #1877f2 !important;
-            color: #fff !important;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(24, 119, 242, 0.3);
-          }
-          
-          .social-github:hover {
-            background: #333 !important;
-            color: #fff !important;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(51, 51, 51, 0.3);
-          }
-          
           .social-linkedin:hover {
             background: #0a66c2 !important;
             color: #fff !important;
@@ -470,24 +538,6 @@ export default function Login() {
               </button>
               <button 
                 type="button" 
-                className="social-facebook" 
-                style={{ ...styles.socialBase, ...styles.facebook }}
-                aria-label="Sign in with Facebook"
-              >
-                f
-              </button>
-              <button 
-                type="button" 
-                className="social-github" 
-                style={{ ...styles.socialBase, ...styles.github }}
-                aria-label="Sign in with GitHub"
-              >
-                <svg style={{ width: "24px", height: "24px" }} viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                </svg>
-              </button>
-              <button 
-                type="button" 
                 className="social-linkedin" 
                 style={{ ...styles.socialBase, ...styles.linkedin }}
                 aria-label="Sign in with LinkedIn"
@@ -501,6 +551,22 @@ export default function Login() {
               <span style={styles.dividerText}>or use your email</span>
               <div style={styles.dividerLine}></div>
             </div>
+
+            {/* Error Display */}
+            {error && (
+              <div style={{
+                padding: '12px 16px',
+                background: 'rgba(220, 38, 38, 0.1)',
+                borderRadius: '10px',
+                marginBottom: '20px',
+                fontSize: '14px',
+                color: '#dc2626',
+                fontWeight: '500',
+                border: '1px solid rgba(220, 38, 38, 0.25)',
+              }}>
+                {error}
+              </div>
+            )}
 
             <div style={styles.inputGroup}>
               <label style={styles.label}>Email Address</label>
@@ -539,17 +605,26 @@ export default function Login() {
             </div>
 
             <div style={styles.rememberRow}>
-              <label style={styles.checkbox}>
-                <input 
-                  type="checkbox" 
-                  name="rememberMe"
-                  checked={formData.rememberMe}
-                  onChange={handleChange}
-                />
-                <span>Remember me</span>
-              </label>
-              <a style={styles.link} href="#">Forgot Password?</a>
-            </div>
+                <label style={styles.checkbox}>
+                  <input 
+                    type="checkbox" 
+                    name="rememberMe"
+                    checked={formData.rememberMe}
+                    onChange={handleChange}
+                  />
+                  <span>Remember me</span>
+                </label>
+                <a 
+                  style={styles.link} 
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate('/auth/forgot-password');
+                  }}
+                >
+                  Forgot Password?
+                </a>
+              </div>
 
             <button type="submit" className="submit-btn" style={styles.button} disabled={loading}>
               {loading ? (
@@ -561,6 +636,16 @@ export default function Login() {
                 'Sign In'
               )}
             </button>
+
+            {/* Session info */}
+            <p style={{
+              marginTop: '12px',
+              textAlign: 'center',
+              fontSize: '12px',
+              color: '#999',
+            }}>
+              Session: up to 30 days
+            </p>
           </form>
         </div>
 

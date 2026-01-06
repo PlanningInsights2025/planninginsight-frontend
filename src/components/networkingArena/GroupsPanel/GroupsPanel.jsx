@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Users, Plus, Search, TrendingUp, Lock, Globe, MessageCircle, Crown, Settings } from 'lucide-react';
+import toast from 'react-hot-toast';
+import * as networkingApi from '@/services/api/networking';
 import './GroupsPanel.css';
 import CreateGroupModal from './CreateGroupModal';
 import GroupDetailsModal from './GroupDetailsModal';
@@ -10,72 +12,52 @@ const GroupsPanel = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState(null);
+  const [myGroups, setMyGroups] = useState([]);
+  const [discoverGroups, setDiscoverGroups] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const [myGroups, setMyGroups] = useState([
-    {
-      id: 1,
-      name: 'React Developers Community',
-      members: 15420,
-      image: '/api/placeholder/100/100',
-      description: 'A community for React developers to share knowledge and best practices',
-      privacy: 'public',
-      unreadPosts: 5,
-      role: 'admin'
-    },
-    {
-      id: 2,
-      name: 'Product Management Network',
-      members: 8900,
-      image: '/api/placeholder/100/100',
-      description: 'Connect with product managers worldwide',
-      privacy: 'private',
-      unreadPosts: 12,
-      role: 'member'
-    },
-    {
-      id: 3,
-      name: 'AI & Machine Learning',
-      members: 23400,
-      image: '/api/placeholder/100/100',
-      description: 'Latest trends and discussions on AI/ML',
-      privacy: 'public',
-      unreadPosts: 8,
-      role: 'moderator'
+  // Fetch groups on mount
+  useEffect(() => {
+    fetchGroups();
+  }, []);
+
+  const fetchGroups = async () => {
+    try {
+      setLoading(true);
+      
+      // Fetch both my groups and discover groups in parallel
+      const [myGroupsResponse, discoverResponse] = await Promise.all([
+        networkingApi.getMyGroups(),
+        networkingApi.discoverGroups()
+      ]);
+
+      if (myGroupsResponse.success) {
+        setMyGroups(myGroupsResponse.groups);
+      }
+
+      if (discoverResponse.success) {
+        setDiscoverGroups(discoverResponse.groups);
+      }
+    } catch (error) {
+      console.error('Error fetching groups:', error);
+      // Silently fail - empty state will be shown
+    } finally {
+      setLoading(false);
     }
-  ]);
+  };
 
-  const [discoverGroups, setDiscoverGroups] = useState([
-    {
-      id: 4,
-      name: 'Startup Founders Hub',
-      members: 12300,
-      image: '/api/placeholder/100/100',
-      description: 'Network for startup founders and entrepreneurs',
-      privacy: 'private',
-      trending: true
-    },
-    {
-      id: 5,
-      name: 'UX/UI Designers',
-      members: 18700,
-      image: '/api/placeholder/100/100',
-      description: 'Share design inspiration and get feedback',
-      privacy: 'public',
-      trending: true
-    },
-    {
-      id: 6,
-      name: 'DevOps Engineers',
-      members: 9800,
-      image: '/api/placeholder/100/100',
-      description: 'Best practices in DevOps and cloud infrastructure',
-      privacy: 'public',
-      trending: false
+  const handleCreateGroup = async (newGroup) => {
+    try {
+      const response = await networkingApi.createGroup(newGroup);
+      
+      if (response.success) {
+        setMyGroups(prevGroups => [response.group, ...prevGroups]);
+        toast.success('Group created successfully');
+      }
+    } catch (error) {
+      console.error('Error creating group:', error);
+      // Silently fail
     }
-  ]);
-
-  const handleCreateGroup = (newGroup) => {
-    setMyGroups(prevGroups => [newGroup, ...prevGroups]);
   };
 
   const handleViewGroup = (group) => {
@@ -83,16 +65,27 @@ const GroupsPanel = () => {
     setShowDetailsModal(true);
   };
 
-  const handleJoinGroup = (groupId) => {
-    const groupToJoin = discoverGroups.find(g => g.id === groupId);
-    if (groupToJoin) {
-      const joinedGroup = {
-        ...groupToJoin,
-        role: 'member',
-        unreadPosts: 0
-      };
-      setMyGroups(prevGroups => [joinedGroup, ...prevGroups]);
-      setDiscoverGroups(prevGroups => prevGroups.filter(g => g.id !== groupId));
+  const handleJoinGroup = async (groupId) => {
+    try {
+      const response = await networkingApi.joinGroup(groupId);
+      
+      if (response.success) {
+        // Move group from discover to my groups
+        const groupToJoin = discoverGroups.find(g => g.id === groupId);
+        if (groupToJoin) {
+          const joinedGroup = {
+            ...groupToJoin,
+            role: 'member',
+            unreadPosts: 0
+          };
+          setMyGroups(prevGroups => [joinedGroup, ...prevGroups]);
+          setDiscoverGroups(prevGroups => prevGroups.filter(g => g.id !== groupId));
+        }
+        toast.success('Joined group successfully');
+      }
+    } catch (error) {
+      console.error('Error joining group:', error);
+      // Silently fail
     }
   };
 
@@ -139,9 +132,22 @@ const GroupsPanel = () => {
 
       {/* Content */}
       <div className="groups-content">
-        {activeTab === 'myGroups' && (
+        {loading ? (
+          <div className="loading-state">
+            <p>Loading groups...</p>
+          </div>
+        ) : activeTab === 'myGroups' ? (
           <div className="groups-list">
-            {myGroups.map((group) => (
+            {myGroups.length === 0 ? (
+              <div className="empty-state">
+                <Users size={48} />
+                <p>You haven't joined any groups yet</p>
+                <button className="create-group-btn" onClick={() => setShowCreateModal(true)}>
+                  Create Your First Group
+                </button>
+              </div>
+            ) : (
+              myGroups.map((group) => (
               <div key={group.id} className="group-card">
                 <img src={group.image} alt={group.name} className="group-image" />
                 <div className="group-info">
@@ -178,11 +184,10 @@ const GroupsPanel = () => {
                   )}
                 </div>
               </div>
-            ))}
+            ))
+            )}
           </div>
-        )}
-
-        {activeTab === 'discover' && (
+        ) : (
           <div className="discover-groups">
             <div className="discover-header">
               <h3>
@@ -190,8 +195,13 @@ const GroupsPanel = () => {
                 Trending Groups
               </h3>
             </div>
-            <div className="groups-grid">
-              {discoverGroups.map((group) => (
+            {discoverGroups.length === 0 ? (
+              <div className="empty-state">
+                <p>No new groups to discover</p>
+              </div>
+            ) : (
+              <div className="groups-grid">
+                {discoverGroups.map((group) => (
                 <div key={group.id} className="discover-group-card">
                   <img src={group.image} alt={group.name} className="group-image" />
                   {group.trending && (
@@ -221,7 +231,8 @@ const GroupsPanel = () => {
                   </button>
                 </div>
               ))}
-            </div>
+              </div>
+            )}
           </div>
         )}
       </div>
