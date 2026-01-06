@@ -1,8 +1,29 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './JobPortal.css';
 import './ApplicationForm.css';
+// import { useAuth } from '../../contexts/AuthContext';
+// import { useUser } from '../../contexts/UserContext';
 
 const JobPortal = () => {
+  const navigate = useNavigate();
+  // const { user, isAuthenticated } = useAuth(); // Uncomment when context is ready
+  // const { profile } = useUser(); // Uncomment when context is ready
+  
+  // Mock user profile data for autofill (replace with actual user data from context)
+  const [userProfile] = useState({
+    fullName: 'John Smith',
+    email: 'john.smith@example.com',
+    phone: '9876543210',
+    country: 'India',
+    dateOfBirth: '1995-05-15',
+    yearsOfExperience: '5',
+    currentCTC: '$50,000',
+    expectedCTC: '$60,000',
+    noticePeriod: '30 days',
+    portfolio: 'https://linkedin.com/in/johnsmith'
+  });
+  
   const [jobs, setJobs] = useState([]);
   const [filteredJobs, setFilteredJobs] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -35,6 +56,7 @@ const JobPortal = () => {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [showScrollTop, setShowScrollTop] = useState(false);
+<<<<<<< HEAD
 
   // Scroll to top handler
   const scrollToTop = () => {
@@ -49,82 +71,205 @@ const JobPortal = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
 
-  // Mock data for demonstration
+  // Scroll to top handler
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Track scroll position to show/hide button
   useEffect(() => {
-    // Simulate API call
-    const t = setTimeout(() => {
-      // base examples
-      const base = [
-        {
-          id: 1,
-          title: "Senior Urban Planner",
-          company: "CityScape Architects",
-          location: "New York, USA",
-          type: "Full-time",
-          experience: "5+ years",
-          salary: "$80,000 - $120,000",
-          deadline: "2026-12-15",
-          description: "We are seeking an experienced Urban Planner to lead our sustainable city development projects. The ideal candidate will have expertise in transit-oriented development and community engagement.",
-          requirements: ["Master's degree in Urban Planning","5+ years of professional experience"],
-          recruiter: { name: "Alex Johnson", company: "CityScape Architects", id: "RID-001" },
-          applicants: 42, acceptanceProbability: 78, isPremium: true, featured: true, postedDate: "2025-11-10",
-          customFields: { noticePeriod: "30 days", currentCTC: "$90,000", expectedCTC: "$110,000" }
-        },
-        {
-          id: 2,
-          title: "Landscape Architect",
-          company: "GreenSpace Design",
-          location: "Barcelona, Spain",
-          type: "Full-time",
-          experience: "3+ years",
-          salary: "€45,000 - €65,000",
-          deadline: "2026-12-20",
-          description: "Join our innovative team to create sustainable and accessible public spaces. We're looking for creative minds with a passion for environmental design.",
-          requirements: ["Bachelor's degree in Landscape Architecture","3+ years of professional experience"],
-          recruiter: { name: "Maria Rodriguez", company: "GreenSpace Design", id: "RID-002" },
-          applicants: 28, acceptanceProbability: 65, isPremium: false, featured: false, postedDate: "2025-11-15",
-          customFields: { noticePeriod: "15 days", currentCTC: "€50,000", expectedCTC: "€60,000" }
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 300);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+<<<<<<< HEAD
+=======
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+
+  // Scroll to top handler
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Track scroll position to show/hide button
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 300);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+
+  // Load jobs from localStorage and sync with Recruiter portal
+  useEffect(() => {
+    const loadJobs = () => {
+      // Try to load jobs from localStorage first
+      const storedJobs = localStorage.getItem('recruiterJobs');
+      
+      if (storedJobs) {
+        try {
+          const parsedJobs = JSON.parse(storedJobs);
+          // Transform recruiter job format to job portal format
+          const transformedJobs = parsedJobs
+            .filter(job => job.status === 'active') // Only show active jobs
+            .map(job => ({
+              id: job.id,
+              title: job.title,
+              company: job.company || "TechCorp Solutions",
+              location: job.location,
+              type: job.type,
+              experience: job.experience,
+              salary: job.salary,
+              deadline: job.deadline,
+              description: job.description,
+              requirements: Array.isArray(job.requirements) ? job.requirements : [],
+              recruiter: { name: "Sarah Johnson", company: job.company || "TechCorp Solutions", id: "RID-001" },
+              applicants: job.applications || 0,
+              acceptanceProbability: Math.floor(60 + Math.random() * 30),
+              isPremium: job.isPremium || false,
+              featured: job.isFeatured || false,
+              postedDate: job.postedDate,
+              customFields: { noticePeriod: "30 days", currentCTC: "$90,000", expectedCTC: "$110,000" },
+              views: job.views || 0,
+              shortlisted: job.shortlisted || 0,
+              interviewed: job.interviewed || 0
+            }));
+          
+          setJobs(transformedJobs);
+          setFilteredJobs(transformedJobs);
+          setIsLoading(false);
+          return;
+        } catch (e) {
+          console.error('Error loading jobs from localStorage:', e);
         }
-      ];
+      }
+      
+      // Fallback to mock data if no stored jobs
+      const t = setTimeout(() => {
+        const base = [
+          {
+            id: 1,
+            title: "Senior Full Stack Developer",
+            company: "TechCorp Solutions",
+            location: "New York, USA",
+            type: "Full-time",
+            experience: "5+ years",
+            salary: "$120,000 - $150,000",
+            deadline: "2025-01-15",
+            description: "We are looking for a talented Full Stack Developer to join our engineering team. You will be responsible for developing and maintaining web applications using modern technologies.",
+            requirements: [
+              "5+ years of experience in full-stack development",
+              "Strong proficiency in React, Node.js, and TypeScript",
+              "Experience with cloud services (AWS/Azure)",
+              "Knowledge of database design and optimization",
+              "Excellent problem-solving skills"
+            ],
+            recruiter: { name: "Sarah Johnson", company: "TechCorp Solutions", id: "RID-001" },
+            applicants: 45, acceptanceProbability: 78, isPremium: true, featured: true, postedDate: "2024-12-15",
+            customFields: { noticePeriod: "30 days", currentCTC: "$110,000", expectedCTC: "$140,000" },
+            views: 892,
+            shortlisted: 8,
+            interviewed: 3
+          },
+          {
+            id: 2,
+            title: "Product Manager",
+            company: "TechCorp Solutions",
+            location: "Remote",
+            type: "Full-time",
+            experience: "3+ years",
+            salary: "$100,000 - $130,000",
+            deadline: "2025-01-20",
+            description: "Lead product development from conception to launch. Work with cross-functional teams to deliver exceptional products.",
+            requirements: [
+              "3+ years of product management experience",
+              "Strong analytical and strategic thinking",
+              "Excellent communication skills",
+              "Experience with Agile methodologies"
+            ],
+            recruiter: { name: "Sarah Johnson", company: "TechCorp Solutions", id: "RID-001" },
+            applicants: 28, acceptanceProbability: 65, isPremium: false, featured: false, postedDate: "2024-12-20",
+            customFields: { noticePeriod: "15 days", currentCTC: "$90,000", expectedCTC: "$110,000" },
+            views: 456,
+            shortlisted: 5,
+            interviewed: 2
+          }
+        ];
 
-      // generate more demo items
-      const more = Array.from({ length: 14 }).map((_, i) => {
-        const titles = ['Project Manager','Environmental Consultant','Urban Designer','Site Engineer','Sustainability Consultant','Transportation Planner','Building Services Engineer'];
-        const companies = ['BuildRight','EcoSolutions Inc.','CityScape Architects','GreenSpace Design','UrbanWorks Ltd'];
-        const locations = ['Singapore','Vancouver, Canada','New York, USA','Barcelona, Spain','London, UK'];
-        const types = ['Full-time','Contract','Part-time','Remote'];
-        const exp = ['1+ years','2+ years','3+ years','5+ years','7+ years'];
+        const more = Array.from({ length: 14 }).map((_, i) => {
+          const titles = ['UX Designer','Data Analyst','DevOps Engineer','Marketing Manager','Sales Executive','HR Manager','Business Analyst'];
+          const companies = ['TechCorp Solutions','InnovateTech','Digital Solutions Inc.','CloudWorks Ltd','StartupHub'];
+          const locations = ['New York, USA','Remote','San Francisco, USA','London, UK','Singapore'];
+          const types = ['Full-time','Contract','Part-time','Remote'];
+          const exp = ['1+ years','2+ years','3+ years','5+ years','7+ years'];
 
-        const idx = i % titles.length;
-        return {
-          id: 100 + i,
-          title: `${titles[idx]} ${i+1}`,
-          company: companies[i % companies.length],
-          location: locations[i % locations.length],
-          type: types[i % types.length],
-          experience: exp[i % exp.length],
-          salary: `$${50 + i * 5}k - $${60 + i * 6}k`,
-          deadline: `2026-12-${10 + (i % 20)}`,
-          description: 'This is a demo job description used to preview the card layout and spacing. Replace with live data from the API.',
-          requirements: ['Relevant degree','Experience in role'],
-          recruiter: { name: companies[i % companies.length] + ' HR', company: companies[i % companies.length], id: `RID-${i+100}` },
-          applicants: Math.floor(5 + Math.random()*80),
-          acceptanceProbability: Math.floor(40 + Math.random()*40),
-          isPremium: i % 6 === 0,
-          featured: i % 5 === 0,
-          postedDate: '2025-11-01',
-          customFields: { noticePeriod: `${10 + (i % 30)} days`, currentCTC: `$${40 + i}k`, expectedCTC: `$${45 + i}k` }
-        }
-      })
+          const idx = i % titles.length;
+          return {
+            id: 100 + i,
+            title: `${titles[idx]}`,
+            company: companies[i % companies.length],
+            location: locations[i % locations.length],
+            type: types[i % types.length],
+            experience: exp[i % exp.length],
+            salary: `$${50 + i * 5}k - $${60 + i * 6}k`,
+            deadline: `2025-01-${10 + (i % 20)}`,
+            description: 'Join our dynamic team and contribute to innovative projects. We offer competitive salary, flexible work arrangements, and excellent growth opportunities.',
+            requirements: ['Relevant degree or equivalent experience','Strong communication skills','Team player with problem-solving abilities'],
+            recruiter: { name: companies[i % companies.length] + ' HR', company: companies[i % companies.length], id: `RID-${i+100}` },
+            applicants: Math.floor(5 + Math.random()*80),
+            acceptanceProbability: Math.floor(40 + Math.random()*40),
+            isPremium: i % 6 === 0,
+            featured: i % 5 === 0,
+            postedDate: '2024-12-01',
+            customFields: { noticePeriod: `${10 + (i % 30)} days`, currentCTC: `$${40 + i}k`, expectedCTC: `${45 + i}k` },
+            views: Math.floor(200 + Math.random() * 800),
+            shortlisted: Math.floor(2 + Math.random() * 10),
+            interviewed: Math.floor(1 + Math.random() * 5)
+          }
+        });
 
-      const mockJobs = [...base, ...more];
-      setJobs(mockJobs);
-      setFilteredJobs(mockJobs);
-      setIsLoading(false);
-    }, 400);
+        const mockJobs = [...base, ...more];
+        setJobs(mockJobs);
+        setFilteredJobs(mockJobs);
+        setIsLoading(false);
+      }, 400);
 
-    return () => clearTimeout(t);
+      return () => clearTimeout(t);
+    };
+
+    loadJobs();
+
+    // Listen for localStorage changes (when jobs are added in recruiter portal)
+    const handleStorageChange = (e) => {
+      if (e.key === 'recruiterJobs') {
+        loadJobs();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Also listen for custom event for same-tab updates
+    const handleJobsUpdate = () => {
+      loadJobs();
+    };
+    
+    window.addEventListener('jobsUpdated', handleJobsUpdate);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('jobsUpdated', handleJobsUpdate);
+    };
   }, []);
 
   // Filter and search functionality
@@ -249,9 +394,9 @@ const JobPortal = () => {
             <h1 className="jp-title">Job Portal</h1>
             <p className="jp-sub">Find your next career opportunity in the built environment</p>
           </div>
-          <div className="jp-actions">
-            {/* Login and recruiter buttons removed — access to View Details and Apply is public */}
-          </div>
+          {/* <div className="jp-actions">
+            <button className="btn primary">Post Jobs</button>
+          </div> */}
         </div>
       </header>
 
@@ -286,7 +431,11 @@ const JobPortal = () => {
             <select value={selectedFilters.salaryRange} onChange={(e) => setSelectedFilters({...selectedFilters, salaryRange: e.target.value})}>
               {salaryRanges.map(s => <option key={s} value={s === 'All Ranges' ? '' : s}>{s}</option>)}
             </select>
+            <div className="jp-actions">
+            <button className="btn primary" onClick={() => navigate('/recruiter')}>Post Jobs</button>
           </div>
+          </div>
+          
         </section>
 
         {/* Public access: full details and application available without login */}
@@ -305,7 +454,7 @@ const JobPortal = () => {
 
       {showJobDetail && <JobDetailModal job={selectedJob} isPremium={isPremium} onClose={() => { setShowJobDetail(false); setSelectedJob(null); }} onApply={() => { setShowJobDetail(false); setShowApplication(true); }} />}
 
-      {showApplication && <ApplicationModal job={selectedJob} onClose={() => { setShowApplication(false); setSelectedJob(null); }} onSubmit={() => { setShowApplication(false); setSelectedJob(null); alert('Application submitted successfully!'); }} />}
+      {showApplication && <ApplicationModal job={selectedJob} userProfile={userProfile} onClose={() => { setShowApplication(false); setSelectedJob(null); }} onSubmit={() => { setShowApplication(false); setSelectedJob(null); alert('Application submitted successfully!'); }} />}
 
       {showRecruiterPortal && <RecruiterPortalModal onClose={() => setShowRecruiterPortal(false)} />}
 
@@ -458,7 +607,7 @@ const JobDetailModal = ({ job, isPremium, onClose, onApply }) => {
 };
 
 // Application Modal (full form)
-const ApplicationModal = ({ job, onClose, onSubmit }) => {
+const ApplicationModal = ({ job, userProfile, onClose, onSubmit }) => {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -476,13 +625,144 @@ const ApplicationModal = ({ job, onClose, onSubmit }) => {
   const [errors, setErrors] = useState({});
 
   useEffect(()=>{
-    // Prefill with placeholder if available
-    if (job && job.customFields) {
-      setCurrentCTC(job.customFields.currentCTC || '');
-      setExpectedCTC(job.customFields.expectedCTC || '');
-      setNoticePeriod(job.customFields.noticePeriod || '');
+    // Autofill form with user profile data if available
+    if (userProfile) {
+      setFullName(userProfile.fullName || '');
+      setEmail(userProfile.email || '');
+      setPhone(userProfile.phone || '');
+      setCountry(userProfile.country || '');
+      setDateOfBirth(userProfile.dateOfBirth || '');
+      setYearsOfExperience(userProfile.yearsOfExperience || '');
+      setPortfolio(userProfile.portfolio || '');
+      setCurrentCTC(userProfile.currentCTC || '');
+      setExpectedCTC(userProfile.expectedCTC || '');
+      setNoticePeriod(userProfile.noticePeriod || '');
     }
-  }, [job]);
+    
+    // Prefill with job-specific fields if available (override user profile if needed)
+    if (job && job.customFields) {
+      if (job.customFields.currentCTC) setCurrentCTC(job.customFields.currentCTC);
+      if (job.customFields.expectedCTC) setExpectedCTC(job.customFields.expectedCTC);
+      if (job.customFields.noticePeriod) setNoticePeriod(job.customFields.noticePeriod);
+    }
+  }, [job, userProfile]);
+
+  // Handle full name with validation - only letters and spaces
+  const handleFullNameChange = (value) => {
+    // Remove any character that is not a letter or space
+    const processedValue = value.replace(/[^a-zA-Z\s]/g, '');
+    setFullName(processedValue);
+    
+    // Real-time validation
+    let newErrors = { ...errors };
+    if (value !== processedValue && value.length > 0) {
+      newErrors.fullName = 'Only letters and spaces are allowed';
+    } else if (processedValue.length > 0 && processedValue.length < 3) {
+      newErrors.fullName = 'Full name must be at least 3 characters';
+    } else if (processedValue.length >= 3) {
+      delete newErrors.fullName;
+    }
+    setErrors(newErrors);
+  };
+
+  // Handle email with validation
+  const handleEmailChange = (value) => {
+    setEmail(value);
+    
+    // Real-time validation
+    let newErrors = { ...errors };
+    if (value.length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+      newErrors.email = 'Please enter a valid email address';
+    } else if (value.length > 0) {
+      delete newErrors.email;
+    }
+    setErrors(newErrors);
+  };
+
+  // Handle phone with validation - only numbers, 10 digits
+  const handlePhoneChange = (value) => {
+    // Remove all non-digit characters
+    const processedValue = value.replace(/\D/g, '');
+    
+    // Limit to 10 digits
+    const limitedValue = processedValue.substring(0, 10);
+    setPhone(limitedValue);
+    
+    // Real-time validation
+    let newErrors = { ...errors };
+    if (value !== processedValue && value.length > 0) {
+      newErrors.phone = 'Only numbers are allowed (10 digits required)';
+    } else if (limitedValue.length > 0 && limitedValue.length < 10) {
+      newErrors.phone = 'Phone number must be exactly 10 digits';
+    } else if (limitedValue.length === 10) {
+      if (!/^[6-9]/.test(limitedValue)) {
+        newErrors.phone = 'Phone number must start with 6, 7, 8, or 9';
+      } else {
+        delete newErrors.phone;
+      }
+    }
+    setErrors(newErrors);
+  };
+<<<<<<< HEAD
+=======
+
+  // Handle full name with validation - only letters and spaces
+  const handleFullNameChange = (value) => {
+    // Remove any character that is not a letter or space
+    const processedValue = value.replace(/[^a-zA-Z\s]/g, '');
+    setFullName(processedValue);
+    
+    // Real-time validation
+    let newErrors = { ...errors };
+    if (value !== processedValue && value.length > 0) {
+      newErrors.fullName = 'Only letters and spaces are allowed';
+    } else if (processedValue.length > 0 && processedValue.length < 3) {
+      newErrors.fullName = 'Full name must be at least 3 characters';
+    } else if (processedValue.length >= 3) {
+      delete newErrors.fullName;
+    }
+    setErrors(newErrors);
+  };
+
+  // Handle email with validation
+  const handleEmailChange = (value) => {
+    setEmail(value);
+    
+    // Real-time validation
+    let newErrors = { ...errors };
+    if (value.length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+      newErrors.email = 'Please enter a valid email address';
+    } else if (value.length > 0) {
+      delete newErrors.email;
+    }
+    setErrors(newErrors);
+  };
+
+  // Handle phone with validation - only numbers, 10 digits
+  const handlePhoneChange = (value) => {
+    // Remove all non-digit characters
+    const processedValue = value.replace(/\D/g, '');
+    
+    // Limit to 10 digits
+    const limitedValue = processedValue.substring(0, 10);
+    setPhone(limitedValue);
+    
+    // Real-time validation
+    let newErrors = { ...errors };
+    if (value !== processedValue && value.length > 0) {
+      newErrors.phone = 'Only numbers are allowed (10 digits required)';
+    } else if (limitedValue.length > 0 && limitedValue.length < 10) {
+      newErrors.phone = 'Phone number must be exactly 10 digits';
+    } else if (limitedValue.length === 10) {
+      if (!/^[6-9]/.test(limitedValue)) {
+        newErrors.phone = 'Phone number must start with 6, 7, 8, or 9';
+      } else {
+        delete newErrors.phone;
+      }
+    }
+    setErrors(newErrors);
+  };
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
 
   // Handle full name with validation - only letters and spaces
   const handleFullNameChange = (value) => {

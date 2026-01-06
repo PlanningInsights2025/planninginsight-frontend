@@ -327,13 +327,13 @@ const CourseDetail = () => {
               )}
             </div>
             
-            <button 
+            {/* <button 
               className="btn btn-primary btn-large"
               onClick={handleEnroll}
             >
               <Book size={20} />
               Enroll Now
-            </button>
+            </button> */}
           </div>
         ) : (
           <div className="login-prompt">
@@ -379,66 +379,87 @@ const CourseDetail = () => {
    */
   const renderOverviewTab = () => (
     <div className="tab-content">
+      {/* Course Video Section */}
+      {course.videoUrl && (
+        <div className="course-video-section" style={{marginBottom: '2rem'}}>
+          <h2>Course Preview</h2>
+          <div style={{position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden', borderRadius: '8px', marginTop: '1rem', backgroundColor: '#000'}}>
+            {course.videoUrl.includes('youtube.com') || course.videoUrl.includes('youtu.be') ? (
+              <iframe
+                src={course.videoUrl.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/')}
+                style={{position: 'absolute', top: 0, left: 0, width: '100%', height: '100%'}}
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                title="Course Preview"
+              />
+            ) : course.videoUrl.includes('vimeo.com') ? (
+              <iframe
+                src={course.videoUrl.replace('vimeo.com/', 'player.vimeo.com/video/')}
+                style={{position: 'absolute', top: 0, left: 0, width: '100%', height: '100%'}}
+                frameBorder="0"
+                allow="autoplay; fullscreen; picture-in-picture"
+                allowFullScreen
+                title="Course Preview"
+              />
+            ) : (
+              <video 
+                controls 
+                style={{position: 'absolute', top: 0, left: 0, width: '100%', height: '100%'}}
+              >
+                <source src={course.videoUrl} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            )}
+          </div>
+        </div>
+      )}
+
       <div className="course-description">
         <h2>About This Course</h2>
         <p>{course.description}</p>
       </div>
 
-      <div className="learning-objectives">
-        <h3>What You'll Learn</h3>
-        <div className="objectives-grid">
-          <div className="objective-item">
-            <CheckCircle size={16} />
-            <span>Understand smart city planning principles</span>
-          </div>
-          <div className="objective-item">
-            <CheckCircle size={16} />
-            <span>Implement IoT solutions for urban development</span>
-          </div>
-          <div className="objective-item">
-            <CheckCircle size={16} />
-            <span>Analyze urban data for decision making</span>
-          </div>
-          <div className="objective-item">
-            <CheckCircle size={16} />
-            <span>Develop sustainable urban development strategies</span>
+      {(course.objectives && course.objectives.length > 0) && (
+        <div className="learning-objectives">
+          <h3>What You'll Learn</h3>
+          <div className="objectives-grid">
+            {course.objectives.map((objective, index) => (
+              <div key={index} className="objective-item">
+                <CheckCircle size={16} />
+                <span>{objective}</span>
+              </div>
+            ))}
           </div>
         </div>
-      </div>
+      )}
 
-      <div className="course-features">
-        <h3>Course Features</h3>
-        <div className="features-grid">
-          <div className="feature-item">
-            <PlayCircle size={24} />
-            <div>
-              <h4>Video Content</h4>
-              <p>{course.duration * 4} hours of on-demand video</p>
-            </div>
-          </div>
-          <div className="feature-item">
-            <Download size={24} />
-            <div>
-              <h4>Resources</h4>
-              <p>Downloadable resources and exercises</p>
-            </div>
-          </div>
-          <div className="feature-item">
-            <FileText size={24} />
-            <div>
-              <h4>Certificate</h4>
-              <p>Certificate of completion</p>
-            </div>
-          </div>
-          <div className="feature-item">
-            <Clock size={24} />
-            <div>
-              <h4>Lifetime Access</h4>
-              <p>Full lifetime access to course materials</p>
-            </div>
+      {(course.features && course.features.length > 0) && (
+        <div className="course-features">
+          <h3>Course Features</h3>
+          <div className="features-grid">
+            {course.features.map((feature, index) => (
+              <div key={index} className="feature-item">
+                <CheckCircle size={24} />
+                <div>
+                  <p>{feature}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
-      </div>
+      )}
+
+      {(course.requirements && course.requirements.length > 0) && (
+        <div className="course-requirements" style={{marginTop: '2rem'}}>
+          <h3>Requirements</h3>
+          <ul style={{listStyle: 'disc', paddingLeft: '1.5rem', color: '#4b5563'}}>
+            {course.requirements.map((req, index) => (
+              <li key={index} style={{marginBottom: '0.5rem'}}>{req}</li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {course.tags && course.tags.length > 0 && (
         <div className="course-tags">
@@ -465,37 +486,89 @@ const CourseDetail = () => {
         <div className="curriculum-stats">
           <span>{course.duration * 4} hours of content</span>
           <span>{course.duration} weeks</span>
-          <span>{course.duration * 2} lessons</span>
+          <span>{(course.curriculum && course.curriculum.length > 0) ? course.curriculum.length : (course.syllabus && course.syllabus.length > 0) ? course.syllabus.length : course.duration * 2} modules</span>
         </div>
       </div>
 
       <div className="curriculum-sections">
-        {[1, 2, 3, 4, 5, 6].map((week) => (
-          <div key={week} className="curriculum-section">
-            <div className="section-header">
-              <h3>Week {week}: {getWeekTitle(week)}</h3>
-              <span>{week * 4 - 3}-{week * 4} hours</span>
-            </div>
-            <div className="section-lessons">
-              {[1, 2, 3, 4].map((lesson) => (
-                <div key={lesson} className="lesson-item">
-                  <div className="lesson-info">
-                    <PlayCircle size={16} />
-                    <span>Lesson {lesson}: {getLessonTitle(week, lesson)}</span>
+        {(course.curriculum && course.curriculum.length > 0) ? (
+          // Display structured curriculum with modules and lessons
+          course.curriculum.map((module, index) => (
+            <div key={index} className="curriculum-section">
+              <div className="section-header">
+                <h3>{module.title || `Module ${index + 1}`}</h3>
+                <span>{module.lessons?.length || 0} lessons</span>
+              </div>
+              <div className="section-lessons">
+                {module.lessons && module.lessons.map((lesson, lessonIndex) => (
+                  <div key={lessonIndex} className="lesson-item">
+                    <div className="lesson-info">
+                      <PlayCircle size={16} />
+                      <span>{lesson.title}</span>
+                    </div>
+                    <div className="lesson-duration">{lesson.duration || '30 min'}</div>
                   </div>
-                  <div className="lesson-duration">45 min</div>
-                </div>
-              ))}
-              <div className="lesson-item assignment">
-                <div className="lesson-info">
-                  <FileText size={16} />
-                  <span>Weekly Assignment</span>
-                </div>
-                <div className="lesson-duration">1 hour</div>
+                ))}
               </div>
             </div>
-          </div>
-        ))}
+          ))
+        ) : (course.syllabus && course.syllabus.length > 0) ? (
+          // Display simple syllabus
+          course.syllabus.map((module, index) => (
+            <div key={index} className="curriculum-section">
+              <div className="section-header">
+                <h3>{module}</h3>
+                <span>{Math.floor(Math.random() * 2) + 2}-{Math.floor(Math.random() * 2) + 4} hours</span>
+              </div>
+              <div className="section-lessons">
+                {[1, 2, 3].map((lesson) => (
+                  <div key={lesson} className="lesson-item">
+                    <div className="lesson-info">
+                      <PlayCircle size={16} />
+                      <span>Lesson {lesson}</span>
+                    </div>
+                    <div className="lesson-duration">{30 + lesson * 5} min</div>
+                  </div>
+                ))}
+                <div className="lesson-item assignment">
+                  <div className="lesson-info">
+                    <FileText size={16} />
+                    <span>Assignment</span>
+                  </div>
+                  <div className="lesson-duration">1 hour</div>
+                </div>
+              </div>
+            </div>
+          ))
+        ) : (
+          // Default curriculum
+          [1, 2, 3, 4, 5, 6].map((week) => (
+            <div key={week} className="curriculum-section">
+              <div className="section-header">
+                <h3>Week {week}: {getWeekTitle(week)}</h3>
+                <span>{week * 4 - 3}-{week * 4} hours</span>
+              </div>
+              <div className="section-lessons">
+                {[1, 2, 3, 4].map((lesson) => (
+                  <div key={lesson} className="lesson-item">
+                    <div className="lesson-info">
+                      <PlayCircle size={16} />
+                      <span>Lesson {lesson}: {getLessonTitle(week, lesson)}</span>
+                    </div>
+                    <div className="lesson-duration">45 min</div>
+                  </div>
+                ))}
+                <div className="lesson-item assignment">
+                  <div className="lesson-info">
+                    <FileText size={16} />
+                    <span>Weekly Assignment</span>
+                  </div>
+                  <div className="lesson-duration">1 hour</div>
+                </div>
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </div>
   )

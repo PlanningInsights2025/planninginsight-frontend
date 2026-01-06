@@ -43,10 +43,15 @@ const IconSearch = () => (
 
 // Header removed for Learning Centre page (use global site header instead)
 
-const Hero = ({ value, onChange, onClear, sortBy, setSortBy }) => (
+const Hero = ({ value, onChange, onClear, sortBy, setSortBy, navigate }) => (
   <section className="hero">
-    <h1>Learning Centre</h1>
-    <p className="sub">Browse courses like job postings — filter, save and apply.</p>
+    <div className="hero-header">
+      <div>
+        <h1>Learning Centre</h1>
+        <p className="sub">Browse courses like job postings — filter, save and apply.</p>
+      </div>
+      <button className="btn primary" onClick={() => navigate('/instructor')}>Post Courses</button>
+    </div>
 
     <div className="hero-controls">
       <div className="search-wrap">
@@ -208,8 +213,7 @@ const EnrollForm = ({course, onCancel, onSubmit}) => {
 }
 
 export default function Learning(){
-  // For integration: replace sample data with API-loaded `courses` and `loading` state
-  const [courses] = useState(SAMPLE_COURSES)
+  const [courses, setCourses] = useState(SAMPLE_COURSES)
   const [query, setQuery] = useState('')
   const debouncedQuery = useDebounce(query, 250)
   const [sortBy, setSortBy] = useState('popular')
@@ -222,6 +226,69 @@ export default function Learning(){
   const [detailCourse, setDetailCourse] = useState(null)
   const [enrollFormCourse, setEnrollFormCourse] = useState(null)
   const [enrolledCourses, setEnrolledCourses] = useState([])
+
+  // Load courses from instructor's localStorage and sync in real-time
+  useEffect(() => {
+    const loadCourses = () => {
+      const storedCourses = localStorage.getItem('instructorCourses')
+      if (storedCourses) {
+        try {
+          const parsedCourses = JSON.parse(storedCourses)
+          // Only show Published courses in Learning Centre
+          const publishedCourses = parsedCourses
+            .filter(course => course.status === 'Published')
+            .map(course => ({
+              id: course.id,
+              title: course.title,
+              instructor: course.instructor || 'Dr. A. Kumar',
+              company: course.company || 'PI Learning',
+              location: course.location || 'Remote',
+              duration: course.duration,
+              mode: course.mode,
+              fees: course.fees || course.price || 0,
+              rating: course.rating || 4.5,
+              excerpt: course.excerpt || course.description?.substring(0, 100) + '...' || '',
+              type: course.type || (course.mode === 'Live' ? 'live' : course.mode === 'Pre-recorded' ? 'recorded' : 'offline'),
+              tags: course.tags || [course.category],
+              posted: course.posted || 'Recently',
+              thumbnail: course.thumbnail || svgPlaceholder(course.title)
+            }))
+          
+          // Merge with sample courses
+          const allCourses = [...publishedCourses, ...SAMPLE_COURSES]
+          setCourses(allCourses)
+        } catch (e) {
+          console.error('Error loading courses from localStorage:', e)
+          setCourses(SAMPLE_COURSES)
+        }
+      } else {
+        setCourses(SAMPLE_COURSES)
+      }
+    }
+
+    loadCourses()
+
+    // Listen for localStorage changes (cross-tab)
+    const handleStorageChange = (e) => {
+      if (e.key === 'instructorCourses') {
+        loadCourses()
+      }
+    }
+
+    window.addEventListener('storage', handleStorageChange)
+    
+    // Listen for custom event (same-tab updates)
+    const handleCoursesUpdate = () => {
+      loadCourses()
+    }
+    
+    window.addEventListener('coursesUpdated', handleCoursesUpdate)
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange)
+      window.removeEventListener('coursesUpdated', handleCoursesUpdate)
+    }
+  }, [])
 
   // Persist saved and enrolled lists to localStorage
   useEffect(() => {
@@ -314,7 +381,7 @@ export default function Learning(){
       {/* Global site header is used; local header removed for this page */}
       <main className="learning-main container">
         <div className="left">
-          <Hero value={query} onChange={setQuery} onClear={()=>setQuery('')} sortBy={sortBy} setSortBy={setSortBy} />
+          <Hero value={query} onChange={setQuery} onClear={()=>setQuery('')} sortBy={sortBy} setSortBy={setSortBy} navigate={navigate} />
 
           <section className="courses-section">
             <div className="section-head">

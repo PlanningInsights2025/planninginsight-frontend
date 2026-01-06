@@ -1,5 +1,28 @@
+<<<<<<< HEAD
 // filepath: ProfileMenu.jsx
 import React, { useEffect, useRef, useState } from "react";
+=======
+<<<<<<< HEAD
+// filepath: ProfileMenu.jsx
+import React, { useEffect, useRef, useState } from "react";
+=======
+<<<<<<< HEAD
+// filepath: ProfileMenu.jsx
+import React, { useEffect, useRef, useState } from "react";
+=======
+<<<<<<< HEAD
+// filepath: ProfileMenu.jsx
+import React, { useEffect, useRef, useState } from "react";
+=======
+
+// filepath: c:\Users\Lenovo\Downloads\Planning-Insights22\Planning-Insights\frontend\src\components\common\Header\ProfileMenu.jsx
+import React, { useEffect, useRef, useState } from "react";
+
+// MUI icons
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
 import PersonOutlineRoundedIcon from "@mui/icons-material/PersonOutlineRounded";
 import TuneRoundedIcon from "@mui/icons-material/TuneRounded";
 import PaletteRoundedIcon from "@mui/icons-material/PaletteRounded";
@@ -11,7 +34,19 @@ import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
 
 const ROWS = [
+<<<<<<< HEAD
   { key: "profile", label: "Profile", Icon: PersonOutlineRoundedIcon },
+=======
+<<<<<<< HEAD
+  { key: "profile", label: "Dashboard", Icon: PersonOutlineRoundedIcon },
+=======
+<<<<<<< HEAD
+  { key: "profile", label: "Dashboard", Icon: PersonOutlineRoundedIcon },
+=======
+  { key: "profile", label: "Profile", Icon: PersonOutlineRoundedIcon },
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
   { key: "preferences", label: "Preferences", Icon: TuneRoundedIcon },
   { key: "theme", label: "Theme", Icon: PaletteRoundedIcon },
   {
@@ -41,7 +76,22 @@ const ProfileMenu = ({
   const [open, setOpen] = useState(false);
   const [activeKey, setActiveKey] = useState("settings");
   const [status, setStatus] = useState(user?.status || "Online");
+<<<<<<< HEAD
   const [isMobile, setIsMobile] = useState(false);
+=======
+<<<<<<< HEAD
+  const [isMobile, setIsMobile] = useState(false);
+=======
+<<<<<<< HEAD
+  const [isMobile, setIsMobile] = useState(false);
+=======
+<<<<<<< HEAD
+  const [isMobile, setIsMobile] = useState(false);
+=======
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
 
   const buttonRef = useRef(null);
   const menuRef = useRef(null);
@@ -60,6 +110,16 @@ const ProfileMenu = ({
     return (parts[0][0] + parts[1][0]).toUpperCase();
   }, [name]);
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
   // Detect mobile viewport
   useEffect(() => {
     const checkMobile = () => {
@@ -73,6 +133,18 @@ const ProfileMenu = ({
   }, []);
 
   // Outside click when menu is open
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+  // outside click when menu is open
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
   useEffect(() => {
     if (!open) return;
 
@@ -86,32 +158,109 @@ const ProfileMenu = ({
         setOpen(false);
       }
     };
+<<<<<<< HEAD
 
+=======
+<<<<<<< HEAD
+
+=======
+<<<<<<< HEAD
+
+=======
+<<<<<<< HEAD
+
+=======
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
     document.addEventListener("mousedown", handleClick);
     return () => {
       document.removeEventListener("mousedown", handleClick);
     };
   }, [open]);
 
+<<<<<<< HEAD
   // Keyboard shortcuts (ESC and P)
+=======
+<<<<<<< HEAD
+  // Keyboard shortcuts (ESC and P)
+=======
+<<<<<<< HEAD
+  // Keyboard shortcuts (ESC and P)
+=======
+<<<<<<< HEAD
+  // Keyboard shortcuts (ESC and P)
+=======
+  // keyboard shortcuts (ESC and P)
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
   useEffect(() => {
     const handleKey = (e) => {
       // Ignore if typing in an input field
       if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") {
         return;
       }
+<<<<<<< HEAD
 
+=======
+<<<<<<< HEAD
+
+=======
+<<<<<<< HEAD
+
+=======
+<<<<<<< HEAD
+
+=======
+      
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
       if (e.key === "Escape" && open) {
         setOpen(false);
         buttonRef.current?.focus();
       }
+<<<<<<< HEAD
 
+=======
+<<<<<<< HEAD
+
+=======
+<<<<<<< HEAD
+
+=======
+<<<<<<< HEAD
+
+=======
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
       if (e.key.toLowerCase() === "p") {
         e.preventDefault();
         setOpen((prev) => !prev);
       }
     };
+<<<<<<< HEAD
 
+=======
+<<<<<<< HEAD
+
+=======
+<<<<<<< HEAD
+
+=======
+<<<<<<< HEAD
+
+=======
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
     document.addEventListener("keydown", handleKey);
     return () => {
       document.removeEventListener("keydown", handleKey);
@@ -122,6 +271,16 @@ const ProfileMenu = ({
     '"Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
 
   const styles = {
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
     root: {
       position: "relative",
       fontFamily: baseFont,
@@ -131,6 +290,24 @@ const ProfileMenu = ({
       alignItems: "center",
       gap: isMobile ? 6 : 8,
       padding: isMobile ? "4px 8px 4px 4px" : "4px 10px 4px 4px",
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+    root: { position: "relative", fontFamily: baseFont },
+
+    trigger: {
+      display: "inline-flex",
+      alignItems: "center",
+      gap: 8,
+      padding: "4px 10px 4px 4px",
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
       borderRadius: 999,
       border: "1px solid rgba(148,163,184,0.55)",
       background: "#ffffff",
@@ -148,8 +325,28 @@ const ProfileMenu = ({
     },
     avatarWrap: {
       position: "relative",
+<<<<<<< HEAD
       width: isMobile ? 28 : 32,
       height: isMobile ? 28 : 32,
+=======
+<<<<<<< HEAD
+      width: isMobile ? 28 : 32,
+      height: isMobile ? 28 : 32,
+=======
+<<<<<<< HEAD
+      width: isMobile ? 28 : 32,
+      height: isMobile ? 28 : 32,
+=======
+<<<<<<< HEAD
+      width: isMobile ? 28 : 32,
+      height: isMobile ? 28 : 32,
+=======
+      width: 32,
+      height: 32,
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
       borderRadius: 999,
       overflow: "hidden",
       background:
@@ -159,6 +356,16 @@ const ProfileMenu = ({
       justifyContent: "center",
       color: "#ecfdf3",
       fontWeight: 600,
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
       fontSize: isMobile ? 11 : 13,
       flexShrink: 0,
     },
@@ -167,18 +374,69 @@ const ProfileMenu = ({
       height: "100%",
       objectFit: "cover",
     },
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+      fontSize: 13,
+      flexShrink: 0,
+    },
+    avatarImg: { width: "100%", height: "100%", objectFit: "cover" },
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
     statusDot: {
       position: "absolute",
       right: -1,
       bottom: -1,
+<<<<<<< HEAD
       width: isMobile ? 8 : 10,
       height: isMobile ? 8 : 10,
+=======
+<<<<<<< HEAD
+      width: isMobile ? 8 : 10,
+      height: isMobile ? 8 : 10,
+=======
+<<<<<<< HEAD
+      width: isMobile ? 8 : 10,
+      height: isMobile ? 8 : 10,
+=======
+<<<<<<< HEAD
+      width: isMobile ? 8 : 10,
+      height: isMobile ? 8 : 10,
+=======
+      width: 10,
+      height: 10,
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
       borderRadius: 999,
       border: "2px solid #f9fafb",
       backgroundColor: status === "Online" ? "#22c55e" : "#9ca3af",
     },
     triggerText: {
+<<<<<<< HEAD
       display: isMobile ? "none" : "flex",
+=======
+<<<<<<< HEAD
+      display: isMobile ? "none" : "flex",
+=======
+<<<<<<< HEAD
+      display: isMobile ? "none" : "flex",
+=======
+<<<<<<< HEAD
+      display: isMobile ? "none" : "flex",
+=======
+      display: "flex",
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
       flexDirection: "column",
       alignItems: "flex-start",
       maxWidth: 170,
@@ -201,11 +459,37 @@ const ProfileMenu = ({
       textOverflow: "ellipsis",
     },
     caret: {
+<<<<<<< HEAD
       marginLeft: isMobile ? 2 : 4,
+=======
+<<<<<<< HEAD
+      marginLeft: isMobile ? 2 : 4,
+=======
+<<<<<<< HEAD
+      marginLeft: isMobile ? 2 : 4,
+=======
+<<<<<<< HEAD
+      marginLeft: isMobile ? 2 : 4,
+=======
+      marginLeft: 4,
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
       fontSize: 12,
       color: "#9ca3af",
       transform: open ? "rotate(-180deg)" : "rotate(0deg)",
       transition: "transform 150ms ease",
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
       display: isMobile ? "none" : "block",
     },
     menu: {
@@ -225,13 +509,62 @@ const ProfileMenu = ({
       padding: isMobile ? 14 : 18,
       zIndex: 60,
       transformOrigin: isMobile ? "center" : "top right",
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+    },
+
+    menu: {
+      position: "absolute",
+      right: 0,
+      marginTop: 10,
+      minWidth: 320,
+      background: "#ffffff",
+      borderRadius: 28,
+      boxShadow:
+        "0 32px 80px rgba(15,23,42,0.35), 0 0 0 1px rgba(209,213,219,0.5)",
+      padding: 18,
+      zIndex: 60,
+      transformOrigin: "top right",
+      transform: open ? "scale(1)" : "scale(0.97)",
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
       opacity: open ? 1 : 0,
       pointerEvents: open ? "auto" : "none",
       transition:
         "opacity 120ms ease, transform 120ms cubic-bezier(0.16, 1, 0.3, 1)",
+<<<<<<< HEAD
       maxHeight: isMobile ? "85vh" : "auto",
       overflowY: isMobile ? "auto" : "visible",
     },
+=======
+<<<<<<< HEAD
+      maxHeight: isMobile ? "85vh" : "auto",
+      overflowY: isMobile ? "auto" : "visible",
+    },
+=======
+<<<<<<< HEAD
+      maxHeight: isMobile ? "85vh" : "auto",
+      overflowY: isMobile ? "auto" : "visible",
+    },
+=======
+<<<<<<< HEAD
+      maxHeight: isMobile ? "85vh" : "auto",
+      overflowY: isMobile ? "auto" : "visible",
+    },
+=======
+    },
+
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
     header: {
       display: "flex",
       alignItems: "center",
@@ -240,8 +573,28 @@ const ProfileMenu = ({
     },
     headerAvatar: {
       position: "relative",
+<<<<<<< HEAD
       width: isMobile ? 36 : 40,
       height: isMobile ? 36 : 40,
+=======
+<<<<<<< HEAD
+      width: isMobile ? 36 : 40,
+      height: isMobile ? 36 : 40,
+=======
+<<<<<<< HEAD
+      width: isMobile ? 36 : 40,
+      height: isMobile ? 36 : 40,
+=======
+<<<<<<< HEAD
+      width: isMobile ? 36 : 40,
+      height: isMobile ? 36 : 40,
+=======
+      width: 40,
+      height: 40,
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
       borderRadius: 999,
       overflow: "hidden",
       background:
@@ -251,6 +604,16 @@ const ProfileMenu = ({
       justifyContent: "center",
       color: "#ecfdf3",
       fontWeight: 600,
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
       fontSize: isMobile ? 14 : 16,
       flexShrink: 0,
     },
@@ -266,15 +629,57 @@ const ProfileMenu = ({
     headerEmail: {
       marginTop: 2,
       fontSize: isMobile ? 11 : 12,
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+      fontSize: 16,
+      flexShrink: 0,
+    },
+    headerText: { flex: 1, minWidth: 0 },
+    headerName: { fontSize: 14, fontWeight: 600, color: "#020617" },
+    headerEmail: {
+      marginTop: 2,
+      fontSize: 12,
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
       color: "#6b7280",
       whiteSpace: "nowrap",
       overflow: "hidden",
       textOverflow: "ellipsis",
     },
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
     headerRightIcon: {
       fontSize: 18,
       color: "#cbd5e1",
     },
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+    headerRightIcon: { fontSize: 18, color: "#cbd5f5" },
+
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
     subtleDivider: {
       height: 1,
       width: "100%",
@@ -282,16 +687,50 @@ const ProfileMenu = ({
       background:
         "linear-gradient(90deg, transparent, rgba(226,232,240,1), transparent)",
     },
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
     list: {
       display: "flex",
       flexDirection: "column",
       gap: 4,
     },
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+
+    list: { display: "flex", flexDirection: "column", gap: 4 },
+
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
     row: (accent, active, danger) => ({
       display: "flex",
       alignItems: "center",
       gap: 10,
       borderRadius: 14,
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
       padding: isMobile ? "10px" : "8px 10px",
       cursor: "pointer",
       background: active ? "rgba(187,247,208,0.9)" : "transparent",
@@ -303,6 +742,30 @@ const ProfileMenu = ({
     iconWrap: (accent, active) => ({
       width: isMobile ? 32 : 26,
       height: isMobile ? 32 : 26,
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+      padding: "8px 10px",
+      cursor: "pointer",
+      background: active
+        ? "rgba(187,247,208,0.9)"
+        : "transparent",
+      color: danger ? "#b91c1c" : "#111827",
+      transition: "background 120ms ease, transform 80ms ease",
+    }),
+    rowHoverBg: "rgba(240,253,244,0.9)",
+
+    iconWrap: (accent, active) => ({
+      width: 26,
+      height: 26,
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
       borderRadius: 999,
       display: "flex",
       alignItems: "center",
@@ -315,6 +778,16 @@ const ProfileMenu = ({
         : "transparent",
       color: active ? "#f0fdf4" : "#111827",
     }),
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
     labelCol: {
       flex: 1,
       minWidth: 0,
@@ -334,6 +807,24 @@ const ProfileMenu = ({
       fontSize: 10,
       color: "#9ca3af",
     },
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+
+    labelCol: { flex: 1, minWidth: 0, display: "flex", flexDirection: "column" },
+    label: { fontSize: 13, fontWeight: 500 },
+    subLabel: { fontSize: 11, color: "#9ca3af", marginTop: 1 },
+
+    rightHint: { fontSize: 10, color: "#9ca3af" },
+
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
     footerNote: {
       marginTop: 12,
       fontSize: 10,
@@ -360,6 +851,16 @@ const ProfileMenu = ({
 
   return (
     <div style={styles.root}>
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
       <button
         ref={buttonRef}
         style={styles.trigger}
@@ -372,12 +873,43 @@ const ProfileMenu = ({
           e.currentTarget.style.transform = "translateY(0)";
         }}
         aria-label="User menu"
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+      {/* Trigger */}
+      <button
+        ref={buttonRef}
+        type="button"
+        style={{
+          ...styles.trigger,
+          ...(open ? styles.triggerHover : null),
+        }}
+        onClick={() => setOpen((o) => !o)}
+        aria-haspopup="menu"
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
         aria-expanded={open}
       >
         <div style={styles.avatarWrap}>
           {avatarUrl ? (
             <img src={avatarUrl} alt={name} style={styles.avatarImg} />
           ) : (
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
             <span>{initials}</span>
           )}
           <div style={styles.statusDot} />
@@ -390,11 +922,45 @@ const ProfileMenu = ({
       </button>
 
       <div ref={menuRef} style={styles.menu}>
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+            initials
+          )}
+          <span style={styles.statusDot} />
+        </div>
+        <div style={styles.triggerText}>
+          <span style={styles.triggerName}>{name}</span>
+          {email && <span style={styles.triggerEmail}>{email}</span>}
+        </div>
+        <span style={styles.caret}>▾</span>
+      </button>
+
+      {/* Menu card */}
+      <div style={styles.menu} ref={menuRef} role="menu">
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
         <div style={styles.header}>
           <div style={styles.headerAvatar}>
             {avatarUrl ? (
               <img src={avatarUrl} alt={name} style={styles.avatarImg} />
             ) : (
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
               <span>{initials}</span>
             )}
             <div style={styles.statusDot} />
@@ -402,6 +968,23 @@ const ProfileMenu = ({
           <div style={styles.headerText}>
             <div style={styles.headerName}>{name}</div>
             <div style={styles.headerEmail}>{email}</div>
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+              initials
+            )}
+          </div>
+          <div style={styles.headerText}>
+            <div style={styles.headerName}>{name}</div>
+            {email && <div style={styles.headerEmail}>{email}</div>}
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
           </div>
           <MoreHorizRoundedIcon style={styles.headerRightIcon} />
         </div>
@@ -417,6 +1000,16 @@ const ProfileMenu = ({
                 style={styles.row(accent, active, danger)}
                 onClick={() => handleRowClick(key)}
                 onMouseEnter={(e) => {
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
                   if (!active && !danger) {
                     e.currentTarget.style.background = styles.rowHoverBg;
                   }
@@ -444,6 +1037,55 @@ const ProfileMenu = ({
                     <div style={styles.subLabel}>{status}</div>
                   )}
                 </div>
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+                  if (!active) {
+                    e.currentTarget.style.background = styles.rowHoverBg;
+                  }
+                  e.currentTarget.style.transform = "translateY(-1px)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = active
+                    ? "rgba(187,247,208,0.9)"
+                    : "transparent";
+                  e.currentTarget.style.transform = "";
+                }}
+              >
+                <div style={styles.iconWrap(accent, active)}>
+                  <Icon
+                    style={{
+                      fontSize: 18,
+                    }}
+                  />
+                </div>
+                <div style={styles.labelCol}>
+                  <span style={styles.label}>{label}</span>
+                  {key === "status" && (
+                    <span style={styles.subLabel}>Current: {status}</span>
+                  )}
+                  {key === "notifications" && (
+                    <span style={styles.subLabel}>
+                      Control alerts & digest emails
+                    </span>
+                  )}
+                  {key === "theme" && (
+                    <span style={styles.subLabel}>
+                      Accent color, dark / light mode
+                    </span>
+                  )}
+                </div>
+                {key === "settings" && (
+                  <span style={styles.rightHint}>⌘ ,</span>
+                )}
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
                 {key === "profile" && (
                   <span style={styles.rightHint}>P</span>
                 )}
@@ -453,7 +1095,23 @@ const ProfileMenu = ({
         </div>
 
         <div style={styles.footerNote}>
+<<<<<<< HEAD
           Press <strong>ESC</strong> to close • <strong>P</strong> to toggle
+=======
+<<<<<<< HEAD
+          Press <strong>ESC</strong> to close • <strong>P</strong> to toggle
+=======
+<<<<<<< HEAD
+          Press <strong>ESC</strong> to close • <strong>P</strong> to toggle
+=======
+<<<<<<< HEAD
+          Press <strong>ESC</strong> to close • <strong>P</strong> to toggle
+=======
+          Press “P” to open profile · Planning Insights
+>>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
+>>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
+>>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
+>>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
         </div>
       </div>
     </div>
