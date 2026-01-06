@@ -3,41 +3,17 @@ import { useNavigate } from "react-router-dom";
 import { signInWithGoogle } from "../../../services/api/firebaseAuth";
 import { useAuth } from '../../../hooks/useAuth';
 import { useNotification } from '../../../contexts/NotificationContext';
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
 import PersonIcon from '@mui/icons-material/Person';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
->>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
->>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
->>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
->>>>>>> d407dac660c41680e4e8832e1966544b3e5b6249
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({ email: "", password: "", rememberMe: false });
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
   const [currentRole, setCurrentRole] = useState('user'); // 'user' or 'admin'
   const [twoFactorCode, setTwoFactorCode] = useState('');
   const [securityQuestion, setSecurityQuestion] = useState('');
   const [securityAnswer, setSecurityAnswer] = useState('');
   const [trustDevice, setTrustDevice] = useState(false);
->>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
->>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
->>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
->>>>>>> d407dac660c41680e4e8832e1966544b3e5b6249
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const { login, setAuthState } = useAuth()
@@ -92,211 +68,43 @@ export default function Login() {
     setFormData({ ...formData, [name]: type === "checkbox" ? checked : value });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-    ;(async () => {
-      setLoading(true)
-      try {
-        // Try backend login with email/password
-        console.log('🔐 Login: Attempting backend login...')
-        const response = await fetch(`http://localhost:3000/api/auth/login`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email: formData.email,
-            password: formData.password
-          })
-        })
-        
-        const data = await response.json()
-        console.log('📥 Login: Backend response:', data)
-        
-        if (data.success && data.data?.token && data.data?.user) {
-          // Save token
-          console.log('🔑 Login: Saving token...')
-          localStorage.setItem('authToken', data.data.token)
-          
-          // Format and set user data
-          const formattedUser = {
-            id: data.data.user.id || data.data.user._id,
-            email: data.data.user.email,
-            firstName: data.data.user.profile?.firstName || '',
-            lastName: data.data.user.profile?.lastName || '',
-            displayName: `${data.data.user.profile?.firstName || ''} ${data.data.user.profile?.lastName || ''}`.trim() || data.data.user.email,
-            role: data.data.user.role || 'user',
-            emailVerified: data.data.user.emailVerified || true,
-            status: data.data.user.status || 'active',
-            photoURL: data.data.user.profile?.avatar || null,
-            profile: data.data.user.profile || {}
-          }
-          
-          console.log('👤 Login: Setting auth state...')
-          setAuthState(formattedUser)
-          console.log('✅ Login: Success!')
-          
-          showNotification('Signed in successfully', 'success')
-          navigate('/dashboard', { replace: true })
-        } else {
-          showNotification(data.message || 'Login failed', 'error')
-        }
-      } catch (err) {
-        console.error('❌ Login error:', err)
-        showNotification(err?.message || 'Login failed', 'error')
-      } finally {
-        setLoading(false)
-=======
->>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
->>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
->>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
->>>>>>> d407dac660c41680e4e8832e1966544b3e5b6249
-    setError('');
-    setLoading(true);
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError('');
+  setLoading(true);
 
-    try {
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
->>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
->>>>>>> d407dac660c41680e4e8832e1966544b3e5b6249
-      const endpoint = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api'}/auth/login`;
+  try {
+    const endpoint = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api'}/auth/login`;
 
-      const payload = {
-        email: formData.email,
-        password: formData.password,
-        rememberMe: formData.rememberMe,
-      };
+    const payload = {
+      email: formData.email,
+      password: formData.password,
+      rememberMe: formData.rememberMe,
+    };
 
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify(payload),
-      });
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify(payload),
+    });
 
-      const data = await response.json();
+    const data = await response.json();
 
-      if (!response.ok) {
-        setError(data.message || 'Invalid credentials');
-        showNotification(data.message || 'Login failed', 'error');
-        setLoading(false);
-        return;
-      }
+    if (!response.ok) {
+      setError(data.message || 'Invalid credentials');
+      showNotification(data.message || 'Login failed', 'error');
+      setLoading(false);
+      return;
+    }
 
-      // Success
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-=======
-      // Admin lockout check
-      if (currentRole === 'admin') {
-        const lockCheck = checkAdminLockout();
-        if (lockCheck.locked) {
-          setError(lockCheck.message);
-          showNotification(lockCheck.message, 'error');
-          // Switch to user mode (stealth)
-          handleRoleChange('user');
-          setLoading(false);
-          return;
-        }
->>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
-      }
-
-      // Validate admin-specific fields
-      if (currentRole === 'admin') {
-        if (!twoFactorCode || twoFactorCode.length !== 6) {
-          setError('Please enter your 6-digit 2FA code');
-          setLoading(false);
-          return;
-        }
-        if (!securityQuestion || !securityAnswer.trim()) {
-          setError('Please answer the security question');
-          setLoading(false);
-          return;
-        }
-      }
-
-      // Choose endpoint based on role
-      const endpoint = currentRole === 'admin' 
-        ? `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api'}/admin/login`
-        : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api'}/auth/login`;
-
-      const payload = {
-        email: formData.email,
-        password: formData.password,
-        role: currentRole,
-        ...(currentRole === 'admin' && {
-          twoFactorCode,
-          securityQuestion,
-          securityAnswer,
-          trustDevice,
-          deviceId: localStorage.getItem('device_id') || crypto.randomUUID()
-        }),
-        ...(currentRole === 'user' && {
-          rememberMe: formData.rememberMe,
-        }),
-      };
-
-      // Store device ID
-      if (currentRole === 'admin' && !localStorage.getItem('device_id')) {
-        localStorage.setItem('device_id', payload.deviceId);
-      }
-
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Auth-Role': currentRole,
-        },
-        credentials: 'include',
-        body: JSON.stringify(payload),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        if (currentRole === 'admin') {
-          recordAdminFailure();
-          setError('Admin credentials not recognized. Switching to User mode for safety.');
-          showNotification('Invalid admin credentials', 'error');
-          handleRoleChange('user');
-        } else {
-          setError(data.message || 'Invalid credentials');
-          showNotification(data.message || 'Login failed', 'error');
-        }
-        setLoading(false);
-        return;
-      }
-
-      // Success
-      resetAdminFailures();
-
->>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
->>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
->>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
->>>>>>> d407dac660c41680e4e8832e1966544b3e5b6249
-      if (data.token || data.data?.token) {
-        const token = data.token || data.data.token;
-        localStorage.setItem('authToken', token);
-      }
+    // Success
+    if (data.token || data.data?.token) {
+      const token = data.token || data.data.token;
+      localStorage.setItem('authToken', token);
+    }
 
       // Update auth context with user data
       if (data.data?.user) {
@@ -307,48 +115,18 @@ export default function Login() {
           firstName: data.data.user.profile?.firstName || '',
           lastName: data.data.user.profile?.lastName || '',
           displayName: `${data.data.user.profile?.firstName || ''} ${data.data.user.profile?.lastName || ''}`.trim(),
-          photoURL: data.data.user.profile?.photoURL || null
-        };
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
->>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
->>>>>>> d407dac660c41680e4e8832e1966544b3e5b6249
-        await login(userData);
-      }
+      photoURL: data.data.user.profile?.photoURL || null
+    };
+    await login(userData);
+  }
 
-      showNotification('Signed in successfully', 'success');
-      
-      setTimeout(() => {
-        navigate('/dashboard');
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-=======
-        // Call login with userData to update context
-        await login(userData);
-      }
+  showNotification('Signed in successfully', 'success');
+  
+  setTimeout(() => {
+    navigate('/dashboard');
+  }, 100);
 
-      showNotification(`Signed in as ${currentRole}`, 'success');
-      
-      // Small delay to ensure context updates
-      setTimeout(() => {
-        navigate(currentRole === 'admin' ? '/admin/dashboard' : '/dashboard');
->>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
->>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
->>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
->>>>>>> d407dac660c41680e4e8832e1966544b3e5b6249
-      }, 100);
-
-    } catch (err) {
+} catch (err) {
       console.error('Login error:', err);
       setError('Something went wrong. Please try again.');
       showNotification(err?.message || 'Login failed', 'error');
@@ -907,70 +685,6 @@ export default function Login() {
               </div>
             )}
 
-            {/* Error Display */}
-            {error && (
-              <div style={{
-                padding: '12px 16px',
-                background: 'rgba(220, 38, 38, 0.1)',
-                borderRadius: '10px',
-                marginBottom: '20px',
-                fontSize: '14px',
-                color: '#dc2626',
-                fontWeight: '500',
-                border: '1px solid rgba(220, 38, 38, 0.25)',
-              }}>
-                {error}
-              </div>
-            )}
-
-            {/* Error Display */}
-            {error && (
-              <div style={{
-                padding: '12px 16px',
-                background: 'rgba(220, 38, 38, 0.1)',
-                borderRadius: '10px',
-                marginBottom: '20px',
-                fontSize: '14px',
-                color: '#dc2626',
-                fontWeight: '500',
-                border: '1px solid rgba(220, 38, 38, 0.25)',
-              }}>
-                {error}
-              </div>
-            )}
-
-            {/* Error Display */}
-            {error && (
-              <div style={{
-                padding: '12px 16px',
-                background: 'rgba(220, 38, 38, 0.1)',
-                borderRadius: '10px',
-                marginBottom: '20px',
-                fontSize: '14px',
-                color: '#dc2626',
-                fontWeight: '500',
-                border: '1px solid rgba(220, 38, 38, 0.25)',
-              }}>
-                {error}
-              </div>
-            )}
-
-            {/* Error Display */}
-            {error && (
-              <div style={{
-                padding: '12px 16px',
-                background: 'rgba(220, 38, 38, 0.1)',
-                borderRadius: '10px',
-                marginBottom: '20px',
-                fontSize: '14px',
-                color: '#dc2626',
-                fontWeight: '500',
-                border: '1px solid rgba(220, 38, 38, 0.25)',
-              }}>
-                {error}
-              </div>
-            )}
-
             <div style={styles.inputGroup}>
               <label style={styles.label}>Email Address</label>
               <input
@@ -1004,153 +718,32 @@ export default function Login() {
                 >
                   {showPassword ? "👁️" : "👁️‍🗨️"}
                 </button>
-              </div>
-            </div>
+  </div>
+</div>
 
-<<<<<<< HEAD
-            <div style={styles.rememberRow}>
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-=======
-            {/* Admin-only fields */}
-            {currentRole === 'admin' && (
-              <div style={{
-                padding: '16px',
-                background: 'rgba(248, 250, 252, 0.6)',
-                borderRadius: '12px',
-                border: '1.5px dashed rgba(220, 38, 38, 0.25)',
-                marginBottom: '20px',
-              }}>
-                <div style={styles.inputGroup}>
-                  <label style={styles.label}>2FA Code</label>
-                  <input
-                    style={styles.input}
-                    type="text"
-                    inputMode="numeric"
-                    placeholder="6-digit code"
-                    maxLength="6"
-                    value={twoFactorCode}
-                    onChange={(e) => setTwoFactorCode(e.target.value.replace(/\D/g, ''))}
-                    required={currentRole === 'admin'}
-                  />
-                </div>
+<div style={styles.rememberRow}>
+    <label style={styles.checkbox}>
+      <input 
+        type="checkbox" 
+        name="rememberMe"
+        checked={formData.rememberMe}
+        onChange={handleChange}
+      />
+      <span>Remember me</span>
+    </label>
+    <a 
+      style={styles.link} 
+      href="#"
+      onClick={(e) => {
+        e.preventDefault();
+        navigate('/auth/forgot-password');
+      }}
+    >
+      Forgot Password?
+    </a>
+  </div>
 
-                <div style={styles.inputGroup}>
-                  <label style={styles.label}>Security Question</label>
-                  <select
-                    style={styles.input}
-                    value={securityQuestion}
-                    onChange={(e) => setSecurityQuestion(e.target.value)}
-                    required={currentRole === 'admin'}
-                  >
-                    <option value="">Select a question</option>
-                    <option value="city">What city did you grow up in?</option>
-                    <option value="teacher">What was the name of your first teacher?</option>
-                    <option value="pet">What was your first pet's name?</option>
-                  </select>
-                </div>
-
-                <div style={styles.inputGroup}>
-                  <label style={styles.label}>Answer</label>
-                  <input
-                    style={styles.input}
-                    type="text"
-                    placeholder="Your answer"
-                    value={securityAnswer}
-                    onChange={(e) => setSecurityAnswer(e.target.value)}
-                    required={currentRole === 'admin'}
-                    autoComplete="off"
-                  />
-                </div>
-
-                <label style={{ ...styles.checkbox, marginTop: '8px' }}>
-                  <input
-                    type="checkbox"
-                    checked={trustDevice}
-                    onChange={(e) => setTrustDevice(e.target.checked)}
-                  />
-                  <span>Trust this device for 7 days</span>
-                </label>
-              </div>
-            )}
-
-            {/* User-only remember me and links */}
-            {currentRole === 'user' && (
-              <div style={styles.rememberRow}>
->>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
->>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
->>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
->>>>>>> d407dac660c41680e4e8832e1966544b3e5b6249
-                <label style={styles.checkbox}>
-                  <input 
-                    type="checkbox" 
-                    name="rememberMe"
-                    checked={formData.rememberMe}
-                    onChange={handleChange}
-                  />
-                  <span>Remember me</span>
-                </label>
-                <a 
-                  style={styles.link} 
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    navigate('/auth/forgot-password');
-                  }}
-                >
-                  Forgot Password?
-                </a>
-              </div>
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-            )}
-
-            {/* Admin-only links */}
-            {currentRole === 'admin' && (
-              <div style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                marginBottom: '20px',
-                fontSize: '14px',
-              }}>
-                <a 
-                  style={{...styles.link, color: '#dc2626'}} 
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    navigate('/admin/help');
-                  }}
-                >
-                  Admin Help
-                </a>
-                <a 
-                  style={{...styles.link, color: '#dc2626'}} 
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    navigate('/admin/emergency');
-                  }}
-                >
-                  Emergency Access
-                </a>
-              </div>
-            )}
->>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
->>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
->>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
->>>>>>> d407dac660c41680e4e8832e1966544b3e5b6249
-
-            <button type="submit" className="submit-btn" style={styles.button} disabled={loading}>
+<button type="submit" className="submit-btn" style={styles.button} disabled={loading}>
               {loading ? (
                 <>
                   <span className="btn-spinner" aria-hidden></span>
@@ -1163,31 +756,15 @@ export default function Login() {
 
             {/* Session info */}
             <p style={{
-              marginTop: '12px',
-              textAlign: 'center',
-              fontSize: '12px',
-              color: '#999',
-            }}>
-<<<<<<< HEAD
-              Session: up to 30 days
-=======
-<<<<<<< HEAD
-              Session: up to 30 days
-=======
-<<<<<<< HEAD
-              Session: up to 30 days
-=======
-<<<<<<< HEAD
-              Session: up to 30 days
-=======
-              Session: {currentRole === 'admin' ? 'up to 2 hours (Admin)' : 'up to 30 days (User)'}
->>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
->>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
->>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
->>>>>>> d407dac660c41680e4e8832e1966544b3e5b6249
-            </p>
-          </form>
-        </div>
+      marginTop: '12px',
+      textAlign: 'center',
+      fontSize: '12px',
+      color: '#999',
+    }}>
+      Session: up to 30 days
+    </p>
+  </form>
+</div>
 
         <div className="overlay-container" style={styles.overlayContainer}>
           <div style={styles.overlay}>

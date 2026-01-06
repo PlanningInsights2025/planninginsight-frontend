@@ -16,19 +16,6 @@ import {
   EyeOff
 } from 'lucide-react'
 import Loader from '../../common/Loader/Loader'
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
->>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
->>>>>>> d407dac660c41680e4e8832e1966544b3e5b6249
-import './ForgotPassword.css'
-=======
->>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
 
 /**
  * Enhanced Forgot Password Component - 2025
