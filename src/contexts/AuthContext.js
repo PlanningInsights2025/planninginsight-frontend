@@ -81,28 +81,6 @@ export const AuthProvider = ({ children }) => {
     setIsAuthenticated(false)
   }
 
-<<<<<<< HEAD
-  // Manual auth state setter for custom login flows
-  const setAuthState = (userData) => {
-    console.log('🔐 AuthContext: Setting auth state manually', userData)
-    setUser(userData)
-    setIsAuthenticated(true)
-  }
-
-  // Manual auth state setter for custom login flows
-  const setAuthState = (userData) => {
-    console.log('🔐 AuthContext: Setting auth state manually', userData)
-    setUser(userData)
-    setIsAuthenticated(true)
-  }
-
-  // Manual auth state setter for custom login flows
-  const setAuthState = (userData) => {
-    console.log('🔐 AuthContext: Setting auth state manually', userData)
-    setUser(userData)
-    setIsAuthenticated(true)
-  }
-
   // Manual auth state setter for custom login flows
   const setAuthState = (userData) => {
     console.log('🔐 AuthContext: Setting auth state manually', userData)
@@ -111,13 +89,10 @@ export const AuthProvider = ({ children }) => {
   }
 
   const login = async (email, password) => {
-=======
-  const login = async (emailOrUserData, password) => {
->>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
     try {
       // If first parameter is an object, it means we're updating context with user data
-      if (typeof emailOrUserData === 'object' && emailOrUserData !== null) {
-        const userData = emailOrUserData;
+      if (typeof email === 'object' && email !== null) {
+        const userData = email;
         console.log('Updating auth context with user data:', userData);
         setUser(userData);
         setIsAuthenticated(true);
@@ -125,7 +100,6 @@ export const AuthProvider = ({ children }) => {
       }
       
       // Otherwise, proceed with Firebase email/password login
-      const email = emailOrUserData;
       const fbUser = await signInWithEmail(email, password)
       const displayName = fbUser.displayName || ''
       const [firstName, ...rest] = displayName.split(' ')
@@ -336,44 +310,22 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
-  const value = {
-    user,
-    loading,
-    isAuthenticated,
-    login,
-    signup,
-    logout,
-    requestOTP,
-    verifyOTP,
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
->>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
->>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
-    requestSignupOTP,
-    verifySignupOTP,
-    checkAuthStatus,
-    setAuthState
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-=======
-    forgotPassword,
-    resetPassword,
-    checkAuthStatus
->>>>>>> 9ca6212b0f3cb517223236cdbdca1eddd13c50f3
->>>>>>> c68411abd8537256a8e5805a7bcf8661696ac3cb
->>>>>>> 5de0f4e61380cd77865027fcd0dc92877a094607
->>>>>>> 6a23b3a0c7eb7babee234a87d16c0b1cb3c4acc5
-  }
+const value = {
+  user,
+  loading,
+  isAuthenticated,
+  login,
+  signup,
+  logout,
+  requestOTP,
+  verifyOTP,
+  forgotPassword,
+  resetPassword,
+  requestSignupOTP,
+  verifySignupOTP,
+  checkAuthStatus,
+  setAuthState
+}
 
   return (
     <AuthContext.Provider value={value}>
