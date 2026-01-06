@@ -88,13 +88,6 @@ export const AuthProvider = ({ children }) => {
     setIsAuthenticated(true)
   }
 
-  // Manual auth state setter for custom login flows
-  const setAuthState = (userData) => {
-    console.log('🔐 AuthContext: Setting auth state manually', userData)
-    setUser(userData)
-    setIsAuthenticated(true)
-  }
-
   const login = async (email, password) => {
     try {
       // If first parameter is an object, it means we're updating context with user data
@@ -277,43 +270,27 @@ export const AuthProvider = ({ children }) => {
         success: false, 
         error: error.response?.data?.message || error.message || 'OTP verification failed' 
       }
+  }
+}
+
+const forgotPassword = async (email) => {
+  try {
+    const response = await authAPI.forgotPassword(email)
+    // Backend returns { success: true, message: "..." }
+    if (response.success) {
+      return { success: true, data: response }
+    }
+    return { success: false, error: response.message || 'Failed to send reset code' }
+  } catch (error) {
+    console.error('Forgot password error:', error)
+    return { 
+      success: false, 
+      error: error.response?.data?.message || error.message || 'Failed to send reset code' 
     }
   }
+}
 
-<<<<<<< HEAD
-  const value = {
-    user,
-    loading,
-    isAuthenticated,
-    login,
-    signup,
-    logout,
-    requestOTP,
-    verifyOTP,
-    requestSignupOTP,
-    verifySignupOTP,
-    checkAuthStatus,
-    setAuthState
-=======
-  const forgotPassword = async (email) => {
-    try {
-      const response = await authAPI.forgotPassword(email)
-      // Backend returns { success: true, message: "..." }
-      if (response.success) {
-        return { success: true, data: response }
-      }
-      return { success: false, error: response.message || 'Failed to send reset code' }
-    } catch (error) {
-      console.error('Forgot password error:', error)
-      return { 
-        success: false, 
-        error: error.response?.data?.message || error.message || 'Failed to send reset code' 
-      }
-    }
->>>>>>> d407dac660c41680e4e8832e1966544b3e5b6249
-  }
-
-  const resetPassword = async (token, newPassword) => {
+const resetPassword = async (token, newPassword) => {
     try {
       // Backend expects { resetToken, newPassword }
       const response = await authAPI.resetPassword(token, newPassword)
@@ -330,8 +307,8 @@ export const AuthProvider = ({ children }) => {
         success: false, 
         error: error.response?.data?.message || error.message || 'Password reset failed' 
       }
-    }
   }
+}
 
 const value = {
   user,
