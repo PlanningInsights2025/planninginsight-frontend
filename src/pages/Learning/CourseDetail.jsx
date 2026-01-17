@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useParams, useNavigate, Link } from 'react-router-dom'
+import { useParams, useNavigate, Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
 import { useNotification } from '../../contexts/NotificationContext'
 import { useApi } from '../../hooks/useApi'
@@ -33,6 +33,7 @@ import Loader from '../../components/common/Loader/Loader'
 const CourseDetail = () => {
   const { id } = useParams()
   const navigate = useNavigate()
+  const location = useLocation()
   const { isAuthenticated, user } = useAuth()
   const { showNotification } = useNotification()
   
@@ -65,7 +66,51 @@ const CourseDetail = () => {
     try {
       setLoading(true)
       
-      // Fetch course details
+      // Check if course data was passed via navigation state first
+      const passedCourse = location.state?.course
+      if (passedCourse) {
+        // Use the course data passed from the Learning page
+        const mockCourseData = {
+          ...passedCourse,
+          description: 'This comprehensive course covers the fundamentals of smart city planning, sustainable development, and innovative urban technologies. You\'ll learn from industry experts and work on real-world case studies.',
+          enrollments: 2500,
+          reviewCount: 245,
+          originalFees: passedCourse.fees > 0 ? passedCourse.fees + 1000 : 0,
+          nextSession: '2024-01-15',
+          courseType: passedCourse.type === 'live' ? 'live' : passedCourse.type === 'recorded' ? 'recorded' : 'offline',
+          location: passedCourse.location,
+          category: 'Urban Planning',
+          earlyBird: true
+        }
+        setCourse(mockCourseData)
+        
+        // Mock similar courses (generate unique ids so suggestions change per course and exclude the current one)
+        const baseSimilar = [
+          { title: 'Advanced GIS for Urban Planning', instructor: 'Prof. Sarah Chen', rating: 4.6, fees: 3499 },
+          { title: 'Sustainable Urban Development', instructor: 'Dr. Michael Rodriguez', rating: 4.4, fees: 2799 },
+          { title: 'IoT Applications in Smart Cities', instructor: 'Dr. Raj Patel', rating: 4.7, fees: 3999 }
+        ]
+        const generated = baseSimilar
+          .map((s, i) => ({ id: `${passedCourse.id}-sim-${i+1}`, ...s, image: null }))
+          .filter(s => s.id !== passedCourse.id)
+        setSimilarCourses(generated)
+        
+        // Scroll to top so newly loaded course details are visible
+        try { window.scrollTo({ top: 0, behavior: 'smooth' }) } catch(e) { window.scrollTo(0,0) }
+        
+        // Mock reviews
+        setReviews([
+          { id: 1, reviewerName: 'Alex Johnson', rating: 5, comment: 'Excellent course! Very comprehensive and practical.', date: '2024-01-10' },
+          { id: 2, reviewerName: 'Priya Sharma', rating: 4, comment: 'Good content, but could use more hands-on exercises.', date: '2024-01-08' },
+          { id: 3, reviewerName: 'David Chen', rating: 5, comment: 'Outstanding instructor and well-structured curriculum.', date: '2024-01-05' }
+        ])
+        
+        loadInstructorInfo(mockCourseData.instructorId || 'instructor-1')
+        setLoading(false)
+        return
+      }
+      
+      // Fallback to API fetch if no course data in state
       const courseData = await fetchCourseApi(id, {
         showError: true,
         errorMessage: 'Failed to load course details'
@@ -76,7 +121,8 @@ const CourseDetail = () => {
         
         // Fetch similar courses
         const similarCoursesData = await fetchSimilarCoursesApi(id)
-        setSimilarCourses(similarCoursesData || [])
+        // Ensure suggestions don't include the current course
+        setSimilarCourses((similarCoursesData || []).filter(sc => sc.id !== id))
         
         // Fetch reviews
         const reviewsData = await fetchReviewsApi(id)
@@ -85,6 +131,8 @@ const CourseDetail = () => {
         // Fetch instructor info (would come from API in real implementation)
         loadInstructorInfo(courseData.instructorId)
       }
+      // Scroll to top after loading from API
+      try { window.scrollTo({ top: 0, behavior: 'smooth' }) } catch(e) { window.scrollTo(0,0) }
     } catch (error) {
       // Error handled by useApi hook
     } finally {
@@ -123,7 +171,7 @@ const CourseDetail = () => {
   const handleEnroll = () => {
     if (!isAuthenticated) {
       showNotification('Please sign in to enroll in this course', 'info')
-      navigate('/login', { state: { from: `/learning/courses/${id}/enroll` } })
+      navigate('/login', { state: { from: `/learning/enroll`, course } })
       return
     }
     // Navigate to the full enrollment page and pass the course
@@ -627,7 +675,19 @@ const CourseDetail = () => {
       <h2>Similar Courses You Might Like</h2>
       <div className="similar-courses-grid">
         {similarCourses.slice(0, 3).map(similarCourse => (
-          <div key={similarCourse.id} className="similar-course-card">
+          <div
+            key={similarCourse.id}
+            className="similar-course-card"
+            role="link"
+            tabIndex={0}
+            onClick={() => navigate(`/learning/courses/${similarCourse.id}`, { state: { course: similarCourse } })}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+                e.preventDefault()
+                navigate(`/learning/courses/${similarCourse.id}`, { state: { course: similarCourse } })
+              }
+            }}
+          >
             <div className="similar-course-image">
               {similarCourse.image ? (
                 <img src={similarCourse.image} alt={similarCourse.title} />
@@ -653,12 +713,13 @@ const CourseDetail = () => {
             </div>
             
             <div className="similar-course-actions">
-              <Link 
-                to={`/learning/courses/${similarCourse.id}`}
+              <button
+                type="button"
                 className="btn btn-outline btn-small"
+                onClick={(e) => { e.stopPropagation(); navigate(`/learning/courses/${similarCourse.id}`, { state: { course: similarCourse } }) }}
               >
                 View Details
-              </Link>
+              </button>
             </div>
           </div>
         ))}
@@ -732,12 +793,6 @@ const CourseDetail = () => {
               <div className="quick-enroll-card">
                 <div className="card-content">
                   <h3>Ready to Start Learning?</h3>
-                  <div className="pricing">
-                    <span className="price">{formatPrice(course.fees)}</span>
-                    {course.originalFees > course.fees && (
-                      <span className="original-price">₹{course.originalFees.toLocaleString()}</span>
-                    )}
-                  </div>
                   <button 
                     className="btn btn-primary w-full"
                     onClick={handleEnroll}

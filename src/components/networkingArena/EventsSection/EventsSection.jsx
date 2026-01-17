@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Calendar, MapPin, Users, Clock, Video, Plus, Search, Filter, ExternalLink } from 'lucide-react';
+import toast from 'react-hot-toast';
+import * as networkingApi from '@/services/api/networking';
 import './EventsSection.css';
 import CreateEventModal from './CreateEventModal';
 import EventDetailsModal from './EventDetailsModal';
@@ -10,62 +12,63 @@ const EventsSection = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [myEvents, setMyEvents] = useState([]);
+  const [upcomingEvents, setUpcomingEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const [events, setEvents] = useState([
-    {
-      id: 1,
-      title: 'Tech Conference 2024',
-      date: 'Dec 15, 2024',
-      time: '9:00 AM - 5:00 PM',
-      location: 'San Francisco, CA',
-      type: 'in-person',
-      attendees: 234,
-      image: '/api/placeholder/400/200',
-      rsvp: 'going',
-      organizer: 'Tech Events Inc.',
-      description: 'Annual technology conference featuring the latest innovations'
-    },
-    {
-      id: 2,
-      title: 'Web Development Workshop',
-      date: 'Dec 20, 2024',
-      time: '2:00 PM - 4:00 PM',
-      location: 'Virtual Event',
-      type: 'virtual',
-      attendees: 456,
-      image: '/api/placeholder/400/200',
-      rsvp: 'interested',
-      organizer: 'Dev Community',
-      description: 'Hands-on workshop covering React and Next.js best practices'
-    },
-    {
-      id: 3,
-      title: 'Networking Mixer',
-      date: 'Jan 5, 2025',
-      time: '6:00 PM - 9:00 PM',
-      location: 'New York, NY',
-      type: 'in-person',
-      attendees: 89,
-      image: '/api/placeholder/400/200',
-      rsvp: null,
-      organizer: 'Professional Network Group',
-      description: 'Connect with professionals in your industry over drinks'
+  // Fetch events on mount
+  useEffect(() => {
+    fetchEvents();
+  }, []);
+
+  const fetchEvents = async () => {
+    try {
+      setLoading(true);
+      
+      // Fetch both my events and upcoming events
+      const [myEventsResponse, upcomingResponse] = await Promise.all([
+        networkingApi.getMyEvents(),
+        networkingApi.getUpcomingEvents()
+      ]);
+
+      if (myEventsResponse.success) {
+        setMyEvents(myEventsResponse.events);
+      }
+
+      if (upcomingResponse.success) {
+        setUpcomingEvents(upcomingResponse.events);
+      }
+    } catch (error) {
+      console.error('Error fetching events:', error);
+      // Silently fail - empty state will be shown
+    } finally {
+      setLoading(false);
     }
-  ]);
+  };
 
-  const [pastEvents] = useState([
-    {
-      id: 4,
-      title: 'AI Summit 2024',
-      date: 'Nov 10, 2024',
-      attendees: 567,
-      type: 'virtual',
-      rsvp: 'attended'
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  };
+
+  const formatTime = (startDate, endDate) => {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    return `${start.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })} - ${end.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`;
+  };
+
+  const handleCreateEvent = async (newEvent) => {
+    try {
+      const response = await networkingApi.createEvent(newEvent);
+      
+      if (response.success) {
+        setMyEvents(prev => [response.event, ...prev]);
+        toast.success('Event created successfully');
+      }
+    } catch (error) {
+      console.error('Error creating event:', error);
+      // Silently fail
     }
-  ]);
-
-  const handleCreateEvent = (newEvent) => {
-    setEvents(prevEvents => [newEvent, ...prevEvents]);
   };
 
   const handleViewDetails = (event) => {
@@ -73,14 +76,40 @@ const EventsSection = () => {
     setShowDetailsModal(true);
   };
 
-  const handleRSVP = (eventId, status) => {
-    setEvents(prevEvents =>
-      prevEvents.map(event =>
-        event.id === eventId ? { ...event, rsvp: status } : event
-      )
-    );
-    setSelectedEvent(prev => prev ? { ...prev, rsvp: status } : null);
+  const handleRegister = async (eventId) => {
+    try {
+      const response = await networkingApi.registerForEvent(eventId);
+      
+      if (response.success) {
+        // Move event from upcoming to my events
+        const event = upcomingEvents.find(e => e.id === eventId);
+        if (event) {
+          setMyEvents(prev => [{ ...event, status: 'registered' }, ...prev]);
+          setUpcomingEvents(prev => prev.filter(e => e.id !== eventId));
+        }
+        toast.success('Registered for event successfully');
+      }
+    } catch (error) {
+      console.error('Error registering for event:', error);
+      // Silently fail
+    }
   };
+
+  const handleCancelRegistration = async (eventId) => {
+    try {
+      const response = await networkingApi.cancelEventRegistration(eventId);
+      
+      if (response.success) {
+        setMyEvents(prev => prev.filter(e => e.id !== eventId));
+        toast.success('Registration cancelled');
+      }
+    } catch (error) {
+      console.error('Error cancelling registration:', error);
+      // Silently fail
+    }
+  };
+
+  const allEvents = activeTab === 'upcoming' ? [...myEvents, ...upcomingEvents] : myEvents.filter(e => new Date(e.endDate) < new Date());
 
   return (
     <div className="events-section">
@@ -119,7 +148,7 @@ const EventsSection = () => {
           className={`tab-btn ${activeTab === 'upcoming' ? 'active' : ''}`}
           onClick={() => setActiveTab('upcoming')}
         >
-          Upcoming ({events.length})
+          Upcoming ({[...myEvents, ...upcomingEvents].length})
         </button>
         <button
           className={`tab-btn ${activeTab === 'past' ? 'active' : ''}`}
@@ -137,127 +166,131 @@ const EventsSection = () => {
 
       {/* Content */}
       <div className="events-content">
-        {activeTab === 'upcoming' && (
-          <div className="events-list">
-            {events.map((event) => (
-              <div key={event.id} className="event-card">
-                <img src={event.image} alt={event.title} className="event-image" />
-                <div className="event-info">
-                  <div className="event-type-badge">
-                    {event.type === 'virtual' ? (
-                      <>
-                        <Video size={14} />
-                        Virtual
-                      </>
-                    ) : (
-                      <>
-                        <MapPin size={14} />
-                        In-Person
-                      </>
-                    )}
-                  </div>
-                  <h3>{event.title}</h3>
-                  <p className="event-description">{event.description}</p>
-                  <div className="event-details">
-                    <div className="detail-item">
-                      <Calendar size={16} />
-                      <span>{event.date}</span>
-                    </div>
-                    <div className="detail-item">
-                      <Clock size={16} />
-                      <span>{event.time}</span>
-                    </div>
-                    <div className="detail-item">
-                      {event.type === 'virtual' ? (
-                        <>
-                          <Video size={16} />
-                          <span>{event.location}</span>
-                        </>
-                      ) : (
-                        <>
-                          <MapPin size={16} />
-                          <span>{event.location}</span>
-                        </>
-                      )}
-                    </div>
-                    <div className="detail-item">
-                      <Users size={16} />
-                      <span>{event.attendees} attendees</span>
-                    </div>
-                  </div>
-                  <div className="event-organizer">
-                    <span>Organized by {event.organizer}</span>
-                  </div>
-                </div>
-                <div className="event-actions">
-                  {event.rsvp === 'going' && (
-                    <button className="btn-rsvp going">
-                      ✓ Going
-                    </button>
-                  )}
-                  {event.rsvp === 'interested' && (
-                    <button className="btn-rsvp interested">
-                      ⭐ Interested
-                    </button>
-                  )}
-                  {!event.rsvp && (
-                    <div className="rsvp-buttons">
-                      <button className="btn-rsvp going">
-                        RSVP
-                      </button>
-                      <button className="btn-rsvp interested">
-                        Interested
-                      </button>
-                    </div>
-                  )}
-                  <button className="btn-view-event" onClick={() => handleViewDetails(event)}>
-                    <ExternalLink size={16} />
-                    View Details
-                  </button>
-                </div>
-              </div>
-            ))}
+        {loading ? (
+          <div className="loading-state">
+            <p>Loading events...</p>
           </div>
-        )}
-
-        {activeTab === 'past' && (
-          <div className="past-events-list">
-            {pastEvents.map((event) => (
-              <div key={event.id} className="past-event-card">
-                <div className="event-info">
-                  <h3>{event.title}</h3>
-                  <div className="event-meta">
-                    <span>
-                      <Calendar size={14} />
-                      {event.date}
-                    </span>
-                    <span>
-                      <Users size={14} />
-                      {event.attendees} attendees
-                    </span>
-                    {event.type === 'virtual' && (
-                      <span className="event-type-badge virtual">
-                        <Video size={14} />
-                        Virtual
-                      </span>
-                    )}
-                  </div>
-                </div>
-                <button className="btn-view-recording">
-                  View Recording
+        ) : activeTab === 'upcoming' ? (
+          <div className="events-list">
+            {allEvents.length === 0 ? (
+              <div className="empty-state">
+                <Calendar size={48} />
+                <p>No upcoming events</p>
+                <button className="create-event-btn" onClick={() => setShowCreateModal(true)}>
+                  Create Your First Event
                 </button>
               </div>
-            ))}
+            ) : (
+              allEvents.map((event) => {
+                const isRegistered = myEvents.some(e => e.id === event.id);
+                return (
+                  <div key={event.id} className="event-card">
+                    <div className="event-info">
+                      <div className="event-type-badge">
+                        {event.mode === 'online' ? (
+                          <>
+                            <Video size={14} />
+                            Virtual
+                          </>
+                        ) : event.mode === 'offline' ? (
+                          <>
+                            <MapPin size={14} />
+                            In-Person
+                          </>
+                        ) : (
+                          <>
+                            <MapPin size={14} />
+                            Hybrid
+                          </>
+                        )}
+                      </div>
+                      <h3>{event.title}</h3>
+                      <p className="event-description">{event.description}</p>
+                      <div className="event-details">
+                        <div className="detail-item">
+                          <Calendar size={16} />
+                          <span>{formatDate(event.startDate)}</span>
+                        </div>
+                        <div className="detail-item">
+                          <Clock size={16} />
+                          <span>{formatTime(event.startDate, event.endDate)}</span>
+                        </div>
+                        <div className="detail-item">
+                          {event.mode === 'online' ? (
+                            <>
+                              <Video size={16} />
+                              <span>Virtual Event</span>
+                            </>
+                          ) : (
+                            <>
+                              <MapPin size={16} />
+                              <span>{event.location?.city || event.location?.venue || 'In-Person'}</span>
+                            </>
+                          )}
+                        </div>
+                        <div className="detail-item">
+                          <Users size={16} />
+                          <span>{event.attendees} attendees</span>
+                        </div>
+                      </div>
+                      <div className="event-organizer">
+                        <span>Organized by {event.organizer?.profile?.firstName} {event.organizer?.profile?.lastName}</span>
+                      </div>
+                    </div>
+                    <div className="event-actions">
+                      <button className="btn-view-details" onClick={() => handleViewDetails(event)}>
+                        View Details
+                      </button>
+                      {isRegistered ? (
+                        <button 
+                          className="btn-cancel-rsvp" 
+                          onClick={() => handleCancelRegistration(event.id)}
+                        >
+                          Cancel
+                        </button>
+                      ) : (
+                        <button 
+                          className="btn-rsvp-going" 
+                          onClick={() => handleRegister(event.id)}
+                        >
+                          Register
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </div>
-        )}
-
-        {activeTab === 'calendar' && (
+        ) : activeTab === 'past' ? (
+          <div className="events-list">
+            {allEvents.length === 0 ? (
+              <div className="empty-state">
+                <p>No past events</p>
+              </div>
+            ) : (
+              allEvents.map((event) => (
+                <div key={event.id} className="event-card">
+                  <div className="event-info">
+                    <h3>{event.title}</h3>
+                    <div className="event-details">
+                      <div className="detail-item">
+                        <Calendar size={16} />
+                        <span>{formatDate(event.startDate)}</span>
+                      </div>
+                      <div className="detail-item">
+                        <Users size={16} />
+                        <span>{event.attendees} attended</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        ) : (
           <div className="calendar-view">
-            <div className="calendar-placeholder">
-              <Calendar size={48} />
-              <p>Calendar view coming soon</p>
-              <p className="calendar-subtitle">View all your events in a calendar format</p>
-            </div>
+            <p>Calendar view coming soon...</p>
           </div>
         )}
       </div>
@@ -273,7 +306,6 @@ const EventsSection = () => {
         isOpen={showDetailsModal}
         onClose={() => setShowDetailsModal(false)}
         event={selectedEvent}
-        onRSVP={handleRSVP}
       />
     </div>
   );

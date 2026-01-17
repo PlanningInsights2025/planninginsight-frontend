@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import { User, Award, Eye, TrendingUp, Link2, Edit, Check, Star, Shield, X } from 'lucide-react';
 import './ProfileSection.css';
-import { useAuth } from '../../../contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContext';
+import * as profileAPI from '@/services/api/profile';
+import toast from 'react-hot-toast';
 
 const ProfileSection = ({ userRole, setUserRole }) => {
   const { user } = useAuth();
@@ -16,49 +19,59 @@ const ProfileSection = ({ userRole, setUserRole }) => {
   
   const userPhoto = user?.photoURL || '/api/placeholder/80/80';
   const [showEditModal, setShowEditModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   
   const [profileData, setProfileData] = useState({
     name: userName,
-    title: 'Senior Software Engineer',
-    company: 'Tech Innovations Inc.',
-    location: 'San Francisco, CA',
-    profileViews: 1234,
-    connections: 234,
-    postImpressions: 5432,
-    profileStrength: 85,
-    customUrl: (userName.toLowerCase().replace(/\s+/g, '') || 'user') + '-tech',
-    verified: userRole === 'premium' || userRole === 'recruiter',
-    skills: [
-      { name: 'React', endorsements: 45 },
-      { name: 'Node.js', endorsements: 38 },
-      { name: 'Python', endorsements: 32 },
-      { name: 'AWS', endorsements: 28 },
-    ],
+    firstName: '',
+    lastName: '',
+    title: '',
+    company: '',
+    location: '',
+    bio: '',
+    profileViews: 0,
+    connections: 0,
+    postImpressions: 0,
+    profileStrength: 0,
+    linkedinUrl: '',
+    verified: false,
+    skills: [],
     badges: []
   });
 
-  // Update profile data when user role changes
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+
   useEffect(() => {
-    let newBadges = [];
-    let isVerified = false;
-    
-    if (userRole === 'premium') {
-      newBadges = ['Premium Member', 'Industry Expert'];
-      isVerified = true;
-    } else if (userRole === 'recruiter') {
-      newBadges = ['Verified Recruiter', 'Top Hiring Manager'];
-      isVerified = true;
-    } else {
-      newBadges = [];
-      isVerified = false;
+    fetchProfileData();
+  }, []);
+
+  const fetchProfileData = async () => {
+    try {
+      setIsLoading(true);
+      const response = await profileAPI.getProfileStats();
+      
+      if (response.success && response.stats) {
+        // Merge response stats with existing profileData
+        setProfileData(prev => ({
+          ...prev,
+          ...response.stats,
+          connections: response.stats.connections || 0,
+          postImpressions: response.stats.posts || 0,
+          profileViews: response.stats.views || 0
+        }));
+        
+        // Update userRole based on actual role from backend if available
+        if (response.stats.role === 'premium' || response.stats.role === 'admin') {
+          setUserRole(response.stats.role === 'admin' ? 'premium' : response.stats.role);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching profile data:', error);
+      // Silently fail - default values will be used
+    } finally {
+      setIsLoading(false);
     }
-    
-    setProfileData(prev => ({
-      ...prev,
-      badges: newBadges,
-      verified: isVerified
-    }));
-  }, [userRole]);
+  };
 
   const getStrengthColor = (strength) => {
     if (strength >= 80) return '#10b981';
@@ -67,42 +80,95 @@ const ProfileSection = ({ userRole, setUserRole }) => {
     return '#ef4444';
   };
 
-  const handleSaveProfile = () => {
-    // Save profile data
-    alert('Profile updated successfully!');
-    setShowEditModal(false);
+  const handleSaveProfile = async () => {
+    try {
+      const response = await profileAPI.updateProfile({
+        firstName: profileData.firstName,
+        lastName: profileData.lastName,
+        position: profileData.title,
+        organization: profileData.company,
+        location: profileData.location,
+        bio: profileData.bio,
+        linkedinUrl: profileData.linkedinUrl,
+        skills: profileData.skills
+      });
+      
+      if (response.success) {
+        setShowEditModal(false);
+        setShowSuccessMessage(true);
+        toast.success('Profile updated successfully!');
+        
+        // Refresh profile data
+        await fetchProfileData();
+        
+        // Hide success message after 3 seconds
+        setTimeout(() => {
+          setShowSuccessMessage(false);
+        }, 3000);
+      }
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      // Silently fail
+    }
   };
+
+  if (isLoading) {
+    return (
+      <div className="profile-section">
+        <div className="profile-main-container">
+          <div className="loading-container">
+            <div className="spinner"></div>
+            <p>Loading profile...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="profile-section">
-      {/* Profile Header */}
-      <div className="profile-header">
-        <div className="profile-avatar">
-          <img src={userPhoto} alt={profileData.name} />
-          {profileData.verified && (
-            <div className="verified-badge">
-              <Check size={16} />
-            </div>
-          )}
+      {/* Success Message Toast */}
+      {showSuccessMessage && (
+        <div className="success-toast">
+          <Check size={20} />
+          <span>Profile updated successfully!</span>
         </div>
+      )}
+
+      {/* Single Main Container Box */}
+      <div className="profile-main-container">
         
-        <div className="profile-info">
-          <h2 className="profile-name">
-            {profileData.name}
-            {profileData.verified && <Shield size={18} className="verify-icon" />}
-          </h2>
-          <p className="profile-title">{profileData.title}</p>
-          <p className="profile-company">{profileData.company}</p>
-          <p className="profile-location">{profileData.location}</p>
+        {/* Profile Header */}
+        <div className="profile-header">
+          <div className="profile-avatar">
+            <img src={userPhoto} alt={profileData.name} />
+            {profileData.verified && (
+              <div className="verified-badge">
+                <Check size={16} />
+              </div>
+            )}
+          </div>
+          
+          <div className="profile-info">
+            <h2 className="profile-name">
+              {profileData.name}
+              {profileData.verified && <Shield size={18} className="verify-icon" />}
+            </h2>
+            <p className="profile-title">{profileData.title}</p>
+            <p className="profile-company">{profileData.company}</p>
+            <p className="profile-location">{profileData.location}</p>
+          </div>
+
+          <button className="edit-profile-btn" onClick={() => setShowEditModal(true)}>
+            <Edit size={16} />
+          </button>
         </div>
 
-        <button className="edit-profile-btn" onClick={() => setShowEditModal(true)}>
-          <Edit size={16} />
-        </button>
-      </div>
+        {/* Divider */}
+        <div className="profile-divider"></div>
 
-      {/* Profile Strength */}
-      <div className="profile-strength">
+        {/* Profile Strength */}
+        <div className="profile-strength">
         <div className="strength-header">
           <span className="strength-label">Profile Strength</span>
           <span className="strength-value">{profileData.profileStrength}%</span>
@@ -123,11 +189,19 @@ const ProfileSection = ({ userRole, setUserRole }) => {
         </p>
       </div>
 
+      {/* Divider */}
+      <div className="profile-divider"></div>
+
       {/* Custom URL */}
       <div className="custom-url">
         <Link2 size={16} />
-        <span className="url-text">linkedin.com/in/{profileData.customUrl}</span>
+        <span className="url-text">
+          {profileData.linkedinUrl || 'No LinkedIn profile added'}
+        </span>
       </div>
+
+      {/* Divider */}
+      <div className="profile-divider"></div>
 
       {/* Badges */}
       {profileData.badges.length > 0 && (
@@ -143,6 +217,9 @@ const ProfileSection = ({ userRole, setUserRole }) => {
           </div>
         </div>
       )}
+
+      {/* Divider */}
+      {profileData.badges.length > 0 && <div className="profile-divider"></div>}
 
       {/* Stats */}
       <div className="profile-stats">
@@ -169,29 +246,39 @@ const ProfileSection = ({ userRole, setUserRole }) => {
         </div>
       </div>
 
+      {/* Divider */}
+      <div className="profile-divider"></div>
+
       {/* Top Skills with Endorsements */}
       <div className="profile-skills">
         <h4>Top Skills</h4>
-        <div className="skills-list">
-          {profileData.skills.map((skill, index) => (
-            <div key={index} className="skill-item">
-              <div className="skill-header">
-                <span className="skill-name">{skill.name}</span>
-                <span className="skill-endorsements">
-                  <Star size={14} />
-                  {skill.endorsements}
-                </span>
+        {profileData.skills && profileData.skills.length > 0 ? (
+          <div className="skills-list">
+            {profileData.skills.map((skill, index) => (
+              <div key={index} className="skill-item">
+                <div className="skill-header">
+                  <span className="skill-name">{skill.name}</span>
+                  <span className="skill-endorsements">
+                    <Star size={14} />
+                    {skill.endorsements || 0}
+                  </span>
+                </div>
+                <div className="skill-bar">
+                  <div 
+                    className="skill-fill"
+                    style={{ width: `${Math.min((skill.endorsements / 50) * 100, 100)}%` }}
+                  />
+                </div>
               </div>
-              <div className="skill-bar">
-                <div 
-                  className="skill-fill"
-                  style={{ width: `${(skill.endorsements / 50) * 100}%` }}
-                />
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <p className="no-skills">No skills added yet. Add skills to your profile!</p>
+        )}
       </div>
+
+      {/* Divider */}
+      <div className="profile-divider"></div>
 
       {/* Role Switcher (Demo Purpose) */}
       <div className="role-switcher">
@@ -218,8 +305,11 @@ const ProfileSection = ({ userRole, setUserRole }) => {
         </div>
       </div>
 
-      {/* Edit Profile Modal */}
-      {showEditModal && (
+      {/* Close Main Container */}
+      </div>
+
+      {/* Edit Profile Modal - Rendered via Portal */}
+      {showEditModal && ReactDOM.createPortal(
         <div className="edit-modal-overlay" onClick={() => setShowEditModal(false)}>
           <div className="edit-modal" onClick={(e) => e.stopPropagation()}>
             <div className="edit-modal-header">
@@ -231,12 +321,22 @@ const ProfileSection = ({ userRole, setUserRole }) => {
             
             <div className="edit-modal-body">
               <div className="edit-field">
-                <label>Name</label>
+                <label>First Name</label>
                 <input
                   type="text"
-                  value={profileData.name}
-                  onChange={(e) => setProfileData({...profileData, name: e.target.value})}
-                  placeholder="Your full name"
+                  value={profileData.firstName}
+                  onChange={(e) => setProfileData({...profileData, firstName: e.target.value})}
+                  placeholder="Your first name"
+                />
+              </div>
+
+              <div className="edit-field">
+                <label>Last Name</label>
+                <input
+                  type="text"
+                  value={profileData.lastName}
+                  onChange={(e) => setProfileData({...profileData, lastName: e.target.value})}
+                  placeholder="Your last name"
                 />
               </div>
 
@@ -271,16 +371,23 @@ const ProfileSection = ({ userRole, setUserRole }) => {
               </div>
 
               <div className="edit-field">
-                <label>Custom URL</label>
-                <div className="url-input-wrapper">
-                  <span className="url-prefix">linkedin.com/in/</span>
-                  <input
-                    type="text"
-                    value={profileData.customUrl}
-                    onChange={(e) => setProfileData({...profileData, customUrl: e.target.value})}
-                    placeholder="your-custom-url"
-                  />
-                </div>
+                <label>LinkedIn URL</label>
+                <input
+                  type="text"
+                  value={profileData.linkedinUrl}
+                  onChange={(e) => setProfileData({...profileData, linkedinUrl: e.target.value})}
+                  placeholder="https://linkedin.com/in/your-profile"
+                />
+              </div>
+
+              <div className="edit-field">
+                <label>Bio</label>
+                <textarea
+                  value={profileData.bio}
+                  onChange={(e) => setProfileData({...profileData, bio: e.target.value})}
+                  placeholder="Tell us about yourself..."
+                  rows="4"
+                />
               </div>
             </div>
 
@@ -293,7 +400,8 @@ const ProfileSection = ({ userRole, setUserRole }) => {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

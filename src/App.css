@@ -7,18 +7,14 @@
 @import './components/common/Loader/Loader.css';
 
 /* Header & Footer */
-@import './components/common/Header/Header.css';
+@import './components/common/Header/Header/Header.css';
 @import './components/common/Footer/Footer.css';
 
 /* Auth component styles */
 /* @import './components/auth/Login/Login.css'; */
 
-/* Dashboard / profile */
-@import './components/dashboard/Profile/Profile.css';
-
 /* Page styles */
-@import './pages/Home/Home.css';
-@import './pages/Dashboard/Dashboard.css';
+@import './pages/Home/Home/Home.css';
 @import './pages/Jobs/Jobs.css';
 @import './pages/Jobs/JobDetail.css';
 @import './pages/Jobs/ApplicationForm.css';
@@ -27,7 +23,7 @@
 @import './pages/Learning/EnrollmentForm/EnrollmentForm.css';
 @import './pages/Publishing/Publishing.css';
 @import './pages/Publishing/ManuscriptSubmission.css';
-@import './pages/News/News.css';
+@import './pages/News/News/News.css';
 @import './pages/Forum/Forum.css';
 
 /* Publishing component styles */

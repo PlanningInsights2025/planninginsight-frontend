@@ -1,225 +1,1127 @@
-/* Global Job Portal styles - light, minimal, soft card shadows, rounded corners */
+/* JobPortal.css — Professional, minimal, enterprise-ready styles
+   - Plain CSS only
+   - Navy primary palette, light neutral background
+   - Clear hierarchy, clean spacing, readable typography
+*/
 :root{
-  --bg:#f8fafc;
-  --card:#ffffff;
-  --muted:#6b7280;
-  --accent:#6d28d9;
-  --chip-bg:#f1f5f9;
-  --chip-text:#334155;
-  --border:#e6eef2;
-  --container-pad:24px;
+  /* Design tokens */
+  --max-width:1200px;
+  --page-bg: #f7fbfb; /* very light neutral */
+  --card-bg: #ffffff;
+  --muted: #6b7280;
+  --text: #0f1724; /* near-black */
+  --primary: #2b2f3a; /* charcoal */
+  --primary-strong: #1f2227;
+  --accent: #b86b2f; /* warm amber accent */
+  --success: #059669;
+  --border: #e6eef2;
+  --radius: 12px;
+  --shadow: 0 10px 30px rgba(16,24,40,0.06);
+  --gap: 20px;
+  --line-height: 1.6;
+  --container-pad: 28px;
+  font-family: Inter, Roboto, -apple-system, 'Segoe UI', Arial, sans-serif;
 }
 
-html, body { height:100%; }
-body { background: var(--bg); -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
+/* Page layout */
+.jp-page{ background:#EEF3CE !important; color:var(--text) !important; min-height:100vh; }
+.jp-container{ width:calc(100% - 48px); max-width:var(--max-width); margin:0 auto; padding:var(--container-pad) 24px; }
 
-.jp-card { background: var(--card); border-radius:12px; box-shadow: 0 8px 26px rgba(15,23,42,0.06); border:1px solid rgba(15,23,42,0.04); overflow:hidden; transition:transform .18s ease, box-shadow .18s ease; position:relative; }
-.jp-card:hover{ transform:translateY(-6px); box-shadow: 0 18px 40px rgba(15,23,42,0.09); }
-.jp-card + .jp-card { margin-top:18px; }
-  .jp-card-inner { padding:18px; display:flex; flex-direction:column; gap:12px; }
+/* Header */
+.jp-header{ background:transparent; padding:8px 0 18px 0; }
+.jp-header-inner{ display:flex; justify-content:space-between; align-items:center; gap:16px; }
+.jp-title{ margin:0; font-size:28px; color:var(--primary-strong); font-weight:800; letter-spacing:-0.2px }
+.jp-sub{ margin:6px 0 0; color:var(--muted); font-size:14px }
 
-/* Horizontal card layout */
-.jp-card-inner.horizontal { flex-direction:row; align-items:flex-start; }
-.jp-card-main { flex:1; min-width:0; padding-right:12px; }
-.jp-card-side { width:240px; display:flex; flex-direction:column; align-items:flex-end; gap:12px; }
-.jp-side-actions { display:flex; gap:10px; flex-direction:column; width:100%; align-items:flex-end; }
-  .jp-side-actions { display:flex; gap:10px; flex-direction:column; width:100%; align-items:flex-end; }
-  .jp-side-actions .btn { width:140px; border-radius:8px; }
-  .jp-side-actions .btn.outline { background:#f8fafc; }
+/* Centered hero/header for Job Portal: larger, centered title & subtitle */
+.jp-header{
+  padding:40px 0 0px !important;
+}
+.jp-header-inner{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  text-align:center !important;
+  gap:8px !important;
+}
+.jp-title{
+  font-size:120px !important;
+  line-height:1.05 !important;
+  color:var(--primary-strong) !important;
+  letter-spacing:-0.4px !important;
+}
+.jp-sub{
+  margin-top:6px !important;
+  font-size:30px !important;
+  color:var(--muted) !important;
+  max-width:920px !important;
+  opacity:0.95 !important;
+}
 
-  /* Make side actions vertically centered */
-  .jp-card-inner.horizontal { align-items:flex-start; }
-  .jp-card-side { display:flex; flex-direction:column; justify-content:center; }
-.side-badges { justify-content:flex-end; }
-.left-meta { margin-top:8px; }
+/* Slightly increase spacing below header so the search feels anchored */
+.jp-main{ padding-top:18px !important; }
 
-.jp-card-header { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
-.jp-title { margin:0; font-size:20px; color:#0f172a; font-weight:700; letter-spacing:0.1px; }
-.jp-sub { font-size:13px; color:var(--muted); margin-top:6px; }
-.dot { margin:0 6px; color:var(--muted); }
+/* Search & Filters */
+.jp-main{ padding:18px 0 40px; }
+.jp-search{ display:flex; flex-direction:column; gap:12px; margin-bottom:18px }
+.search-box{ display:block }
+.search-box input{ width:100%; padding:16px 13px; border-radius:10px; border:1px solid var(--border); background:#fff; font-size:18px; color:var(--text); box-shadow:inset 0 -1px 0 rgba(15,23,42,0.02) }
+.filters{ display:flex; gap:12px; flex-wrap:wrap }
+.filters select{ padding:12px 12px; border-radius:8px; border:1px solid var(--border); background:#fff; color:var(--text); font-size:16px }
 
-.jp-badges { display:flex; gap:8px; align-items:center; }
-.jp-chip { background:var(--chip-bg); color:var(--chip-text); font-size:12px; padding:6px 8px; border-radius:999px; font-weight:600; }
-.jp-chip.light { background:#fff7ed; color:#b45309; }
+/* Grid: single column for list — cards stacked */
+.jp-grid{ display:grid; grid-template-columns:1fr; gap:18px }
 
-.jp-body { display:flex; flex-direction:column; gap:8px; }
-.jp-desc { margin:0; color:#334155; line-height:1.45; font-size:14px; }
+/* Job Card */
+.jp-card{ background:var(--card-bg); border-radius:var(--radius); box-shadow:var(--shadow); border:1px solid rgba(11,59,102,0.06); overflow:hidden; transition:transform .14s ease, box-shadow .14s ease; }
+.jp-card:hover{ transform: translateY(-6px); box-shadow: 0 20px 44px rgba(11,59,102,0.06); }
+.jp-card-inner{ padding:28px; display:flex; flex-direction:column; gap:18px }
 
-.jp-login-bar { margin-top:8px; padding:12px 14px; border-radius:10px; background:#f3eefb; color:#5b21b6; font-size:14px; text-align:center; border:1px solid rgba(107,33,168,0.06); }
+.jp-card-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px }
+.jp-card-left{ display:flex; gap:12px; align-items:flex-start }
+.logo-placeholder{ width:52px; height:52px; border-radius:10px; background:#fff7f0; display:flex; align-items:center; justify-content:center; color:var(--primary); font-weight:700 }
+.jp-card-title{ margin:0; font-size:21px; color:var(--text); font-weight:700 }
+.jp-card-sub{ color:var(--muted); font-size:15px; margin-top:6px }
 
-.jp-footer { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:6px; }
-.jp-left { color:var(--muted); font-size:13px; display:flex; align-items:center; gap:8px; }
-.jp-right { display:flex; align-items:center; gap:12px; }
-.jp-applicants { color:var(--muted); font-size:13px; display:flex; align-items:center; gap:6px; }
+.jp-tags{ display:flex; gap:8px; flex-wrap:wrap; margin-top:8px }
+.jp-tags .tag{ background:#f1f5f9; color:var(--primary); padding:6px 10px; border-radius:999px; font-size:14px; font-weight:600; border:1px solid rgba(11,59,102,0.04) }
 
-.jp-actions { display:flex; gap:10px; align-items:center; }
-.jp-btn { padding:8px 12px; border-radius:8px; font-size:14px; cursor:pointer; }
-.jp-btn.outline { background:transparent; border:1px solid var(--border); color:#334155; }
-.jp-btn.primary { background:var(--accent); color:#fff; border:none; box-shadow:0 8px 20px rgba(109,40,217,0.12); }
+.jp-desc{ margin:0; color:#374151; line-height:var(--line-height); font-size:15px }
 
-/* Filter bar and header styles */
-.jobs-header { margin-bottom:18px; }
-.search-section { display:flex; gap:12px; align-items:center; }
-.search-bar { flex:1; display:flex; align-items:center; gap:12px; background:#fff; padding:12px 16px; border-radius:12px; border:1px solid var(--border); }
-.search-input { border:0; outline:0; width:100%; font-size:15px; color:#0f172a; }
-.filter-toggle { background:#fff; border:1px solid var(--border); padding:10px 14px; border-radius:10px; display:flex; gap:10px; align-items:center; cursor:pointer; }
-.sort-select { border:1px solid var(--border); padding:10px 12px; border-radius:10px; background:#fff; }
+.jp-card-bottom{ display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:12px }
+.jp-deadline{ color:var(--muted); font-size:14px }
+.jp-days{ margin-left:8px; padding:4px 8px; border-radius:999px; font-size:12px }
+.jp-days.urgent{ background:#feeaea; color:#9b1c1c }
+.jp-days.soon{ background:#fff7ed; color:#92400e }
 
-.filters-panel { margin-top:12px; background:#fff; border-radius:12px; padding:18px; border:1px solid var(--border); box-shadow:0 10px 24px rgba(16,24,40,0.04); }
-.filters-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:12px; }
-.filter-group label { display:block; font-size:13px; color:var(--muted); margin-bottom:6px; }
-.filter-group select { width:100%; padding:8px; border-radius:8px; border:1px solid var(--border); background:#fff; }
+.jp-actions{ display:flex; gap:10px; margin-left:auto }
+.btn{ display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:10px 14px; border-radius:10px; font-weight:700; cursor:pointer; border:1px solid transparent; font-size:14px; transition:background .12s ease, transform .08s ease }
+/* Primary actions: use warm accent for strong visibility */
+.btn.primary{ background:#60a5fa; color:#fff; border:1px solid rgba(59,130,246,0.12); box-shadow: 0 6px 18px rgba(59,130,246,0.08) }
+.btn.primary:hover{ background: #3b82f6; transform: translateY(-1px) }
+/* Secondary / outline: white background with primary text for contrast on dark areas */
+.btn.secondary, .btn.outline{ background:#ffffff; color:var(--primary); border:1px solid rgba(15,23,42,0.06) }
+.btn:focus{ outline:3px solid rgba(184,107,47,0.12); outline-offset:2px }
 
-.jobs-loading { padding:48px 0; text-align:center; }
-.no-jobs-found { padding:48px 0; text-align:center; color:var(--muted); }
+/* Badges */
+.badge{ display:inline-flex; align-items:center; gap:6px; padding:6px 8px; border-radius:999px; font-size:12px; font-weight:700; border:1px solid rgba(11,59,102,0.04) }
+.badge.premium{ display: none !important; }
+.badge.featured{ display: none !important; }
 
-/* Limited view purple banner */
-.login-promotion { margin-top:28px; border-radius:10px; overflow:hidden; }
-.promotion-content { background:linear-gradient(90deg,#f5f3ff,#fdf2f8); padding:20px; border-radius:12px; display:flex; justify-content:space-between; align-items:center; gap:12px; border:1px solid rgba(109,40,217,0.06); }
-.promotion-content h3 { margin:0; color:#4c1d95; }
-.promotion-content p { margin:0; color:var(--muted); }
-.promotion-actions button { margin-left:8px; }
+/* ========== MODERN JOB DETAIL MODAL ========== */
 
-/* Responsive */
+/* Modal Overlay */
+.jp-modal-overlay{ 
+  position: fixed; 
+  inset: 0; 
+  background: rgba(15, 23, 42, 0.65); 
+  backdrop-filter: blur(4px);
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  z-index: 999; 
+  padding: 80px 20px 20px 20px; 
+  overflow: hidden;
+}
+
+/* Main Modal Container */
+.jp-modal{ 
+  background: #ffffff; 
+  border-radius: 16px; 
+  width: 100%; 
+  max-width: 1100px; 
+  max-height: 90vh;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.12), 0 12px 24px rgba(0, 0, 0, 0.08); 
+  display: flex; 
+  flex-direction: column; 
+  overflow: hidden; 
+  margin: 0;
+  animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Lock body scroll when modal is open */
+body.modal-open {
+  overflow: hidden;
+  height: 100vh;
+}
+
+.jp-modal.small{ max-width: 800px }
+.jp-modal.large{ max-width: 1200px }
+
+/* Modal Header - Clean & Professional */
+.jp-modal-header{ 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  padding: 24px 32px; 
+  border-bottom: 1px solid #e5e7eb;
+  background: #ffffff;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.jp-modal-header h2, 
+.jp-modal-header h3{ 
+  margin: 0; 
+  color: #111827;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.jp-modal-header .muted {
+  color: #6b7280;
+  font-size: 15px;
+  font-weight: 400;
+  margin-top: 4px;
+}
+
+.modal-close{ 
+  background: transparent; 
+  border: none; 
+  font-size: 24px; 
+  cursor: pointer; 
+  color: #9ca3af; 
+  padding: 8px; 
+  border-radius: 8px;
+  transition: all 0.2s;
+  line-height: 1;
+}
+
+.modal-close:hover{ 
+  background: #f3f4f6;
+  color: #111827;
+  transform: scale(1.05);
+}
+
+/* Modal Body - Two Column Layout */
+.jp-modal-body{ 
+  padding: 0; 
+  display: flex; 
+  gap: 0; 
+  align-items: flex-start; 
+  overflow-y: auto; 
+  overflow-x: hidden;
+  background: #f9fafb;
+  flex: 1;
+  min-height: 0;
+}
+
+.jp-main-col{ 
+  flex: 1; 
+  min-width: 0;
+  background: #ffffff;
+  padding: 32px;
+}
+
+.jp-side-col{ 
+  width: 360px;
+  background: #f9fafb;
+  padding: 32px 24px;
+  border-left: 1px solid #e5e7eb;
+  height: fit-content;
+  overflow: visible;
+}
+
+/* Vertical modal variant: stack main content above sidebar (desktop and mobile) */
+.jp-modal.vertical { max-width:900px; }
+.jp-modal.vertical .jp-modal-body{ flex-direction:column; gap:18px; padding:16px; }
+.jp-modal.vertical .jp-main-col{ order:0 }
+.jp-modal.vertical .jp-side-col{ order:1; width:100%; }
+.jp-modal.vertical .recruiter-card{ flex-direction:row; align-items:center; }
+.jp-modal.vertical .recruiter-avatar{ width:48px; height:48px; border-radius:8px }
+.jp-modal.vertical .recruiter-info{ display:flex; flex-direction:column }
+.jp-modal.vertical .stats-card{ width:100%; }
+
+/* Recruiter Profile Modal: clean, professional layout */
+.jp-modal.small.vertical .jp-modal-body{ display:grid; grid-template-columns: 140px 1fr; gap:18px; align-items:start }
+.jp-modal.small.vertical .recruiter-large{ display:block; padding:4px 0 }
+.avatar-lg{ width:112px; height:112px; border-radius:14px; background:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:28px; color:var(--primary); border:1px solid var(--border); box-shadow: 0 6px 18px rgba(2,6,23,0.06) }
+.jp-modal.small.vertical h4{ margin:0; font-size:18px; color:var(--text); font-weight:700 }
+.jp-modal.small.vertical .muted{ color:var(--muted); margin-top:6px }
+.jp-modal.small.vertical .recruiter-meta{ margin-top:12px; display:flex; gap:18px; align-items:center }
+.jp-modal.small.vertical .recruiter-meta .meta-item{ font-size:14px; color:var(--muted) }
+.jp-modal.small.vertical .recruiter-section{ padding-left:0 }
+.jp-modal.small.vertical p{ margin:0 0 10px 0; color:#374151 }
+
+/* Recruiter details card (modal) - light, professional */
+.jp-modal.small.vertical .recruiter-card{ background:var(--card-bg); color:var(--text); border:1px solid var(--border); box-shadow: 0 8px 20px rgba(15,23,42,0.04); border-radius:12px; padding:14px; display:flex; gap:16px; align-items:center }
+.jp-modal.small.vertical .recruiter-info{ display:flex; flex-direction:column; gap:6px }
+.jp-modal.small.vertical .recruiter-info .org{ font-weight:700 }
+.jp-modal.small.vertical .recruiter-info .role{ color:var(--muted); font-size:13px }
+.jp-modal.small.vertical .recruiter-actions{ margin-left:auto; display:flex; gap:10px; align-items:center }
+.jp-modal.small.vertical .recruiter-actions .btn{ min-width:140px; padding:10px 14px; border-radius:10px }
+.jp-modal.small.vertical .recruiter-actions .btn.outline{ background:#fff; color:var(--primary); border:1px solid rgba(59,130,246,0.12) }
+.jp-modal.small.vertical .recruiter-actions .btn.primary{ background:#60a5fa; color:#fff; border:1px solid rgba(59,130,246,0.12) }
+
+/* Header spacing */
+.jp-modal-header{ padding:16px 18px; display:flex; justify-content:space-between; align-items:center }
+.jp-modal-header h3{ margin:0; font-size:20px; color:var(--text); font-weight:700 }
+.modal-close{ font-size:18px; color:var(--muted); background:transparent; border:none }
+
+@media (max-width:880px){
+  .jp-modal.small.vertical .jp-modal-body{ grid-template-columns: 1fr; }
+  .avatar-lg{ width:88px; height:88px; font-size:22px }
+  .jp-modal.small.vertical .recruiter-card{ flex-direction:column; align-items:flex-start }
+  .jp-modal.small.vertical .recruiter-actions{ width:100%; justify-content:flex-end }
+}
+
+/* Footer and similar list stay full width */
+.jp-modal.vertical .jp-modal-footer{ flex-direction:column; align-items:flex-start; gap:12px }
+
+/* Recruiter card (sidebar) */
+.recruiter-card{ background:var(--card-bg); border-radius:10px; padding:14px; border:1px solid rgba(11,59,102,0.04); box-shadow:var(--shadow); display:flex; flex-direction:column; gap:12px }
+.recruiter-avatar{ width:56px; height:56px; border-radius:12px; background:#eef4fb; display:flex; align-items:center; justify-content:center; color:var(--primary); font-weight:700 }
+.recruiter-info .org{ font-weight:700; color:var(--text) }
+
+/* Professional dark recruiter card */
+.recruiter-card{ display:flex; align-items:center; justify-content:space-between; gap:18px; border-radius:12px; padding:16px; background:#0f1724; color:#eef2f5; border:1px solid rgba(255,255,255,0.04); box-shadow: 0 8px 22px rgba(2,6,23,0.28) }
+.recruiter-avatar{ width:56px; height:56px; border-radius:12px; background:linear-gradient(180deg,#fff7f0,#fff3e8); display:flex; align-items:center; justify-content:center; color:var(--primary); font-weight:700 }
+.recruiter-info .org{ font-weight:700; color:#f8fafc }
+
+/* Avoid clipping of action buttons and ensure visibility */
+.recruiter-card{ overflow: visible; position: relative }
+.recruiter-actions .btn{ min-width:120px; white-space:nowrap; z-index:5 }
+.recruiter-card .btn-outline{ background: rgba(255,255,255,0.06); color: #fff; border-color: rgba(255,255,255,0.12) }
+
+.recruiter-card{ overflow: visible; position: relative }
+.recruiter-actions .btn{ min-width:140px; white-space:nowrap; z-index:6; border-radius:10px; padding:10px 14px }
+/* Use same filled light-blue style for both actions */
+.recruiter-actions .btn, .recruiter-card .btn-outline{ background:#60a5fa; color:#fff; border:1px solid rgba(59,130,246,0.12); box-shadow: 0 6px 18px rgba(59,130,246,0.06) }
+.recruiter-actions .btn:hover, .recruiter-card .btn-outline:hover{ background:#3b82f6 }
+
+/* Ensure modal buttons are visible above other layers */
+.jp-modal .btn{ z-index:6 }
+.jp-modal .jp-modal-footer .btn{ min-width:120px }
+
+/* Ensure actions wrap cleanly on small screens */
+.job-actions, .application-section, .recruiter-actions { flex-wrap:wrap }
+.job-actions .btn, .application-section .btn{ min-width:110px }
+.recruiter-card{
+  background:var(--card-bg);
+  border-radius:10px;
+  padding:12px;
+  border:1px solid rgba(11,59,102,0.04);
+  box-shadow:var(--shadow);
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.recruiter-header{ display:flex; gap:12px; align-items:center }
+.recruiter-avatar{ width:56px; height:56px; border-radius:8px; background:linear-gradient(180deg,#fff7f0,#fff3e8); display:flex; align-items:center; justify-content:center; color:var(--primary); font-weight:800; font-size:18px }
+.recruiter-info .org{ font-weight:700; color:var(--text) }
+.recruiter-info .role{ color:var(--muted); font-size:13px }
+.recruiter-actions{ display:flex; gap:10px; margin-left:auto }
+
+/* Stats card: light block with accent stripe — less heavy than full dark block */
+.stats-card{
+  background:#f5f8fb;
+  border-left:4px solid var(--accent);
+  color:var(--text);
+  padding:12px;
+  border-radius:8px;
+}
+.stats-card .label{ color:var(--muted); font-size:13px }
+.stats-card .value{ font-weight:800; font-size:18px; margin-top:6px; color:var(--primary-strong) }
+
+/* Detail sections */
+.detail-section{ margin-bottom:18px }
+.detail-section h4{ margin:0 0 12px 0; font-size:16px; color:var(--text); font-weight:700; border-bottom:1px solid rgba(15,23,42,0.04); padding-bottom:8px }
+.detail-section .text{ color:#374151; line-height:1.6; font-size:14px }
+.two-col{ display:grid; grid-template-columns:1fr 1fr; gap:12px }
+.info-pair .name{ font-size:13px; color:var(--muted) }
+.info-pair .val{ font-weight:700; color:var(--text); margin-top:6px }
+
+.similar-list{ display:flex; flex-direction:column; gap:8px; max-height:220px; overflow-y:auto; padding-right:6px }
+.similar-item{ background:#fff; border:1px solid var(--border); padding:10px 12px; border-radius:8px; color:var(--muted); width:100% }
+
+/* Hide native scrollbars but keep scrolling */
+.similar-list{ -ms-overflow-style: none; /* IE 10+ */ scrollbar-width: none; /* Firefox */ }
+.similar-list::-webkit-scrollbar{ display: none; } /* WebKit */
+
+/* Retain visual fallback for browsers that don't support hidden scrollbars */
+.similar-list.fallback-visible::-webkit-scrollbar{ width:8px }
+
+/* ========== MODERN JOB DETAIL CONTENT STYLES ========== */
+
+/* Override conflicting recruiter card styles with modern clean design */
+.jp-modal-body .recruiter-card {
+  background: #ffffff !important;
+  padding: 20px !important;
+  border-radius: 12px !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+  display: flex !important;
+  gap: 16px !important;
+  align-items: flex-start !important;
+  margin-bottom: 24px !important;
+  transition: all 0.2s !important;
+  color: inherit !important;
+}
+
+.jp-modal-body .recruiter-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+  transform: translateY(-1px);
+}
+
+.jp-modal-body .recruiter-avatar {
+  width: 64px !important;
+  height: 64px !important;
+  border-radius: 8px !important;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  font-size: 24px !important;
+  flex-shrink: 0 !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+.jp-modal-body .recruiter-info {
+  flex: 1 !important;
+  min-width: 0 !important;
+}
+
+.jp-modal-body .recruiter-info .org {
+  font-weight: 700 !important;
+  font-size: 16px !important;
+  color: #111827 !important;
+  margin: 0 0 4px !important;
+  line-height: 1.3 !important;
+}
+
+.jp-modal-body .recruiter-info .role {
+  font-size: 14px !important;
+  color: #6b7280 !important;
+  display: block !important;
+  margin-bottom: 8px !important;
+}
+
+.jp-modal-body .recruiter-info a {
+  font-size: 14px !important;
+  color: #3b82f6 !important;
+  text-decoration: none !important;
+  word-break: break-all !important;
+  transition: color 0.2s !important;
+}
+
+.jp-modal-body .recruiter-info a:hover {
+  color: #2563eb !important;
+  text-decoration: underline !important;
+}
+
+/* Modern stats card styling */
+.jp-modal-body .stats-card,
+.jp-side-col .stats-card {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  border-left: 4px solid #3b82f6 !important;
+  padding: 16px !important;
+  border-radius: 12px !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+  transition: all 0.2s !important;
+  color: inherit !important;
+}
+
+.jp-modal-body .stats-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+  transform: translateY(-1px);
+}
+
+.jp-modal-body .stats-card .label,
+.jp-side-col .stats-card .label {
+  font-size: 13px !important;
+  color: #6b7280 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  font-weight: 500 !important;
+  display: block !important;
+  margin-bottom: 8px !important;
+}
+
+.jp-modal-body .stats-card .value,
+.jp-side-col .stats-card .value {
+  font-size: 22px !important;
+  font-weight: 700 !important;
+  color: #111827 !important;
+  line-height: 1.2 !important;
+  display: block !important;
+  margin: 0 !important;
+}
+
+/* Section headings in main column */
+.jp-main-col h3 {
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  color: #111827 !important;
+  margin: 0 0 16px 0 !important;
+  padding-bottom: 12px !important;
+  border-bottom: 2px solid #e5e7eb !important;
+}
+
+.jp-main-col h4 {
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  color: #374151 !important;
+  margin: 24px 0 12px 0 !important;
+}
+
+/* Content paragraphs */
+.jp-main-col p,
+.jp-main-col .text {
+  color: #4b5563 !important;
+  line-height: 1.7 !important;
+  margin: 12px 0 !important;
+  font-size: 15px !important;
+}
+
+/* Modern list styling */
+.jp-main-col ul {
+  list-style: none !important;
+  padding: 0 !important;
+  margin: 12px 0 !important;
+}
+
+.jp-main-col ul li {
+  color: #4b5563 !important;
+  line-height: 1.7 !important;
+  margin: 8px 0 !important;
+  padding-left: 24px !important;
+  position: relative !important;
+  font-size: 15px !important;
+}
+
+.jp-main-col ul li:before {
+  content: "•" !important;
+  color: #3b82f6 !important;
+  font-weight: bold !important;
+  font-size: 18px !important;
+  position: absolute !important;
+  left: 8px !important;
+}
+
+/* Detail sections spacing */
+.jp-main-col .detail-section {
+  margin-bottom: 32px !important;
+}
+
+.jp-main-col .detail-section:last-child {
+  margin-bottom: 0 !important;
+}
+
+/* Info pairs (two-column layout) */
+.jp-main-col .two-col {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 20px !important;
+  margin: 16px 0 !important;
+}
+
+.jp-main-col .info-pair {
+  background: #f9fafb !important;
+  padding: 16px !important;
+  border-radius: 8px !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+.jp-main-col .info-pair .name {
+  font-size: 13px !important;
+  color: #6b7280 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  font-weight: 500 !important;
+  display: block !important;
+  margin-bottom: 8px !important;
+}
+
+.jp-main-col .info-pair .val {
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  color: #111827 !important;
+  display: block !important;
+}
+
+/* Sidebar section headings */
+.jp-side-col h3 {
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  color: #111827 !important;
+  margin: 0 0 16px 0 !important;
+  padding-bottom: 8px !important;
+  border-bottom: 2px solid #e5e7eb !important;
+}
+
+/* Similar jobs list */
+.jp-side-col .similar-list {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+  max-height: 400px !important;
+  overflow-y: auto !important;
+  padding-right: 8px !important;
+}
+
+.jp-side-col .similar-item {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  padding: 16px !important;
+  border-radius: 12px !important;
+  transition: all 0.2s !important;
+  cursor: pointer !important;
+}
+
+.jp-side-col .similar-item:hover {
+  background: #f9fafb !important;
+  border-color: #3b82f6 !important;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1) !important;
+  transform: translateX(4px);
+}
+
+/* ========== STICKY APPLY BUTTON ========== */
+.jp-apply-sticky {
+  position: sticky !important;
+  bottom: 0 !important;
+  background: #ffffff !important;
+  padding: 20px 24px !important;
+  border-top: 1px solid #e5e7eb !important;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05) !important;
+  z-index: 20 !important;
+  display: flex !important;
+  gap: 12px !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+}
+
+.jp-apply-sticky .btn {
+  padding: 14px 32px !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  border-radius: 10px !important;
+  border: none !important;
+  cursor: pointer !important;
+  transition: all 0.2s !important;
+  min-width: 140px !important;
+}
+
+.jp-apply-sticky .btn.primary {
+  background: #3b82f6 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
+}
+
+.jp-apply-sticky .btn.primary:hover {
+  background: #2563eb !important;
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4) !important;
+  transform: translateY(-2px);
+}
+
+.jp-apply-sticky .btn.outline {
+  background: #ffffff !important;
+  color: #3b82f6 !important;
+  border: 2px solid #3b82f6 !important;
+}
+
+.jp-apply-sticky .btn.outline:hover {
+  background: #eff6ff !important;
+  border-color: #2563eb !important;
+  color: #2563eb !important;
+}
+
+/* Forms inside modals */
+.application-form .form-group input,
+.application-form .form-group textarea,
+.application-form .form-group select{ width:100%; padding:10px 12px; border-radius:8px; border:1px solid var(--border); font-size:14px }
+.form-actions{ display:flex; justify-content:flex-end; gap:8px; padding:12px 0 }
+
+/* Responsive adjustments */
+@media (max-width: 920px){
+  .jp-modal-body{ flex-direction:column }
+  .jp-side-col{ width:100% }
+  .filters{ flex-direction:column }
+  .jp-container{ padding:18px 16px }
+}
+
+@media (max-width: 520px){
+  .jp-title{ font-size:20px }
+  .jp-card-inner{ padding:14px }
+  .jp-actions { flex-direction:column; gap:8px }
+  .jp-side-col{ width:100% }
+  .similar-list{ flex-direction:column }
+}
+
+/* ---------- Enhanced Overrides: Improve button visibility & recruiter layout ---------- */
+/* These rules intentionally come last to take precedence without changing JSX */
+.btn{ box-sizing:border-box; -webkit-font-smoothing:antialiased; }
+.btn.primary{ background:#2563eb; /* stronger blue for contrast */ color:#fff; border:1px solid rgba(37,99,235,0.14); box-shadow: 0 8px 24px rgba(37,99,235,0.10); }
+.btn.primary:hover{ background:#1e40af; transform:translateY(-1px) }
+.btn.secondary, .btn.outline{ background:#fff; color:var(--primary); border:1px solid rgba(15,23,42,0.06) }
+.btn:focus{ outline:3px solid rgba(37,99,235,0.14); outline-offset:3px }
+.btn[disabled]{ opacity:0.6; cursor:not-allowed; pointer-events:none }
+.btn{ cursor:pointer; user-select:none }
+
+/* Ensure modal buttons appear above overlays and are easily clickable */
+.jp-modal .btn{ z-index:120; position:relative }
+.jp-modal .jp-modal-footer .btn{ min-width:110px }
+
+/* Sidebar recruiter card: use compact grid so actions never clip */
+.recruiter-card{ display:grid; grid-template-columns:56px 1fr; grid-template-rows:auto auto; gap:8px 12px; align-items:start }
+.recruiter-avatar{ grid-row:1 / span 2; grid-column:1 }
+.recruiter-info{ grid-column:2 }
+.recruiter-actions{ grid-column:1 / -1; display:flex; justify-content:flex-end; gap:10px; margin:0 }
+.recruiter-actions .btn{ max-width:120px; min-width:0; padding:8px 12px; font-size:13px }
+
+/* Make outline action narrower and visible */
+.recruiter-actions .btn.outline{ background:transparent; color:var(--primary); border:1px solid rgba(37,99,235,0.12); box-shadow:none }
+.recruiter-actions .btn.primary{ background:#2563eb; color:#fff; border:1px solid rgba(37,99,235,0.12); box-shadow: 0 6px 18px rgba(37,99,235,0.08) }
+
+@media (max-width:880px){
+  .recruiter-card{ grid-template-columns:1fr; grid-template-rows:auto auto; }
+  .recruiter-avatar{ grid-row:1; grid-column:1 }
+  .recruiter-info{ grid-column:1 }
+  .recruiter-actions{ grid-column:1; justify-content:flex-end }
+  .recruiter-actions .btn{ width:auto; max-width:48%; }
+}
+
+/* ---------- Remove Similar Jobs view and polish detail spacing ---------- */
+/* Hide similar jobs listing entirely (user requested removal) */
+.similar-list, .similar-item, .similar-job-card { display: none !important; }
+
+/* Make detail sections more spacious and structured */
+.jp-modal .detail-section{ padding:22px 0; margin:0; }
+.jp-modal .detail-section h4{ font-size:17px; color:var(--primary-strong); margin-bottom:14px }
+.jp-modal .detail-section .text{ color:#263244; font-size:15px; line-height:1.75 }
+
+/* ========== RESPONSIVE STYLES FOR MODERN JOB DETAIL ========== */
+
 @media (max-width: 920px) {
-  .filters-grid { grid-template-columns: repeat(2,1fr); }
-  .promotion-content { flex-direction:column; align-items:flex-start; }
-  .jp-card-inner { padding:14px; }
-}
-/* Basic CSS for JobPortal component (no Tailwind) */
-.jp-page { font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; color: #0f172a; background: #f7fafc; min-height: 100vh; }
-.jp-container { width: calc(100% - 48px); max-width: 1200px; margin: 0 auto; padding: var(--container-pad) 0; }
-.jp-header { background: #fff; box-shadow: 0 2px 8px rgba(2,6,23,0.06); position:relative; z-index:10; }
-.jp-header-inner { display:flex; justify-content:space-between; align-items:center; padding:18px 0; }
-.jp-title { margin:0; font-size:30px; color:#4c1d95; }
-.jp-sub { margin:6px 0 0; color:#475569; }
-.jp-actions .btn { margin-left:10px; }
-
-.btn { padding:8px 12px; border-radius:8px; border:1px solid transparent; cursor:pointer; background:#eef2ff; }
-  .btn { padding:8px 12px; border-radius:10px; border:1px solid transparent; cursor:pointer; font-weight:600; }
-  .btn.primary { background: linear-gradient(90deg,#7c3aed,#6d28d9); color:#fff; border:none; box-shadow: 0 8px 20px rgba(124,58,237,0.14); }
-  .btn.primary:hover { transform: translateY(-2px); box-shadow: 0 18px 30px rgba(124,58,237,0.18); }
-  .btn.outline, .btn.secondary { background:#fff; border:1px solid #eef2ff; color:#374151; }
-  .btn.recruiter { background:#10b981; color:#fff; border:none; }
-  .btn.upgrade { background:#f59e0b; color:#fff; border:none; }
-  .btn.white { background:#fff; border:1px solid #e6eef2; }
-  .btn.full { width:100%; padding:10px; }
-  .btn-icon { background:transparent; border:none; font-size:16px; cursor:pointer; }
-.avatar { width:36px; height:36px; border-radius:50%; background:#ede9fe; display:inline-flex; align-items:center; justify-content:center; color:#6d28d9; font-weight:700; }
-.avatar-sm { width:40px; height:40px; border-radius:50%; background:#efe9ff; display:inline-flex; align-items:center; justify-content:center; color:#6d28d9; font-weight:700; }
-.avatar-lg { width:72px; height:72px; border-radius:50%; background:#efe9ff; display:inline-flex; align-items:center; justify-content:center; color:#6d28d9; font-weight:700; font-size:22px; }
-
-.jp-premium-banner { background: linear-gradient(90deg,#f59e0b,#f97316); color:#fff; padding:14px 0; }
-.jp-premium-inner { display:flex; justify-content:space-between; align-items:center; }
-
-.jp-main { padding:28px 0 80px; }
-.jp-search { background:#fff; padding:18px; border-radius:12px; box-shadow:0 10px 28px rgba(2,6,23,0.04); margin-bottom:18px; }
-.search-box input { width:100%; padding:12px 14px; border-radius:10px; border:1px solid #e6eef2; }
-.filters { display:flex; gap:12px; margin-top:14px; align-items:center; }
-.filters select { padding:10px; border-radius:10px; border:1px solid #e6eef2; }
-
-.jp-info { background:#f8fafc; border:1px solid #e6eef2; padding:14px; border-radius:8px; color:#475569; margin:12px 0; }
-.jp-loading { text-align:center; padding:40px 0; }
-
-.jp-grid { display:grid; grid-template-columns: 1fr; gap:18px; }
-.jp-card { background:#fff; border-radius:12px; box-shadow: 0 6px 18px rgba(2,6,23,0.04); position:relative; overflow:hidden; }
-  /* left accent removed per UX request */
-  .jp-card::before{ display:none !important; }
-  /* ensure card content is above the accent bar */
-  .jp-card > .jp-card-inner { position:relative; z-index:1; }
-
-  .jp-card.featured { position:relative; }
-  .jp-card.featured::before{ display:none !important; }
-.jp-card-inner { padding:18px; }
-.jp-card-top { display:flex; justify-content:space-between; align-items:flex-start; }
-.jp-card-title { margin:0; font-size:18px; }
-.jp-card-sub { color:#6b7280; margin-top:6px; }
-.jp-badges .badge { display:inline-block; padding:6px 8px; border-radius:999px; font-size:11px; margin-left:6px; }
-.badge.premium { background:#fff7ed; color:#b45309; }
-.badge.featured { background:#f3e8ff; color:#6d28d9; }
-  .jp-tags { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; align-items:center; }
-  /* Scoped tag styles for job cards to avoid being overridden by other global .tag rules */
-  .jp-tags .tag, .jp-card .tag { background:#eef2ff; color:#0f172a; padding:6px 10px; border-radius:999px; font-size:12px; font-weight:600; display:inline-flex; align-items:center; white-space:nowrap; }
-  .jp-tags .tag.small { padding:4px 8px; font-size:11px; font-weight:600; }
-.jp-desc { color:#374151; margin-top:12px; }
-  .jp-card-bottom { display:flex; justify-content:space-between; align-items:center; margin-top:16px; gap:12px; }
-  .jp-deadline { color:#6b7280; }
-.jp-days { margin-left:8px; padding:4px 8px; border-radius:999px; font-size:12px; }
-.jp-days.urgent { background:#fee2e2; color:#b91c1c; }
-.jp-days.soon { background:#fff7ed; color:#92400e; }
-  .jp-actions { display:flex; gap:10px; margin-left:auto; align-items:center; }
-.jp-login-note { margin-top:12px; padding:10px; background:#fbfafb; border-radius:8px; color:#6b7280; text-align:center; }
-
-/* Modal and details */
-.jp-modal-overlay { position:fixed; inset:0; background:rgba(2,6,23,0.6); display:flex; align-items:center; justify-content:center; z-index:60; padding:20px; }
-.jp-modal { background:#fff; border-radius:12px; width:100%; max-width:1000px; max-height:90vh; box-shadow:0 30px 60px rgba(2,6,23,0.3); -webkit-overflow-scrolling:touch; display:flex; flex-direction:column; overflow:hidden; }
-.jp-modal.small { max-width:720px; }
-.jp-modal.large { max-width:1100px; }
-.jp-modal-header { display:flex; justify-content:space-between; align-items:center; padding:16px; border-bottom:1px solid #eef2ff; flex:0 0 auto; }
-.jp-modal-body { padding:18px; display:flex; gap:22px; align-items:flex-start; flex:1 1 auto; overflow:auto; min-height:0; }
-.jp-main-col { flex:1; min-width:0; }
-.jp-side-col { width:320px; }
-/* Make side column visually distinct and sticky on tall modals */
-.jp-side-col { display:flex; flex-direction:column; gap:12px; }
-.jp-side-col .card { background:#ffffff; padding:16px; border-radius:12px; box-shadow:0 8px 22px rgba(15,23,42,0.06); border:1px solid rgba(15,23,42,0.04); }
-.recruiter-card { display:flex; gap:12px; align-items:center; }
-.recruiter-avatar { width:56px; height:56px; border-radius:50%; background:linear-gradient(180deg,#efe9ff,#f3e8ff); display:flex; align-items:center; justify-content:center; color:#6d28d9; font-weight:700; font-size:18px; }
-.recruiter-info { display:flex; flex-direction:column; }
-.recruiter-info .org { font-weight:700; color:#0f172a; }
-.recruiter-info .role { font-size:13px; color:var(--muted); margin-top:4px; }
-.recruiter-actions { margin-top:10px; display:flex; gap:8px; }
-.recruiter-actions .btn { width:100%; }
-.stats-card { background:linear-gradient(180deg,#0f172a,#0b1220); color:#dbeafe; padding:16px; border-radius:12px; }
-.stats-card .label { color:rgba(219,234,254,0.8); font-size:13px; }
-.stats-card .value { font-weight:700; font-size:18px; margin-top:6px; }
-
-/* Sections inside main column */
-.detail-section { margin-bottom:18px; }
-.detail-section h4 { margin:0 0 8px 0; font-size:16px; color:#0f172a; font-weight:700; }
-.detail-section .text { color:#334155; line-height:1.6; font-size:14px; }
-.two-col { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-.info-pair { display:flex; flex-direction:column; }
-.info-pair .name { font-size:13px; color:var(--muted); }
-.info-pair .val { font-weight:700; color:#0f172a; margin-top:6px; }
-
-.jp-modal-footer { padding:16px; border-top:1px solid #eef2ff; display:flex; justify-content:space-between; gap:12px; align-items:center; }
-
-/* Close button */
-.modal-close { background:transparent; border:none; font-size:18px; cursor:pointer; color:var(--muted); padding:8px; border-radius:8px; }
-.modal-close:hover { background:#f3f4f6; }
-
-.jp-grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-.similar-list { display:flex; gap:8px; flex-wrap:wrap; }
-.similar-item { background:#fff; border:1px solid #eef2ff; padding:8px 12px; border-radius:8px; }
-
-.form-group { margin-bottom:12px; }
-.form-group input, .form-group textarea { width:100%; padding:8px; border-radius:6px; border:1px solid #e6eef2; }
-.modal-actions { display:flex; justify-content:flex-end; gap:8px; padding:12px; }
-
-.tabs { display:flex; gap:8px; margin-bottom:12px; }
-.tabs button { padding:8px 12px; border-radius:8px; border:1px solid #eef2ff; background:#fff; cursor:pointer; }
-.tabs button.active { background:#ecfeff; border-color:#34d399; }
-
-@media (max-width: 900px) {
-  .jp-modal-body { flex-direction:column; }
-  .jp-side-col { width:100%; }
-  .filters { flex-direction:column; }
-  .filters-grid { grid-template-columns: repeat(2,1fr); }
-  .jp-container { width: calc(100% - 24px); padding: 16px 0; }
-  .search-bar { padding:10px 12px; }
-  .jp-card-inner.horizontal { flex-direction:column; }
-  .jp-card-side { width:100%; align-items:flex-start; }
-  .jp-side-actions { flex-direction:row; justify-content:flex-end; width:auto; }
-  .jp-side-actions .btn { width:auto; }
+  /* Stack sidebar below main content on tablets */
+  .jp-modal-body {
+    flex-direction: column !important;
+  }
+  
+  .jp-side-col {
+    width: 100% !important;
+    border-left: none !important;
+    border-top: 1px solid #e5e7eb !important;
+    position: static !important;
+    max-height: none !important;
+  }
+  
+  .jp-main-col {
+    padding: 24px !important;
+  }
+  
+  .jp-side-col {
+    padding: 24px !important;
+  }
+  
+  /* Adjust modal max-width */
+  .jp-modal {
+    max-width: 95% !important;
+  }
 }
 
-@media (min-width: 1000px) {
-  /* Keep side column visible while scrolling the modal body */
-  .jp-modal-body { align-items:flex-start; }
-  .jp-side-col { position:sticky; top:28px; max-height:calc(90vh - 160px); overflow:auto; }
+@media (max-width: 768px) {
+  /* Mobile optimizations */
+  .jp-modal-header {
+    padding: 20px 20px !important;
+  }
+  
+  .jp-modal-header h2,
+  .jp-modal-header h3 {
+    font-size: 20px !important;
+  }
+  
+  .jp-main-col {
+    padding: 20px !important;
+  }
+  
+  .jp-side-col {
+    padding: 20px !important;
+  }
+  
+  /* Stats in single column */
+  .stats-row {
+    flex-direction: column !important;
+  }
+  
+  .stat-chip {
+    min-width: 100% !important;
+  }
+  
+  /* Two-column info pairs to single column */
+  .jp-main-col .two-col {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+  
+  /* Sticky button adjustments */
+  .jp-apply-sticky {
+    padding: 16px !important;
+    flex-direction: column !important;
+  }
+  
+  .jp-apply-sticky .btn {
+    width: 100% !important;
+    min-width: 100% !important;
+  }
 }
 
-/* Custom scrollbar for main content and modals */
-.jp-main::-webkit-scrollbar, .jp-modal::-webkit-scrollbar { height:8px; width:8px; }
-.jp-main::-webkit-scrollbar-thumb, .jp-modal::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.25); border-radius:8px; }
-.jp-main, .jp-modal { scrollbar-width: thin; scrollbar-color: rgba(99,102,241,0.25) transparent; }
+@media (max-width: 520px) {
+  /* Small mobile optimizations */
+  .jp-modal-overlay {
+    padding: 60px 12px 20px 12px !important;
+  }
+  
+  .jp-modal {
+    border-radius: 12px !important;
+  }
+  
+  .jp-modal-header {
+    padding: 16px !important;
+  }
+  
+  .jp-modal-header h2,
+  .jp-modal-header h3 {
+    font-size: 18px !important;
+  }
+  
+  .jp-main-col {
+    padding: 16px !important;
+  }
+  
+  .jp-side-col {
+    padding: 16px !important;
+  }
+  
+  .jp-main-col h3 {
+    font-size: 16px !important;
+  }
+  
+  .jp-main-col p,
+  .jp-main-col .text,
+  .jp-main-col ul li {
+    font-size: 14px !important;
+  }
+  
+  .jp-modal-body .recruiter-card {
+    flex-direction: column !important;
+    padding: 16px !important;
+  }
+  
+  .jp-modal-body .recruiter-avatar {
+    width: 56px !important;
+    height: 56px !important;
+    font-size: 20px !important;
+  }
+  
+  .jp-apply-sticky {
+    padding: 12px !important;
+  }
+  
+  .jp-apply-sticky .btn {
+    padding: 12px 24px !important;
+    font-size: 14px !important;
+  }
+}
+
+/* Overall modal content padding and max-width for readable line lengths */
+.jp-modal-body{ padding:30px 36px; max-width:980px; margin:0 auto }
+.jp-modal .jp-main-col{ padding-right:12px }
+.jp-modal .jp-side-col{ width:320px; padding-left:12px }
+
+/* Improve spacing for the 'Additional Information' area */
+.additional-info{ gap:28px; padding-top:6px; padding-bottom:12px }
+.info-pair .name{ color:var(--muted); font-size:13px }
+.info-pair .val{ color:var(--primary-strong); font-weight:800 }
+
+/* Make stats card and premium banner align and breathe */
+.jp-modal .stats-card{ margin-top:14px; padding:16px }
+.card.premium-note{ margin-top:18px; padding:16px }
+
+
+/* Small extra polish for job card actions to avoid clipping */
+.jp-card { overflow: visible }
+.jp-card .btn{ min-width:110px }
+
+/* End overrides */
+
+/* ---------- Visual polish: modal, cards, badges, typography ---------- */
+/* Subtle page-level refinements for a cleaner, enterprise look */
+:root{ --soft-border: rgba(15,23,42,0.06); --muted-2: #6b7280; }
+
+/* Modal header — bolder and more open */
+.jp-modal{ border-radius:16px; overflow:visible }
+.jp-modal-header{ padding:20px 24px; border-bottom:1px solid var(--soft-border); background:linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.96)) }
+.jp-modal-header h3{ font-size:22px; letter-spacing:-0.2px }
+.jp-modal-header .modal-close{ padding:10px; border-radius:10px }
+
+/* Card titles & description hierarchy */
+.jp-card-title{ font-size:19px; color:var(--primary-strong); letter-spacing:-0.2px }
+.jp-card-sub{ font-size:13px; color:var(--muted-2) }
+.jp-desc{ color:#475569 }
+
+/* Badges — pill with subtle border and inner shadow */
+.badge{ padding:6px 10px; border-radius:999px; font-weight:700; font-size:12px; box-shadow: inset 0 -1px 0 rgba(255,255,255,0.02) }
+.badge.premium{ display: none !important; }
+.badge.featured{ display: none !important; }
+
+/* Job card hover — lift and subtle border glow */
+.jp-card{ transition:transform .18s ease, box-shadow .18s ease, border-color .18s }
+.jp-card:hover{ transform:translateY(-8px); box-shadow:0 30px 60px rgba(2,6,23,0.06); border-color: rgba(11,59,102,0.08) }
+
+/* Similar jobs — softer separators */
+.similar-list .similar-item, .similar-job-card{ background: #fff; border:1px solid rgba(15,23,42,0.04); padding:12px 14px; border-radius:10px }
+
+/* Recruiter card (modal) — modern dark card with clear CTA cluster */
+.jp-modal.small.vertical .recruiter-card{ background: linear-gradient(180deg,#0b1220,#0f1724); color:#eef2f6; padding:18px; border-radius:14px; display:grid; grid-template-columns:64px 1fr; grid-template-rows:auto auto; gap:12px }
+.jp-modal.small.vertical .recruiter-avatar{ width:64px; height:64px; border-radius:12px; grid-row:1 / span 2 }
+.jp-modal.small.vertical .recruiter-info{ grid-column:2; display:flex; flex-direction:column; gap:6px }
+.jp-modal.small.vertical .recruiter-info .org{ color:#f8fafc; font-weight:800 }
+.jp-modal.small.vertical .recruiter-info .role{ color:#cbd5e1 }
+.jp-modal.small.vertical .recruiter-actions{ grid-column:1 / -1; display:flex; justify-content:flex-end; gap:12px; align-items:center }
+.jp-modal.small.vertical .recruiter-actions .btn{ min-width:120px; padding:10px 16px; border-radius:999px; box-shadow:0 8px 20px rgba(2,6,23,0.16) }
+
+/* Make View Profile a lighter filled button and Apply a strong accent */
+.jp-modal.small.vertical .recruiter-actions .btn.outline{ background:rgba(255,255,255,0.08); color:#fff; border:1px solid rgba(255,255,255,0.06) }
+.jp-modal.small.vertical .recruiter-actions .btn.primary{ background:#60a5fa; color:#0f1724; font-weight:800 }
+
+/* Buttons: consistent pill visuals sitewide */
+.btn{ border-radius:999px; padding:10px 16px; font-weight:700 }
+.btn.outline{ background:transparent }
+
+/* Slightly increase spacing in modal body content for readability */
+.jp-modal-body{ gap:26px }
+
+/* End visual polish */
+
+/* ---------- Accessibility & structure fixes: contrast, spacing, hierarchy ---------- */
+/* Increase contrast and readability inside dark recruiter card and stats */
+.jp-modal.small.vertical .recruiter-card{
+  padding:18px 20px;
+  border-radius:14px;
+  background:linear-gradient(180deg,#081123,#0f1724);
+  box-shadow:0 18px 40px rgba(2,6,23,0.18);
+}
+.jp-modal.small.vertical .recruiter-avatar{
+  width:64px; height:64px; border-radius:12px; background:#1d4ed8; color:#fff; font-weight:800; display:flex; align-items:center; justify-content:center; font-size:18px; box-shadow:0 6px 18px rgba(2,6,23,0.18);
+}
+.jp-modal.small.vertical .recruiter-info .org{ color:#ffffff; font-weight:800; font-size:16px }
+.jp-modal.small.vertical .recruiter-info .role{ color:rgba(255,255,255,0.78); font-size:13px }
+
+/* Make CTA cluster clear: subtle divider and consistent spacing */
+.jp-modal.small.vertical .recruiter-actions{ gap:12px; align-items:center; padding-top:2px }
+.jp-modal.small.vertical .recruiter-actions .btn{ min-width:120px; padding:10px 16px; font-size:14px }
+.jp-modal.small.vertical .recruiter-actions .btn.primary{ background:#1d4ed8; color:#fff; box-shadow:0 8px 24px rgba(29,78,216,0.14); }
+.jp-modal.small.vertical .recruiter-actions .btn.outline{ background:rgba(255,255,255,0.06); color:#fff; border:1px solid rgba(255,255,255,0.06) }
+
+/* Improve stat card text contrast and spacing */
+.jp-modal .stats-card{ background:#ffffff; color:var(--text); border-left:4px solid var(--accent); padding:14px; border-radius:10px; box-shadow:0 6px 18px rgba(2,6,23,0.04) }
+.jp-modal .stats-card .label{ color:var(--muted); font-size:13px }
+.jp-modal .stats-card .value{ color:var(--primary-strong); font-size:18px; font-weight:800 }
+
+/* Ensure modal body content has comfortable readable line lengths */
+.jp-modal-body{ padding:20px 22px; line-height:1.65; color:#334155 }
+
+/* Ensure modal has a roomy max-width for forms and comfortable gutters */
+.jp-modal.small{ max-width:880px }
+.jp-modal.large{ max-width:1100px }
+
+/* Style form sidebar inside any modal context */
+.jp-modal .application-summary{ box-shadow:none }
+
+/* Improve scrollbar visibility for long forms (desktop) */
+.jp-modal-body::-webkit-scrollbar{ width:10px }
+.jp-modal-body::-webkit-scrollbar-thumb{ background:rgba(2,6,23,0.12); border-radius:999px }
+
+
+/* Increase contrast for section headings */
+.jp-modal .job-description-section h2, .jp-modal .detail-section h4{ color:var(--primary-strong); font-weight:800 }
+
+/* Slightly reduce radius on similar job items to match modern cards */
+.similar-list .similar-item, .similar-job-card{ border-radius:10px }
+
+/* Ensure primary pill buttons have clear focus ring for accessibility */
+.btn.primary:focus{ outline:3px solid rgba(29,78,216,0.18); outline-offset:3px }
+
+/* End accessibility & structure fixes */
+
+/* ===== User color-only overrides for Job Portal (applied last) ===== */
+/* These rules change ONLY background and color as requested — no layout or sizing edits */
+.jp-page { background: #e1eaa9 !important; color: var(--text) !important; }
+
+/* Primary action color for apply buttons */
+.btn.apply-now,
+.jp-card .btn.primary,
+.recruiter-actions .btn.primary {
+  background: #524393 !important;
+  color: #ffffff !important;
+}
+
+/* Secondary / outline buttons: only color/background changed */
+.btn.secondary,
+.btn.outline {
+  background: #ffffff !important;
+  color: #524393 !important;
+}
+
+/* Tag pills: only color/background changed */
+.tag,
+.jp-tags .tag {
+  background: #eff6ff !important;
+  color: #524393 !important;
+}
+
+/* End color-only overrides */
+
+/* Premium note banner: dark background with white text for readability */
+.card.premium-note{ background: linear-gradient(180deg,#6d83af,#afb5c2); color:#ffffff; padding:14px; border-radius:10px; margin-top:12px; box-shadow:0 8px 20px rgba(2,6,23,0.12); border:1px solid rgba(255,255,255,0.04) }
+.card.premium-note, .card.premium-note *{ color:#ffffff !important }
+.card.premium-note a{ color:#ffffff !important; text-decoration:underline; }
+.card.premium-note .label, .card.premium-note .muted{ color:rgba(255,255,255,0.85) !important }
+
+
+/* ---------- Fix: Apply & Profile button structure (final) ---------- */
+/* Ensure action buttons remain inside their cards and look like pills */
+.jp-card{ overflow:hidden; position:relative }
+.jp-card .jp-actions, .jp-card .job-actions{ position:relative; display:flex; gap:10px; align-items:center; justify-content:flex-end }
+.jp-card .btn{ position:relative; right:auto; transform:none; margin:0; display:inline-flex; align-items:center; justify-content:center }
+
+/* Pill-style primary button used for Apply / Profile actions */
+.btn.apply-now, .jp-card .btn.primary, .recruiter-actions .btn.primary{ background:#2563eb; color:#fff; padding:10px 18px; border-radius:999px; box-shadow:0 8px 20px rgba(37,99,235,0.10); max-width:220px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+.btn.apply-now:hover, .jp-card .btn.primary:hover, .recruiter-actions .btn.primary:hover{ background:#1e40af }
+
+/* Profile / secondary action — outlined pill */
+.recruiter-actions .btn.outline, .jp-card .btn.outline{ background:transparent; color:var(--primary); border:1px solid rgba(37,99,235,0.12); padding:10px 16px; border-radius:999px }
+
+/* If a button was previously positioned off-canvas, reset those properties */
+.jp-card .btn[style], .jp-card .btn{ left:auto !important; right:auto !important; bottom:auto !important; display:inline-flex !important }
+
+@media (max-width:880px){
+  .jp-card .btn.apply-now, .jp-card .btn.primary, .recruiter-actions .btn.primary{ width:100%; max-width:100%; margin-top:6px }
+  .recruiter-actions{ justify-content:flex-end }
+}
+
+/* End: Apply & Profile button structure */
+
+/* Emergency: Force white text on any dark recruiter card to ensure legibility */
+/* This uses high specificity and !important to override inline or earlier rules */
+.jp-modal.small.vertical .recruiter-card,
+.jp-modal.small.vertical .recruiter-card *,
+.recruiter-card.dark,
+.recruiter-card.dark * {
+  color: #ffffff !important;
+}
+.jp-modal.small.vertical .recruiter-card .role,
+.recruiter-card .role { color: rgba(255,255,255,0.9) !important; }
+
+/* ===== Requested recruiter card styling for modal (color-only, scoped) ===== */
+.jp-modal .recruiter-card {
+  display: flex !important;
+  align-items: center !important;
+  gap: 16px !important;
+  padding: 18px 20px !important;
+  background: linear-gradient(135deg, #A9A2CD 100%) !important;
+  color: #ffffff !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.jp-modal .card.premium-note {
+  background: #A9A2CD !important;
+  color: #ffffff !important;
+  padding: 12px 16px !important;
+  border-radius: 10px !important;
+}
+
+
+/* Scroll to Top Button */
+.scroll-to-top {
+  position: fixed;
+  bottom: 32px;
+  left: 32px;
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, #6d28d9 0%, #5b21b6 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(109, 40, 217, 0.3), 0 2px 8px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+  z-index: 1000;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.scroll-to-top:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(109, 40, 217, 0.4), 0 4px 12px rgba(0,0,0,0.15);
+  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+}
+
+.scroll-to-top:active {
+  transform: translateY(-2px);
+}
+
+.scroll-to-top svg {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2.5;
+}
+
+.scroll-to-top span {
+  margin-top: -2px;
+}
+
+@media (max-width: 768px) {
+  .scroll-to-top {
+    bottom: 20px;
+    left: 20px;
+    width: 48px;
+    height: 48px;
+  }
+  
+  .scroll-to-top svg {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .scroll-to-top span {
+    font-size: 9px;
+  }
+}
+
+/* Apply form primary button styling (Apply Job form) */
+.application-form .form-actions .btn.primary,
+.jp-modal .form-actions .btn.primary {
+  background: #524393 !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+  box-shadow: 0 1px 0 rgba(16, 24, 40, 0.02) !important;
+}
+
+

@@ -1,72 +1,88 @@
 /* Enrollment Page Styles */
 .enrollment-page {
-    padding: 2rem 0;
+    padding: 2.5rem 0;
     min-height: 100vh;
-    background: var(--background-color);
+    background: #f8fafc;
+}
+
+.enrollment-page .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
 }
 
 /* Back Navigation */
 .back-navigation {
-    margin-bottom: 2rem;
+    margin-bottom: 2.5rem;
 }
 
 .back-button {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.75rem 1rem;
-    background: var(--surface-color);
-    border: 1px solid var(--border-color);
-    border-radius: 0.5rem;
-    color: var(--text-primary);
+    padding: 0.875rem 1.25rem;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.75rem;
+    color: #0f172a;
     cursor: pointer;
     transition: all 0.2s ease;
-    font-weight: 500;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
 .back-button:hover {
     background: #f8fafc;
-    border-color: var(--primary-color);
+    border-color: #cbd5e1;
 }
 
 /* Enrollment Header */
 .enrollment-header {
     text-align: center;
-    margin-bottom: 2rem;
+    margin-bottom: 3rem;
+    background: white;
+    padding: 2.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
 }
 
 .enrollment-header h1 {
     font-size: 2.5rem;
-    font-weight: 700;
-    color: var(--text-primary);
-    margin-bottom: 0.5rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 0.75rem;
+    letter-spacing: -0.025em;
 }
 
 .enrollment-header p {
     font-size: 1.125rem;
-    color: var(--text-secondary);
+    color: #64748b;
     margin: 0;
+    line-height: 1.6;
 }
 
 /* Enrollment Layout */
 .enrollment-layout {
     display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 2rem;
+    grid-template-columns: 1fr 420px;
+    gap: 2.5rem;
+    align-items: start;
 }
 
 /* Billing Form */
 .billing-form {
-    background: var(--surface-color);
-    padding: 2rem;
-    border-radius: 0.75rem;
-    border: 1px solid var(--border-color);
+    background: white;
+    padding: 2.5rem;
+    border-radius: 1rem;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
 }
 
 .form-section {
-    margin-bottom: 2rem;
-    padding-bottom: 2rem;
-    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 2.5rem;
+    padding-bottom: 2.5rem;
+    border-bottom: 2px solid #f1f5f9;
 }
 
 .form-section:last-child {
@@ -76,22 +92,23 @@
 }
 
 .form-section h3 {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin-bottom: 1.5rem;
+    font-size: 1.375rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 1.75rem;
+    letter-spacing: -0.025em;
 }
 
 .form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1rem;
+    gap: 1.25rem;
 }
 
 .form-group {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.75rem;
 }
 
 .form-group.full-width {
@@ -99,31 +116,43 @@
 }
 
 .form-group label {
-    font-weight: 500;
-    color: var(--text-primary);
-    font-size: 0.875rem;
+    font-weight: 600;
+    color: #0f172a;
+    font-size: 0.9375rem;
 }
 
-.form-group input {
-    padding: 0.75rem 1rem;
-    border: 1px solid var(--border-color);
-    border-radius: 0.5rem;
-    background: var(--surface-color);
-    color: var(--text-primary);
-    font-size: 0.875rem;
+.form-group label span {
+    color: #ef4444;
+    margin-left: 0.25rem;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    padding: 0.875rem 1.25rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 0.75rem;
+    background: white;
+    color: #0f172a;
+    font-size: 0.9375rem;
+    font-weight: 500;
     transition: all 0.2s ease;
 }
 
-.form-group input:focus {
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
     outline: none;
-    border-color: var(--primary-color);
+    border-color: #2563eb;
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
-.form-group input:disabled {
+.form-group input:disabled,
+.form-group select:disabled {
     background: #f8fafc;
-    color: var(--text-secondary);
+    color: #64748b;
     cursor: not-allowed;
+    border-color: #f1f5f9;
 }
 
 /* Payment Methods */
@@ -232,43 +261,47 @@
 
 /* Course Summary Card */
 .course-summary-card {
-    background: var(--surface-color);
-    border: 1px solid var(--border-color);
-    border-radius: 0.75rem;
+    background: white;
+    border: 1px solid #f1f5f9;
+    border-radius: 1rem;
     overflow: hidden;
     position: sticky;
     top: 2rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
 }
 
 .course-header {
-    padding: 1.5rem;
-    border-bottom: 1px solid var(--border-color);
+    padding: 2rem;
+    border-bottom: 2px solid #f1f5f9;
 }
 
 .course-thumbnail {
     width: 100%;
-    height: 120px;
+    height: 140px;
     object-fit: cover;
-    border-radius: 0.5rem;
-    margin-bottom: 1rem;
+    border-radius: 0.75rem;
+    margin-bottom: 1.25rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
 .course-info h3 {
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin: 0 0 0.5rem 0;
-    line-height: 1.3;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 0.75rem 0;
+    line-height: 1.4;
 }
 
 .course-info .instructor {
-    color: var(--text-secondary);
-    font-size: 0.875rem;
-    margin: 0 0 1rem 0;
+    color: #64748b;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    margin: 0 0 1.25rem 0;
 }
 
 .course-meta {
     display: flex;
+    flex-wrap: wrap;
     gap: 1rem;
 }
 
@@ -276,47 +309,53 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    color: var(--text-secondary);
-    font-size: 0.75rem;
+    color: #64748b;
+    font-size: 0.875rem;
+    font-weight: 500;
 }
 
 /* Pricing Breakdown */
 .pricing-breakdown {
-    padding: 1.5rem;
-    border-bottom: 1px solid var(--border-color);
+    padding: 2rem;
+    border-bottom: 2px solid #f1f5f9;
+    background: #f8fafc;
 }
 
 .pricing-breakdown h4 {
     font-size: 1.125rem;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin-bottom: 1rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 1.25rem;
+    letter-spacing: -0.025em;
 }
 
 .breakdown-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.5rem 0;
-    color: var(--text-primary);
-    font-size: 0.875rem;
+    padding: 0.75rem 0;
+    color: #0f172a;
+    font-size: 0.9375rem;
+    font-weight: 500;
 }
 
 .breakdown-item.discount {
-    color: var(--success-color);
+    color: #10b981;
+    font-weight: 600;
 }
 
 .breakdown-item.coupon {
-    color: var(--success-color);
+    color: #10b981;
+    font-weight: 600;
 }
 
 .breakdown-item.total {
-    border-top: 1px solid var(--border-color);
-    margin-top: 0.5rem;
-    padding-top: 1rem;
-    font-weight: 600;
-    font-size: 1.125rem;
-    color: var(--text-primary);
+    border-top: 2px solid #e2e8f0;
+    margin-top: 0.75rem;
+    padding-top: 1.25rem;
+    font-weight: 800;
+    font-size: 1.5rem;
+    color: #0f172a;
 }
 
 /* Course Features */

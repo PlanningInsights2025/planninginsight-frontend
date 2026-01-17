@@ -1,4 +1,4 @@
-import api from './index';
+import api from './api';
 
 /**
  * Admin API Service
@@ -345,6 +345,158 @@ export const adminAPI = {
       params: { format },
       responseType: 'blob'
     });
+    return response.data;
+  },
+
+  // ==================== PUBLISHING MANAGEMENT ====================
+  
+  /**
+   * Create publishing requirement
+   */
+  createPublishingRequirement: async (requirementData) => {
+    const response = await api.post('/admin/publishing-requirements', requirementData);
+    return response.data;
+  },
+
+  /**
+   * Get all publishing requirements
+   */
+  getAllPublishingRequirements: async (params = {}) => {
+    const response = await api.get('/admin/publishing-requirements', { params });
+    return response.data;
+  },
+
+  /**
+   * Update publishing requirement
+   */
+  updatePublishingRequirement: async (requirementId, requirementData) => {
+    const response = await api.patch(`/admin/publishing-requirements/${requirementId}`, requirementData);
+    return response.data;
+  },
+
+  /**
+   * Delete publishing requirement
+   */
+  deletePublishingRequirement: async (requirementId) => {
+    const response = await api.delete(`/admin/publishing-requirements/${requirementId}`);
+    return response.data;
+  },
+
+  /**
+   * Get all manuscripts overview
+   */
+  getAllManuscriptsOverview: async (params = {}) => {
+    const response = await api.get('/admin/manuscripts', { params });
+    return response.data;
+  },
+
+  /**
+   * Get manuscripts by requirement
+   */
+  getManuscriptsByRequirement: async (requirementId) => {
+    const response = await api.get(`/admin/manuscripts/requirement/${requirementId}`);
+    return response.data;
+  },
+
+  /**
+   * Review manuscript
+   */
+  reviewManuscript: async (manuscriptId, reviewData) => {
+    const response = await api.patch(`/admin/manuscripts/${manuscriptId}/review`, reviewData);
+    return response.data;
+  },
+
+  /**
+   * Delete manuscript
+   */
+  deleteManuscript: async (manuscriptId) => {
+    const response = await api.delete(`/admin/manuscripts/${manuscriptId}`);
+    return response.data;
+  },
+
+  /**
+   * Get all research papers overview
+   */
+  getAllResearchPapersOverview: async (params = {}) => {
+    const response = await api.get('/admin/research-papers', { params });
+    return response.data;
+  },
+
+  // ==================== NEWSROOM MANAGEMENT ====================
+
+  /**
+   * Get all articles for admin (with pagination and filters)
+   */
+  getAllArticlesAdmin: async (params = {}) => {
+    const response = await api.get('/admin/articles', { params });
+    return response.data;
+  },
+
+  /**
+   * Update article status (approve, reject, etc.)
+   */
+  updateArticleStatus: async (articleId, statusData) => {
+    const response = await api.patch(`/admin/articles/${articleId}/status`, statusData);
+    return response.data;
+  },
+
+  /**
+   * Delete article (admin)
+   */
+  deleteArticleAdmin: async (articleId) => {
+    const response = await api.delete(`/admin/articles/${articleId}`);
+    return response.data;
+  },
+
+  // ==================== JOB PORTAL MANAGEMENT ====================
+
+  /**
+   * Get all jobs for admin
+   */
+  getAllJobsAdmin: async (params = {}) => {
+    const response = await api.get('/admin/jobs', { params });
+    return response.data;
+  },
+
+  /**
+   * Update job status
+   */
+  updateJobStatus: async (jobId, statusData) => {
+    const response = await api.patch(`/admin/jobs/${jobId}/status`, statusData);
+    return response.data;
+  },
+
+  /**
+   * Delete job (admin)
+   */
+  deleteJobAdmin: async (jobId) => {
+    const response = await api.delete(`/admin/jobs/${jobId}`);
+    return response.data;
+  },
+
+  // ==================== LEARNING CENTER MANAGEMENT ====================
+
+  /**
+   * Get all courses for admin
+   */
+  getAllCoursesAdmin: async (params = {}) => {
+    const response = await api.get('/admin/courses', { params });
+    return response.data;
+  },
+
+  /**
+   * Update course status
+   */
+  updateCourseStatus: async (courseId, statusData) => {
+    const response = await api.patch(`/admin/courses/${courseId}/status`, statusData);
+    return response.data;
+  },
+
+  /**
+   * Delete course (admin)
+   */
+  deleteCourseAdmin: async (courseId) => {
+    const response = await api.delete(`/admin/courses/${courseId}`);
     return response.data;
   }
 };

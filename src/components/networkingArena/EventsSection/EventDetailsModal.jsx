@@ -16,10 +16,6 @@ const EventDetailsModal = ({ isOpen, onClose, event, onRSVP }) => {
           <ArrowLeft size={20} />
           Back to Events
         </button>
-        
-        <button className="close-btn" onClick={onClose}>
-          <X size={24} />
-        </button>
 
         {/* Event Image */}
         <div className="event-details-image-wrapper">
