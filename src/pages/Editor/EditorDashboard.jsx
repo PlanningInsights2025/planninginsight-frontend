@@ -49,7 +49,7 @@ const EditorDashboard = () => {
       const token = localStorage.getItem('authToken');
       
       // Fetch stats
-      const statsResponse = await fetch(`${import.meta.env.VITE_API_URL}/api/editor/dashboard-stats`, {
+      const statsResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api'}/editor/dashboard-stats`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -64,7 +64,7 @@ const EditorDashboard = () => {
       const endpoint = activeTab === 'manuscripts' ? 'manuscripts' : 'research-papers';
       const statusParam = filterStatus !== 'all' ? `?status=${filterStatus}` : '';
       
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/editor/${endpoint}${statusParam}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api'}/editor/${endpoint}${statusParam}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -104,7 +104,7 @@ const EditorDashboard = () => {
       const endpoint = activeTab === 'manuscripts' ? 'manuscripts' : 'research-papers';
       
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/editor/${endpoint}/${selectedItem._id}/review`,
+        `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api'}/editor/${endpoint}/${selectedItem._id}/review`,
         {
           method: 'PATCH',
           headers: {

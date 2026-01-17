@@ -17,9 +17,9 @@ const RoleRequestManagement = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('authToken');
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+      const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
       
-      const response = await fetch(`${apiUrl}/api/admin/role-requests`, {
+      const response = await fetch(`${apiUrl}/admin/role-requests`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -48,9 +48,9 @@ const RoleRequestManagement = () => {
   const handleReviewRequest = async (requestId, status, adminNotes = '') => {
     try {
       const token = localStorage.getItem('authToken');
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+      const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
       
-      const response = await fetch(`${apiUrl}/api/admin/role-requests/${requestId}`, {
+      const response = await fetch(`${apiUrl}/admin/role-requests/${requestId}`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -85,9 +85,9 @@ const RoleRequestManagement = () => {
     try {
       console.log('🗑️ Deleting request:', request._id);
       const token = localStorage.getItem('authToken');
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+      const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
       
-      const url = `${apiUrl}/api/admin/role-requests/${request._id}`;
+      const url = `${apiUrl}/admin/role-requests/${request._id}`;
       console.log('DELETE URL:', url);
       console.log('Auth token:', token ? 'Present' : 'Missing');
       
@@ -185,8 +185,8 @@ const RoleRequestManagement = () => {
 
     try {
       const token = localStorage.getItem('authToken');
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-      const url = `${apiUrl}/api/admin/users/${request.userId._id}/revoke-role`;
+      const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
+      const url = `${apiUrl}/admin/users/${request.userId._id}/revoke-role`;
       
       console.log('🔗 Request URL:', url);
       console.log('📝 Request body:', { roleToRevoke: request.requestedRole });

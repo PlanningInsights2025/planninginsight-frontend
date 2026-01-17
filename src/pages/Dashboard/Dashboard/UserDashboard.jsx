@@ -262,8 +262,8 @@ const UserDashboard = () => {
     setRequestingRole(true);
     try {
       const token = localStorage.getItem('authToken');
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-      const fullUrl = `${apiUrl}/api/user/role-requests`;
+      const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
+      const fullUrl = `${apiUrl}/user/role-requests`;
 
       const response = await fetch(fullUrl, {
         method: 'POST',
