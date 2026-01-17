@@ -15,15 +15,26 @@ export default defineConfig({
       loader: {
         '.js': 'jsx'
       }
-    }
+    },
+    // Include mammoth in optimization
+    include: ['mammoth']
   },
   resolve: {
     alias: {
-      '@': '/src'
+      '@': '/src',
+      // Use the browser build of mammoth
+      'mammoth': 'mammoth/mammoth.browser.min.js'
     }
   },
   server: {
     port: 5173,
     open: true
+  },
+  build: {
+    commonjsOptions: {
+      // Transform mammoth as CommonJS module
+      include: [/mammoth/, /node_modules/],
+      transformMixedEsModules: true
+    }
   }
 });
