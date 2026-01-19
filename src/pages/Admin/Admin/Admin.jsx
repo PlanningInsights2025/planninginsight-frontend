@@ -17,7 +17,7 @@ const Admin = () => {
     }
 
     // Verify admin token
-    fetch('http://localhost:3000/api/auth/me', {
+    fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api'}/auth/me`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
