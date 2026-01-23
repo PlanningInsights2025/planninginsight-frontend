@@ -37,12 +37,12 @@ const Footer = () => {
           <div className="footer-column-horizontal">
             <h3 className="footer-heading-horizontal">About us</h3>
             <p className="footer-tagline-horizontal">
-              Engage | Learn | Interact | Participate
+             Plan. Learn. Collaborate.
             </p>
             <p className="footer-description-horizontal">
-              <strong>Planning Insights</strong> is a platform where different perspectives, 
-              approaches, interventions and ideas across Town and CountryPlanning, Architecture, 
-              Remote Sensing and Construction industry{' '}
+              <strong>Planning Insights</strong> is a digital knowledge ecosystem for the built environment, designed to
+connect education, research, and professional practice on a single, integrated platform. We
+enable collaboration among students, educators, researchers, urban planners, architects, {' '}
               <Link to="/about" className="footer-read-more-horizontal">Read more</Link>
             </p>
           </div>
@@ -87,7 +87,7 @@ const Footer = () => {
                 href="https://facebook.com" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="social-icon-horizontal social-facebook-horizontal"
+                className="C:\Users\Lenovo\Desktop\planning insight data\Planning-Insights 2\frontend\public\assets\images\icons\Facebook.png"
                 aria-label="Facebook"
               >
                 <Facebook size={18} />
@@ -96,12 +96,12 @@ const Footer = () => {
                 href="https://www.instagram.com/planninginsights?igsh=MjVsaTlsa29qc2d5" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="social-icon-horizontal social-instagram-horizontal"
+                className="C:\Users\Lenovo\Desktop\planning insight data\Planning-Insights 2\frontend\public\assets\images\icons\Instagram.png"
                 aria-label="Instagram"
               >
                 <Instagram size={18} />
               </a>
-              <a 
+            { /* <a 
                 href="https://twitter.com" 
                 target="_blank" 
                 rel="noopener noreferrer"
@@ -109,17 +109,17 @@ const Footer = () => {
                 aria-label="Twitter"
               >
                 <Twitter size={18} />
-              </a>
+              </a>*/}
               <a 
                 href="https://youtube.com/@planninginsights1969?si=ef2dA70yTeP1cdgW" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="social-icon-horizontal social-youtube-horizontal"
+                className="C:\Users\Lenovo\Desktop\planning insight data\Planning-Insights 2\frontend\public\assets\images\icons\Youtube.png"
                 aria-label="YouTube"
               >
                 <Youtube size={18} />
               </a>
-              <a 
+              {/* <a 
                 href="https://wa.me/919022311897" 
                 target="_blank" 
                 rel="noopener noreferrer"
@@ -127,22 +127,22 @@ const Footer = () => {
                 aria-label="WhatsApp"
               >
                 <MessageCircle size={18} />
-              </a>
+              </a> */}
               <a 
                 href="https://www.linkedin.com/in/planning-insights/?lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_view_base_contact_details%3BZAAfeJV4SyuFw9eJknYnvg%3D%3Dm" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="social-icon-horizontal social-linkedin-horizontal"
+                className="C:\Users\Lenovo\Desktop\planning insight data\Planning-Insights 2\frontend\public\assets\images\icons\Linkedin.png"
                 aria-label="LinkedIn"
               >
                 <Linkedin size={18} />
               </a>
               <a 
-                href="https://messenger.com" 
+                href="x.com" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="social-icon-horizontal social-messenger-horizontal"
-                aria-label="Messenger"
+                className="C:\Users\Lenovo\Desktop\planning insight data\Planning-Insights 2\frontend\public\assets\images\icons\X.png"
+                aria-label="X"
               >
                 <MessageCircle size={18} />
               </a>

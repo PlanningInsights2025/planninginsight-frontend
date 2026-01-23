@@ -31,6 +31,7 @@ export const AuthProvider = ({ children }) => {
         const displayName = fbUser.displayName || ''
         const [firstName, ...rest] = displayName.split(' ')
         const lastName = rest.join(' ')
+        
         const mapped = {
           id: fbUser.uid,
           email: fbUser.email,
@@ -38,9 +39,27 @@ export const AuthProvider = ({ children }) => {
           lastName: lastName || '',
           displayName: fbUser.displayName || `${firstName} ${lastName}`,
           photoURL: fbUser.photoURL || null,
+          role: 'user' // Default role for Firebase users
         }
+        
+        console.log('👤 Firebase user logged in:', mapped)
         setUser(mapped)
         setIsAuthenticated(true)
+        
+        // Try to fetch additional user data from backend (non-blocking)
+        try {
+          const token = localStorage.getItem('authToken')
+          if (token) {
+            const userData = await authAPI.getCurrentUser()
+            if (userData && userData.role) {
+              // Update user with backend data
+              setUser(prev => ({ ...prev, role: userData.role, ...userData }))
+              console.log('✅ Updated user with backend role:', userData.role)
+            }
+          }
+        } catch (error) {
+          console.log('ℹ️ Could not fetch backend user data (using Firebase data only)')
+        }
       } else {
         // No Firebase user; try backend token check
         await checkAuthStatus()
@@ -53,9 +72,23 @@ export const AuthProvider = ({ children }) => {
 
   const checkAuthStatus = async () => {
     try {
+      // Don't load user data if this is an admin session
+      const isAdminSession = localStorage.getItem('isAdminSession') === 'true'
+      if (isAdminSession) {
+        console.log('🔐 Admin session detected, skipping user auth check')
+        return
+      }
+
       const token = localStorage.getItem('authToken')
       if (token) {
         const userData = await authAPI.getCurrentUser()
+        // Extra check: Don't set admin users in regular user context
+        if (userData.role === 'admin') {
+          console.log('🔐 Admin user detected in user context, clearing session')
+          localStorage.removeItem('authToken')
+          localStorage.removeItem('isAdminSession')
+          return
+        }
         setUser(userData)
         setIsAuthenticated(true)
         return
@@ -66,6 +99,13 @@ export const AuthProvider = ({ children }) => {
     } finally {
       // leave loading state to onAuthChanged handler where appropriate
     }
+  }
+
+  // Manual auth state setter for custom login flows
+  const setAuthState = (userData) => {
+    console.log('🔐 AuthContext: Setting auth state manually', userData)
+    setUser(userData)
+    setIsAuthenticated(true)
   }
 
   const login = async (email, password) => {
@@ -135,6 +175,66 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
+  // New Email Verification Signup Flow
+  const requestSignupOTP = async (userData) => {
+    try {
+      const response = await authAPI.requestSignupOTP(userData)
+      return { success: true, data: response }
+    } catch (error) {
+      return { 
+        success: false, 
+        error: error.response?.data?.message || 'Failed to send verification code' 
+      }
+    }
+  }
+
+  const verifySignupOTP = async (email, otp) => {
+    console.log('🔐 AuthContext: verifySignupOTP called', { email, otp })
+    try {
+      console.log('📡 AuthContext: Calling API...')
+      const response = await authAPI.verifySignupOTP(email, otp)
+      console.log('📥 AuthContext: API Response:', response)
+      
+      if (response.success && response.data?.token) {
+        console.log('✅ AuthContext: Token found, saving...')
+        const token = response.data.token
+        const userData = response.data.user
+        
+        // Save token to localStorage
+        localStorage.setItem('authToken', token)
+        
+        // Set user data with proper structure
+        const formattedUser = {
+          id: userData.id || userData._id,
+          email: userData.email,
+          firstName: userData.profile?.firstName || userData.firstName || '',
+          lastName: userData.profile?.lastName || userData.lastName || '',
+          displayName: `${userData.profile?.firstName || ''} ${userData.profile?.lastName || ''}`.trim() || userData.email,
+          role: userData.role || 'user',
+          emailVerified: userData.emailVerified || true,
+          status: userData.status || 'active',
+          photoURL: userData.profile?.avatar || null,
+          profile: userData.profile || {}
+        }
+        
+        console.log('👤 AuthContext: Setting user:', formattedUser)
+        setUser(formattedUser)
+        setIsAuthenticated(true)
+        console.log('✅ AuthContext: User authenticated!')
+        return { success: true, data: response.data }
+      }
+      console.log('⚠️ AuthContext: Invalid response structure')
+      return { success: false, error: 'Invalid response from server' }
+    } catch (error) {
+      console.error('❌ AuthContext: Error caught:', error)
+      return { 
+        success: false, 
+        error: error.response?.data?.message || 'Verification failed',
+        remainingAttempts: error.response?.data?.remainingAttempts
+      }
+    }
+  }
+
   const logout = async () => {
     try {
       await firebaseSignOut()
@@ -179,7 +279,11 @@ export const AuthProvider = ({ children }) => {
     logout,
     requestOTP,
     verifyOTP,
-    checkAuthStatus
+    requestSignupOTP,
+    verifySignupOTP,
+    checkAuthStatus,
+    setAuthState,
+    refreshUser: checkAuthStatus // Add alias for refreshing user data
   }
 
   return (

@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { X, Search, Send, Paperclip, Image, Smile, MoreVertical, Check, CheckCheck, Phone, Video, ArrowLeft } from 'lucide-react';
+import { X, Search, Send, Paperclip, Image, Smile, MoreVertical, Check, CheckCheck, Phone, Video, ArrowLeft, MessageCircle } from 'lucide-react';
+import toast from 'react-hot-toast';
+import * as networkingApi from '@/services/api/networking';
 import './MessagingCenter.css';
 
 const MessagingCenter = ({ onClose, setUnreadCount, userId, currentUser = { name: 'You', avatar: '/api/placeholder/40/40' } }) => {
@@ -7,70 +9,14 @@ const MessagingCenter = ({ onClose, setUnreadCount, userId, currentUser = { name
   const [messageText, setMessageText] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [chats, setChats] = useState([]);
+  const [messages, setMessages] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
   const messagesEndRef = useRef(null);
 
-  const [chats] = useState([
-    {
-      id: 1,
-      name: 'Sarah Johnson',
-      avatar: '/api/placeholder/40/40',
-      lastMessage: 'Thanks for the recommendation!',
-      timestamp: '2m ago',
-      unread: 2,
-      online: true
-    },
-    {
-      id: 2,
-      name: 'Michael Chen',
-      avatar: '/api/placeholder/40/40',
-      lastMessage: 'When can we schedule a call?',
-      timestamp: '15m ago',
-      unread: 1,
-      online: true
-    },
-    {
-      id: 3,
-      name: 'Emily Rodriguez',
-      avatar: '/api/placeholder/40/40',
-      lastMessage: 'Check out this article',
-      timestamp: '1h ago',
-      unread: 0,
-      online: false
-    },
-    {
-      id: 4,
-      name: 'David Kim',
-      avatar: '/api/placeholder/40/40',
-      lastMessage: 'Great meeting you!',
-      timestamp: '3h ago',
-      unread: 2,
-      online: false
-    }
-  ]);
-
-  const [messages, setMessages] = useState({
-    1: [
-      { id: 1, sender: 'Sarah Johnson', text: 'Hey! How are you doing?', timestamp: '10:30 AM', sent: false, read: true },
-      { id: 2, sender: 'You', text: 'Hi Sarah! I\'m doing great, thanks!', timestamp: '10:32 AM', sent: true, read: true },
-      { id: 3, sender: 'Sarah Johnson', text: 'I wanted to ask about your recommendation', timestamp: '10:33 AM', sent: false, read: true },
-      { id: 4, sender: 'You', text: 'Of course! What would you like to know?', timestamp: '10:35 AM', sent: true, read: true },
-      { id: 5, sender: 'Sarah Johnson', text: 'Thanks for the recommendation!', timestamp: '10:36 AM', sent: false, read: false }
-    ],
-    2: [
-      { id: 1, sender: 'Michael Chen', text: 'Hi! I saw your profile', timestamp: '9:15 AM', sent: false, read: true },
-      { id: 2, sender: 'You', text: 'Hello Michael! Thanks for reaching out', timestamp: '9:20 AM', sent: true, read: true },
-      { id: 3, sender: 'Michael Chen', text: 'When can we schedule a call?', timestamp: '9:45 AM', sent: false, read: false }
-    ],
-    3: [
-      { id: 1, sender: 'Emily Rodriguez', text: 'Hi! I loved your latest post', timestamp: '11:00 AM', sent: false, read: true },
-      { id: 2, sender: 'You', text: 'Thank you Emily! Glad you enjoyed it', timestamp: '11:15 AM', sent: true, read: true },
-      { id: 3, sender: 'Emily Rodriguez', text: 'Check out this article', timestamp: '11:30 AM', sent: false, read: true }
-    ],
-    4: [
-      { id: 1, sender: 'You', text: 'Nice meeting you at the conference!', timestamp: '2:00 PM', sent: true, read: true },
-      { id: 2, sender: 'David Kim', text: 'Great meeting you!', timestamp: '2:15 PM', sent: false, read: false }
-    ]
-  });
+  useEffect(() => {
+    fetchConversations();
+  }, []);
 
   useEffect(() => {
     scrollToBottom();
@@ -78,28 +24,64 @@ const MessagingCenter = ({ onClose, setUnreadCount, userId, currentUser = { name
 
   useEffect(() => {
     // Auto-select chat if userId is provided
-    console.log('MessagingCenter received userId:', userId);
-    if (userId && chats) {
+    if (userId && chats.length > 0) {
       const chatToSelect = chats.find(chat => chat.id === userId);
-      console.log('Found chat to select:', chatToSelect);
       if (chatToSelect) {
         setSelectedChat(chatToSelect);
-      } else {
-        console.warn('No chat found for userId:', userId);
+        fetchMessages(chatToSelect.id);
       }
     }
   }, [userId, chats]);
+
+  const fetchConversations = async () => {
+    try {
+      setIsLoading(true);
+      const response = await networkingApi.getConversations();
+      if (response.success) {
+        setChats(response.conversations || []);
+      }
+    } catch (error) {
+      console.error('Error fetching conversations:', error);
+      // Silently fail - empty state will be shown
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const fetchMessages = async (recipientId) => {
+    try {
+      const response = await networkingApi.getMessages(recipientId);
+      if (response.success) {
+        setMessages(prev => ({
+          ...prev,
+          [recipientId]: response.messages || []
+        }));
+        
+        // Mark messages as read
+        await networkingApi.markMessagesAsRead(recipientId);
+        
+        // Update unread count in chat list
+        setChats(prevChats =>
+          prevChats.map(chat =>
+            chat.id === recipientId ? { ...chat, unread: 0 } : chat
+          )
+        );
+      }
+    } catch (error) {
+      console.error('Error fetching messages:', error);
+      // Silently fail
+    }
+  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!messageText.trim() || !selectedChat) return;
 
-    const currentMessages = messages[selectedChat.id] || [];
-    const newMessage = {
-      id: currentMessages.length + 1,
+    const optimisticMessage = {
+      id: `temp-${Date.now()}`,
       sender: 'You',
       text: messageText,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
@@ -107,61 +89,45 @@ const MessagingCenter = ({ onClose, setUnreadCount, userId, currentUser = { name
       read: false
     };
 
+    // Optimistically add message to UI
     setMessages(prev => ({
       ...prev,
-      [selectedChat.id]: [...(prev[selectedChat.id] || []), newMessage]
+      [selectedChat.id]: [...(prev[selectedChat.id] || []), optimisticMessage]
     }));
 
+    const messageToSend = messageText;
     setMessageText('');
 
-    // Simulate typing indicator and response
-    setTimeout(() => {
-      setIsTyping(true);
-      setTimeout(() => {
-        handleBotResponse(messageText);
-        setIsTyping(false);
-      }, 2000);
-    }, 500);
-  };
+    try {
+      const response = await networkingApi.sendMessage({
+        recipientId: selectedChat.id,
+        content: messageToSend,
+        messageType: 'text'
+      });
 
-  const handleBotResponse = (userMessage) => {
-    const lowerMessage = userMessage.toLowerCase();
-    let responseText = '';
+      if (response.success) {
+        // Replace optimistic message with real one
+        setMessages(prev => ({
+          ...prev,
+          [selectedChat.id]: [
+            ...(prev[selectedChat.id] || []).filter(m => m.id !== optimisticMessage.id),
+            response.message
+          ]
+        }));
 
-    if (lowerMessage.includes('hi') || lowerMessage.includes('hello') || lowerMessage.includes('hey')) {
-      responseText = 'Hello! Nice to hear from you! How can I help you today?';
-    } else if (lowerMessage.includes('how are you')) {
-      responseText = 'I\'m doing great, thank you for asking! How about you?';
-    } else if (lowerMessage.includes('thanks') || lowerMessage.includes('thank you')) {
-      responseText = 'You\'re welcome! Happy to help anytime!';
-    } else if (lowerMessage.includes('bye') || lowerMessage.includes('goodbye')) {
-      responseText = 'Goodbye! Have a great day! Feel free to reach out anytime.';
-    } else if (lowerMessage.includes('help')) {
-      responseText = 'Sure! I\'m here to help. What do you need assistance with?';
-    } else if (lowerMessage.includes('call') || lowerMessage.includes('meeting')) {
-      responseText = 'I\'d be happy to schedule a call! What time works best for you?';
-    } else if (lowerMessage.includes('job') || lowerMessage.includes('opportunity')) {
-      responseText = 'That sounds interesting! Tell me more about the opportunity.';
-    } else if (lowerMessage.includes('connect') || lowerMessage.includes('network')) {
-      responseText = 'I\'d love to connect! Let\'s stay in touch and collaborate.';
-    } else {
-      responseText = 'That\'s interesting! Tell me more about it.';
+        // Update conversation list
+        await fetchConversations();
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+      // Silently fail
+      
+      // Remove optimistic message on error
+      setMessages(prev => ({
+        ...prev,
+        [selectedChat.id]: (prev[selectedChat.id] || []).filter(m => m.id !== optimisticMessage.id)
+      }));
     }
-
-    const currentMessages = messages[selectedChat.id] || [];
-    const botMessage = {
-      id: currentMessages.length + 2,
-      sender: selectedChat.name,
-      text: responseText,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      sent: false,
-      read: false
-    };
-
-    setMessages(prev => ({
-      ...prev,
-      [selectedChat.id]: [...(prev[selectedChat.id] || []), botMessage]
-    }));
   };
 
   const handleKeyPress = (e) => {
@@ -171,9 +137,46 @@ const MessagingCenter = ({ onClose, setUnreadCount, userId, currentUser = { name
     }
   };
 
+  const handleChatSelect = (chat) => {
+    setSelectedChat(chat);
+    if (!messages[chat.id]) {
+      fetchMessages(chat.id);
+    } else {
+      // Mark as read
+      networkingApi.markMessagesAsRead(chat.id);
+      setChats(prevChats =>
+        prevChats.map(c =>
+          c.id === chat.id ? { ...c, unread: 0 } : c
+        )
+      );
+    }
+  };
+
   const filteredChats = chats.filter(chat =>
     chat.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  if (isLoading) {
+    return (
+      <div className="messaging-center-overlay">
+        <div className="messaging-center">
+          <div className="messaging-header">
+            <button className="back-btn" onClick={onClose}>
+              <ArrowLeft size={20} />
+            </button>
+            <h2>Messages</h2>
+            <button className="close-btn" onClick={onClose}>
+              <X size={24} />
+            </button>
+          </div>
+          <div className="loading-container">
+            <div className="spinner"></div>
+            <p>Loading messages...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="messaging-center-overlay">
@@ -203,30 +206,38 @@ const MessagingCenter = ({ onClose, setUnreadCount, userId, currentUser = { name
             </div>
 
             <div className="chats-items">
-              {filteredChats.map((chat) => (
-                <div
-                  key={chat.id}
-                  className={`chat-item ${selectedChat?.id === chat.id ? 'active' : ''}`}
-                  onClick={() => setSelectedChat(chat)}
-                >
-                  <div className="chat-avatar-wrapper">
-                    <img src={chat.avatar} alt={chat.name} className="chat-avatar" />
-                    {chat.online && <span className="online-indicator"></span>}
-                  </div>
-                  <div className="chat-info">
-                    <div className="chat-header">
-                      <h4>{chat.name}</h4>
-                      <span className="chat-time">{chat.timestamp}</span>
+              {filteredChats.length > 0 ? (
+                filteredChats.map((chat) => (
+                  <div
+                    key={chat.id}
+                    className={`chat-item ${selectedChat?.id === chat.id ? 'active' : ''}`}
+                    onClick={() => handleChatSelect(chat)}
+                  >
+                    <div className="chat-avatar-wrapper">
+                      <img src={chat.avatar} alt={chat.name} className="chat-avatar" />
+                      {chat.online && <span className="online-indicator"></span>}
                     </div>
-                    <div className="chat-preview">
-                      <p className={chat.unread > 0 ? 'unread' : ''}>{chat.lastMessage}</p>
-                      {chat.unread > 0 && (
-                        <span className="unread-badge">{chat.unread}</span>
-                      )}
+                    <div className="chat-info">
+                      <div className="chat-header">
+                        <h4>{chat.name}</h4>
+                        <span className="chat-time">{chat.timestamp}</span>
+                      </div>
+                      <div className="chat-preview">
+                        <p className={chat.unread > 0 ? 'unread' : ''}>{chat.lastMessage}</p>
+                        {chat.unread > 0 && (
+                          <span className="unread-badge">{chat.unread}</span>
+                        )}
+                      </div>
                     </div>
                   </div>
+                ))
+              ) : (
+                <div className="empty-chats">
+                  <MessageCircle size={48} />
+                  <p>No conversations yet</p>
+                  <span>Start connecting with people in your network</span>
                 </div>
-              ))}
+              )}
             </div>
           </div>
 
@@ -260,35 +271,43 @@ const MessagingCenter = ({ onClose, setUnreadCount, userId, currentUser = { name
 
                 {/* Messages */}
                 <div className="messages-container">
-                  {messages[selectedChat.id]?.map((message) => (
-                    <div
-                      key={message.id}
-                      className={`message ${message.sent ? 'sent' : 'received'}`}
-                    >
-                      {!message.sent && (
-                        <img src={selectedChat.avatar} alt={selectedChat.name} className="message-avatar" />
-                      )}
-                      <div className="message-bubble">
-                        <div className="message-sender-name">
-                          {message.sent ? currentUser.name : selectedChat.name}
-                        </div>
-                        <div className="message-content">
-                          <p>{message.text}</p>
-                          <div className="message-meta">
-                            <span className="message-time">{message.timestamp}</span>
-                            {message.sent && (
-                              <span className="message-status">
-                                {message.read ? <CheckCheck size={14} /> : <Check size={14} />}
-                              </span>
-                            )}
+                  {(messages[selectedChat.id] && messages[selectedChat.id].length > 0) ? (
+                    messages[selectedChat.id].map((message) => (
+                      <div
+                        key={message.id}
+                        className={`message ${message.sent ? 'sent' : 'received'}`}
+                      >
+                        {!message.sent && (
+                          <img src={selectedChat.avatar} alt={selectedChat.name} className="message-avatar" />
+                        )}
+                        <div className="message-bubble">
+                          <div className="message-sender-name">
+                            {message.sent ? currentUser.name : selectedChat.name}
+                          </div>
+                          <div className="message-content">
+                            <p>{message.text}</p>
+                            <div className="message-meta">
+                              <span className="message-time">{message.timestamp}</span>
+                              {message.sent && (
+                                <span className="message-status">
+                                  {message.read ? <CheckCheck size={14} /> : <Check size={14} />}
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </div>
+                        {message.sent && (
+                          <img src={currentUser.avatar} alt={currentUser.name} className="message-avatar" />
+                        )}
                       </div>
-                      {message.sent && (
-                        <img src={currentUser.avatar} alt={currentUser.name} className="message-avatar" />
-                      )}
+                    ))
+                  ) : (
+                    <div className="empty-messages">
+                      <MessageCircle size={64} />
+                      <p>No messages yet</p>
+                      <span>Send a message to start the conversation</span>
                     </div>
-                  ))}
+                  )}
                   {isTyping && (
                     <div className="typing-indicator">
                       <img src={selectedChat.avatar} alt="" className="message-avatar" />

@@ -145,7 +145,10 @@ export const publishingAPI = {
    * Submit manuscript for publication
    */
   submitManuscript: async (manuscriptData) => {
-    const response = await api.post('/manuscripts/submit', manuscriptData)
+    // Don't set Content-Type header manually - browser will set it automatically with boundary for FormData
+    console.log('🌐 API Service: Sending manuscript to backend...')
+    const response = await api.post('/publishing/manuscripts/submit', manuscriptData)
+    console.log('🌐 API Service: Response received:', response.data)
     return response.data
   },
 
@@ -196,6 +199,50 @@ export const publishingAPI = {
    */
   viewPublication: async (publicationId) => {
     const response = await api.get(`/publications/${publicationId}/view`)
+    return response.data
+  },
+
+  /**
+   * Get publishing requirements (public endpoint)
+   */
+  getPublishingRequirements: async (filters = {}) => {
+    const response = await api.get('/publishing/requirements', { params: filters })
+    return response.data
+  },
+
+  /**
+   * Get my manuscripts
+   */
+  getMyManuscripts: async () => {
+    console.log('🌐 API Service: Fetching my manuscripts...')
+    const response = await api.get('/publishing/my-manuscripts')
+    console.log('🌐 API Service: Manuscripts response:', response.data)
+    return response.data
+  },
+
+  /**
+   * Delete manuscript
+   */
+  deleteManuscript: async (manuscriptId) => {
+    console.log('🌐 API Service: Deleting manuscript:', manuscriptId)
+    const response = await api.delete(`/publishing/manuscripts/${manuscriptId}`)
+    console.log('🌐 API Service: Delete response:', response.data)
+    return response.data
+  },
+
+  /**
+   * Get manuscript details
+   */
+  getManuscriptDetails: async (manuscriptId) => {
+    const response = await api.get(`/publishing/manuscripts/${manuscriptId}`)
+    return response.data
+  },
+
+  /**
+   * Update manuscript status
+   */
+  updateManuscriptStatus: async (manuscriptId, status) => {
+    const response = await api.patch(`/publishing/manuscripts/${manuscriptId}/status`, { status })
     return response.data
   },
 
@@ -275,6 +322,43 @@ export const publishingAPI = {
     const response = await api.post(`/reviewer/manuscripts/${manuscriptId}/review`, reviewData)
     return response.data
   }
+}
+
+// Named exports for convenience
+export const getPublications = publishingAPI.getPublications
+export const getPublishingRequirements = publishingAPI.getPublishingRequirements
+export const submitManuscript = publishingAPI.submitManuscript
+export const getMyManuscripts = publishingAPI.getMyManuscripts
+export const deleteManuscript = publishingAPI.deleteManuscript
+export const updateManuscriptStatus = publishingAPI.updateManuscriptStatus
+export const getManuscriptDetails = publishingAPI.getManuscriptDetails
+export const getAssignedManuscripts = publishingAPI.getAssignedManuscripts
+export const submitReview = publishingAPI.submitReview
+
+// Research Paper API functions
+export const createResearchPaper = async (paperData) => {
+  const response = await api.post('/research-papers', paperData)
+  return response.data
+}
+
+export const getMyResearchPapers = async () => {
+  const response = await api.get('/research-papers')
+  return response.data
+}
+
+export const getResearchPaperById = async (id) => {
+  const response = await api.get(`/research-papers/${id}`)
+  return response.data
+}
+
+export const updateResearchPaper = async (id, paperData) => {
+  const response = await api.put(`/research-papers/${id}`, paperData)
+  return response.data
+}
+
+export const deleteResearchPaper = async (id) => {
+  const response = await api.delete(`/research-papers/${id}`)
+  return response.data
 }
 
 export default publishingAPI

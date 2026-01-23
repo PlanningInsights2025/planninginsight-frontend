@@ -1,63 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Search, Filter, MapPin, Briefcase, GraduationCap, Award, Users, Building, ArrowLeft } from 'lucide-react';
 import './AdvancedSearch.css';
 import UserProfileModal from '../UserProfileModal/UserProfileModal';
+import * as networkingAPI from "@/services/api/networking";
+import toast from 'react-hot-toast';
 
 const AdvancedSearch = ({ onClose, userRole, onOpenMessaging }) => {
   const [searchType, setSearchType] = useState('people');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedUser, setSelectedUser] = useState(null);
   const [showProfileModal, setShowProfileModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [filters, setFilters] = useState({
     location: '',
     industry: '',
     experience: '',
-    skills: [],
+    skills: '',
     education: '',
     company: ''
   });
 
-  const [searchResults, setSearchResults] = useState([
-    {
-      id: 1,
-      name: 'Sarah Johnson',
-      title: 'Product Manager',
-      company: 'Google',
-      location: 'San Francisco, CA',
-      avatar: '/api/placeholder/60/60',
-      mutualConnections: 12,
-      skills: ['Product Strategy', 'Agile', 'Analytics'],
-      match: 95,
-      isFollowing: false,
-      connected: false
-    },
-    {
-      id: 2,
-      name: 'Michael Chen',
-      title: 'Data Scientist',
-      company: 'Amazon',
-      location: 'Seattle, WA',
-      avatar: '/api/placeholder/60/60',
-      mutualConnections: 8,
-      skills: ['Python', 'Machine Learning', 'SQL'],
-      match: 88,
-      isFollowing: true,
-      connected: true
-    },
-    {
-      id: 3,
-      name: 'Emily Rodriguez',
-      title: 'UX Designer',
-      company: 'Apple',
-      location: 'Cupertino, CA',
-      avatar: '/api/placeholder/60/60',
-      mutualConnections: 15,
-      skills: ['Figma', 'User Research', 'Prototyping'],
-      match: 92,
-      isFollowing: false,
-      connected: false
-    }
-  ]);
+  const [searchResults, setSearchResults] = useState([]);
 
   const industries = [
     'Technology', 'Finance', 'Healthcare', 'Education', 
@@ -70,6 +33,70 @@ const AdvancedSearch = ({ onClose, userRole, onOpenMessaging }) => {
     'Senior (6-10 years)',
     'Expert (10+ years)'
   ];
+
+  // Perform search when query or filters change
+  useEffect(() => {
+    const delaySearch = setTimeout(() => {
+      if (searchQuery.trim() || Object.values(filters).some(v => v)) {
+        performSearch();
+      } else {
+        setSearchResults([]);
+      }
+    }, 500);
+
+    return () => clearTimeout(delaySearch);
+  }, [searchQuery, filters, searchType]);
+
+  const performSearch = async () => {
+    try {
+      setIsLoading(true);
+      let response;
+
+      switch (searchType) {
+        case 'people':
+          response = await networkingAPI.searchPeople(searchQuery, filters);
+          break;
+        case 'jobs':
+          response = await networkingAPI.searchJobs(searchQuery, {
+            location: filters.location,
+            type: filters.type,
+            experience: filters.experience
+          });
+          break;
+        case 'companies':
+          response = await networkingAPI.searchCompanies(searchQuery, {
+            industry: filters.industry,
+            location: filters.location
+          });
+          break;
+        default:
+          response = { success: true, results: [] };
+      }
+
+      if (response.success) {
+        setSearchResults(response.results || []);
+      }
+    } catch (error) {
+      console.error('Search error:', error);
+      toast.error('Failed to perform search');
+      setSearchResults([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleClearFilters = () => {
+    setFilters({
+      location: '',
+      industry: '',
+      experience: '',
+      skills: '',
+      education: '',
+      company: ''
+    });
+    setSearchQuery('');
+    setSearchResults([]);
+  };
 
   const handleViewProfile = (user) => {
     setSelectedUser(user);
@@ -100,14 +127,23 @@ const AdvancedSearch = ({ onClose, userRole, onOpenMessaging }) => {
     }
   };
 
-  const handleConnect = (userId) => {
-    console.log('Connecting with user:', userId);
-    setSearchResults(prevResults => 
-      prevResults.map(result => 
-        result.id === userId ? { ...result, connected: true } : result
-      )
-    );
-    setShowProfileModal(false);
+  const handleConnect = async (userId) => {
+    try {
+      const response = await networkingAPI.sendConnectionRequest(userId);
+      
+      if (response.success) {
+        setSearchResults(prevResults => 
+          prevResults.map(result => 
+            result.id === userId ? { ...result, connected: true } : result
+          )
+        );
+        toast.success('Connection request sent');
+        setShowProfileModal(false);
+      }
+    } catch (error) {
+      console.error('Error sending connection request:', error);
+      toast.error('Failed to send connection request');
+    }
   };
 
   const handleMessage = (userId) => {
@@ -125,14 +161,12 @@ const AdvancedSearch = ({ onClose, userRole, onOpenMessaging }) => {
         <div className="search-modal-header">
           <button className="back-btn" onClick={onClose} title="Back to Networking Arena">
             <ArrowLeft size={20} />
+            <span>Back</span>
           </button>
           <h2>
             <Search size={24} />
             Advanced Search
           </h2>
-          <button className="close-btn" onClick={onClose}>
-            <X size={24} />
-          </button>
         </div>
 
         {/* Search Type Tabs */}
@@ -221,6 +255,7 @@ const AdvancedSearch = ({ onClose, userRole, onOpenMessaging }) => {
                   <select
                     value={filters.experience}
                     onChange={(e) => setFilters({...filters, experience: e.target.value})}
+                    className="modern-select"
                   >
                     <option value="">Any Experience</option>
                     {experienceLevels.map((level) => (
@@ -234,6 +269,8 @@ const AdvancedSearch = ({ onClose, userRole, onOpenMessaging }) => {
                   <input
                     type="text"
                     placeholder="e.g. React, Python, AWS"
+                    value={filters.skills}
+                    onChange={(e) => setFilters({...filters, skills: e.target.value})}
                   />
                 </div>
 
@@ -284,22 +321,36 @@ const AdvancedSearch = ({ onClose, userRole, onOpenMessaging }) => {
               </>
             )}
 
-            <button className="clear-filters-btn">Clear All Filters</button>
+            <button className="clear-filters-btn" onClick={handleClearFilters}>Clear All Filters</button>
           </div>
 
           {/* Results */}
           <div className="search-results">
             <div className="results-header">
               <h3>{searchResults.length} results found</h3>
-              <select className="sort-select">
-                <option value="relevance">Most Relevant</option>
-                <option value="recent">Most Recent</option>
-                <option value="connections">Most Connections</option>
-              </select>
+              <div className="sort-dropdown">
+                <select className="sort-select">
+                  <option value="relevance">Most Relevant</option>
+                  <option value="recent">Most Recent</option>
+                  <option value="connections">Most Connections</option>
+                </select>
+              </div>
             </div>
 
             <div className="results-list">
-              {searchResults.map((result) => (
+              {isLoading ? (
+                <div className="loading-state">
+                  <div className="spinner"></div>
+                  <p>Searching...</p>
+                </div>
+              ) : searchResults.length === 0 ? (
+                <div className="empty-state">
+                  <Search size={48} />
+                  <h3>No results found</h3>
+                  <p>Try adjusting your search query or filters</p>
+                </div>
+              ) : (
+                searchResults.map((result) => (
                 <div key={result.id} className="result-card">
                   <img src={result.avatar} alt={result.name} className="result-avatar" />
                   <div className="result-info">
@@ -335,7 +386,8 @@ const AdvancedSearch = ({ onClose, userRole, onOpenMessaging }) => {
                     <button className="btn-view" onClick={() => handleViewProfile(result)}>View Profile</button>
                   </div>
                 </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
         </div>
