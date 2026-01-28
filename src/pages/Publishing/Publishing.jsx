@@ -5,7 +5,6 @@ import { toast } from 'react-hot-toast'
 import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
 import * as pdfjsLib from "pdfjs-dist";
-import mammoth from "mammoth";
 import { 
   getPublishingRequirements, 
   submitManuscript, 
@@ -384,6 +383,8 @@ const Publishing = () => {
   };
 
   const parseDocx = async (arrayBuffer) => {
+    // Dynamically import mammoth browser build at runtime
+    const mammoth = await import("mammoth/mammoth.browser.js");
     const { value } = await mammoth.extractRawText({ arrayBuffer });
     return extractFieldsFromText(value || "");
   };
