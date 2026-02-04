@@ -4,6 +4,8 @@ import {
   FileText, BarChart3, MoreHorizontal, Globe, Users, Lock, X, Smile,
   Edit, Trash2, Flag, Copy 
 } from 'lucide-react';
+import toast from 'react-hot-toast';
+import * as feedApi from '@/services/api/feed';
 import './FeedSection.css';
 
 const FeedSection = ({ userRole, currentUser }) => {
@@ -19,82 +21,37 @@ const FeedSection = ({ userRole, currentUser }) => {
   const [articleTitle, setArticleTitle] = useState('');
   const [articleLink, setArticleLink] = useState('');
   const [showPostMenu, setShowPostMenu] = useState({});
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
 
-  const [posts, setPosts] = useState([
-    {
-      id: 1,
-      author: 'Sarah Johnson',
-      avatar: '/api/placeholder/50/50',
-      title: 'Product Manager at Google',
-      timestamp: '2 hours ago',
-      content: 'Excited to share that our team just launched a new feature that will revolutionize how users interact with our platform! 🚀 The journey from concept to launch was incredible, and I\'m grateful for the amazing team that made it possible.',
-      image: '/api/placeholder/600/400',
-      likes: 145,
-      comments: 23,
-      shares: 12,
-      liked: false,
-      bookmarked: false,
-      type: 'image'
-    },
-    {
-      id: 2,
-      author: 'David Wilson',
-      avatar: '/api/placeholder/50/50',
-      title: 'Tech Entrepreneur',
-      timestamp: '3 hours ago',
-      content: 'Check out our latest product demo! This is going to change everything in the industry. 🎥',
-      video: 'https://www.w3schools.com/html/mov_bbb.mp4',
-      likes: 178,
-      comments: 32,
-      shares: 19,
-      liked: false,
-      bookmarked: false,
-      type: 'video'
-    },
-    {
-      id: 4,
-      author: 'Michael Chen',
-      avatar: '/api/placeholder/50/50',
-      title: 'Data Scientist at Amazon',
-      timestamp: '5 hours ago',
-      content: 'Just published a new article on Machine Learning best practices! Check it out and let me know your thoughts. 📊',
-      likes: 89,
-      comments: 15,
-      shares: 8,
-      liked: true,
-      bookmarked: true,
-      type: 'article',
-      article: {
-        title: 'Machine Learning Best Practices for 2024',
-        link: 'https://medium.com/@example/ml-best-practices'
+  // Fetch feed on mount
+  useEffect(() => {
+    fetchFeed();
+  }, []);
+
+  const fetchFeed = async (pageNum = 1) => {
+    try {
+      setLoading(true);
+      const response = await feedApi.getFeed({ page: pageNum, limit: 20 });
+      
+      if (response.success) {
+        if (pageNum === 1) {
+          setPosts(response.posts);
+        } else {
+          setPosts(prev => [...prev, ...response.posts]);
+        }
+        setHasMore(response.pagination.page < response.pagination.pages);
+        setPage(pageNum);
       }
-    },
-    {
-      id: 5,
-      author: 'Emily Rodriguez',
-      avatar: '/api/placeholder/50/50',
-      title: 'UX Designer at Apple',
-      timestamp: '1 day ago',
-      content: 'What\'s the most important skill for designers in 2024?',
-      likes: 234,
-      comments: 67,
-      shares: 34,
-      liked: false,
-      bookmarked: false,
-      type: 'poll',
-      poll: {
-        question: 'Most important design skill?',
-        options: [
-          { id: 1, text: 'User Research', votes: 45, percentage: 30 },
-          { id: 2, text: 'Prototyping', votes: 35, percentage: 23 },
-          { id: 3, text: 'AI/ML Integration', votes: 50, percentage: 33 },
-          { id: 4, text: 'Accessibility', votes: 20, percentage: 14 }
-        ],
-        totalVotes: 150,
-        userVoted: null
-      }
+    } catch (error) {
+      console.error('Error fetching feed:', error);
+      // Silently fail - empty state will be shown
+    } finally {
+      setLoading(false);
     }
-  ]);
+  };
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -108,73 +65,140 @@ const FeedSection = ({ userRole, currentUser }) => {
     return () => document.removeEventListener('click', handleClickOutside);
   }, []);
 
-  const handleLike = (postId) => {
-    setPosts(posts.map(post => {
-      if (post.id === postId) {
-        return {
-          ...post,
-          liked: !post.liked,
-          likes: post.liked ? post.likes - 1 : post.likes + 1
-        };
-      }
-      return post;
-    }));
-  };
+  const handleLike = async (postId) => {
+    try {
+      // Optimistic update
+      setPosts(posts.map(post => {
+        if (post.id === postId) {
+          return {
+            ...post,
+            liked: !post.liked,
+            likes: post.liked ? post.likes - 1 : post.likes + 1
+          };
+        }
+        return post;
+      }));
 
-  const handleBookmark = (postId) => {
-    setPosts(posts.map(post => {
-      if (post.id === postId) {
-        return { ...post, bookmarked: !post.bookmarked };
+      const response = await feedApi.likePost(postId);
+      
+      if (response.success) {
+        // Update with server response
+        setPosts(posts.map(post => {
+          if (post.id === postId) {
+            return {
+              ...post,
+              liked: response.liked,
+              likes: response.likesCount
+            };
+          }
+          return post;
+        }));
       }
-      return post;
-    }));
-    
-    // Show feedback message
-    const post = posts.find(p => p.id === postId);
-    if (post) {
-      alert(post.bookmarked ? 'Post removed from saved items' : 'Post saved successfully!');
+    } catch (error) {
+      console.error('Error liking post:', error);
+      // Silently fail
+      // Revert optimistic update
+      setPosts(posts.map(post => {
+        if (post.id === postId) {
+          return {
+            ...post,
+            liked: !post.liked,
+            likes: post.liked ? post.likes + 1 : post.likes - 1
+          };
+        }
+        return post;
+      }));
     }
   };
 
-  const handleComment = (postId) => {
+  const handleBookmark = async (postId) => {
+    try {
+      // Optimistic update
+      setPosts(posts.map(post => {
+        if (post.id === postId) {
+          return { ...post, bookmarked: !post.bookmarked };
+        }
+        return post;
+      }));
+
+      const response = await feedApi.bookmarkPost(postId);
+      
+      if (response.success) {
+        toast.success(response.bookmarked ? 'Post saved' : 'Post removed from saved');
+      }
+    } catch (error) {
+      console.error('Error bookmarking post:', error);
+      // Silently fail
+      // Revert
+      setPosts(posts.map(post => {
+        if (post.id === postId) {
+          return { ...post, bookmarked: !post.bookmarked };
+        }
+        return post;
+      }));
+    }
+  };
+
+  const handleComment = async (postId) => {
+    const isOpen = showComments[postId];
+    
     setShowComments(prev => ({
       ...prev,
       [postId]: !prev[postId]
     }));
+
+    // Fetch comments if opening
+    if (!isOpen && !postComments[postId]) {
+      try {
+        const response = await feedApi.getComments(postId);
+        if (response.success) {
+          setPostComments(prev => ({
+            ...prev,
+            [postId]: response.comments
+          }));
+        }
+      } catch (error) {
+        console.error('Error fetching comments:', error);
+      }
+    }
   };
 
-  const handleAddComment = (postId) => {
+  const handleAddComment = async (postId) => {
     const comment = commentText[postId];
-    if (comment && comment.trim()) {
-      const newComment = {
-        id: Date.now(),
-        author: currentUser?.name || 'User',
-        avatar: currentUser?.avatar || '/api/placeholder/40/40',
-        text: comment,
-        timestamp: 'Just now',
-        likes: 0,
-        liked: false
-      };
+    if (!comment || !comment.trim()) return;
 
-      setPostComments(prev => ({
-        ...prev,
-        [postId]: [...(prev[postId] || []), newComment]
-      }));
+    try {
+      const response = await feedApi.addComment(postId, comment);
+      
+      if (response.success) {
+        // Add comment to UI
+        setPostComments(prev => ({
+          ...prev,
+          [postId]: [...(prev[postId] || []), response.comment]
+        }));
 
-      setPosts(posts.map(p => {
-        if (p.id === postId) {
-          return {
-            ...p,
-            comments: p.comments + 1
-          };
-        }
-        return p;
-      }));
+        // Update post comment count
+        setPosts(posts.map(p => {
+          if (p.id === postId) {
+            return {
+              ...p,
+              comments: response.commentsCount
+            };
+          }
+          return p;
+        }));
 
-      setCommentText(prev => ({
-        ...prev,
-        [postId]: ''
-      }));
+        // Clear input
+        setCommentText(prev => ({
+          ...prev,
+          [postId]: ''
+        }));
+
+        toast.success('Comment added');
+      }
+    } catch (error) {
+      console.error('Error adding comment:', error);
+      // Silently fail
     }
   };
 
@@ -197,83 +221,48 @@ const FeedSection = ({ userRole, currentUser }) => {
     });
   };
 
-  const handleShare = (postId) => {
-    const post = posts.find(p => p.id === postId);
-    if (post) {
-      const options = [
-        'Share on your feed',
-        'Share in a message',
-        'Copy link to post',
-        'Share via email'
-      ];
+  const handleShare = async (postId) => {
+    try {
+      const response = await feedApi.sharePost(postId);
       
-      const choice = prompt(
-        `Share ${post.author}'s post:\n\n` +
-        '1. Share on your feed\n' +
-        '2. Share in a message\n' +
-        '3. Copy link to post\n' +
-        '4. Share via email\n\n' +
-        'Enter your choice (1-4):'
-      );
-      
-      if (choice) {
-        const choiceNum = parseInt(choice);
-        if (choiceNum >= 1 && choiceNum <= 4) {
-          setPosts(posts.map(p => {
-            if (p.id === postId) {
-              return {
-                ...p,
-                shares: p.shares + 1
-              };
-            }
-            return p;
-          }));
-          alert(`Post shared: ${options[choiceNum - 1]}`);
-        }
+      if (response.success) {
+        setPosts(posts.map(p => {
+          if (p.id === postId) {
+            return {
+              ...p,
+              shares: response.sharesCount
+            };
+          }
+          return p;
+        }));
+        toast.success('Post shared');
       }
+    } catch (error) {
+      console.error('Error sharing post:', error);
+      // Silently fail
     }
   };
 
-  const handlePollVote = (postId, optionId) => {
-    setPosts(posts.map(post => {
-      if (post.id === postId && post.type === 'poll' && post.poll) {
-        // Check if user already voted
-        if (post.poll.userVoted) {
-          alert('You have already voted in this poll!');
-          return post;
-        }
-
-        // Calculate new votes
-        const updatedOptions = post.poll.options.map(option => {
-          if (option.id === optionId) {
+  const handlePollVote = async (postId, optionId) => {
+    try {
+      const response = await feedApi.votePoll(postId, optionId);
+      
+      if (response.success) {
+        setPosts(posts.map(post => {
+          if (post.id === postId) {
             return {
-              ...option,
-              votes: option.votes + 1
+              ...post,
+              poll: response.poll
             };
           }
-          return option;
-        });
-
-        const newTotalVotes = post.poll.totalVotes + 1;
-
-        // Recalculate percentages
-        const optionsWithPercentages = updatedOptions.map(option => ({
-          ...option,
-          percentage: Math.round((option.votes / newTotalVotes) * 100)
+          return post;
         }));
-
-        return {
-          ...post,
-          poll: {
-            ...post.poll,
-            options: optionsWithPercentages,
-            totalVotes: newTotalVotes,
-            userVoted: optionId
-          }
-        };
+        toast.success('Vote recorded');
       }
-      return post;
-    }));
+    } catch (error) {
+      console.error('Error voting:', error);
+      toast.error(error.response?.data?.message || 'Failed to vote');
+    }
   };
 
   const togglePostMenu = (postId) => {
@@ -283,10 +272,20 @@ const FeedSection = ({ userRole, currentUser }) => {
     }));
   };
 
-  const handleDeletePost = (postId) => {
-    if (window.confirm('Are you sure you want to delete this post?')) {
-      setPosts(posts.filter(post => post.id !== postId));
-      setShowPostMenu({});
+  const handleDeletePost = async (postId) => {
+    if (!window.confirm('Are you sure you want to delete this post?')) return;
+
+    try {
+      const response = await feedApi.deletePost(postId);
+      
+      if (response.success) {
+        setPosts(posts.filter(post => post.id !== postId));
+        setShowPostMenu({});
+        toast.success('Post deleted');
+      }
+    } catch (error) {
+      console.error('Error deleting post:', error);
+      // Silently fail
     }
   };
 
@@ -296,19 +295,18 @@ const FeedSection = ({ userRole, currentUser }) => {
       setPostText(post.content);
       setShowCreatePost(true);
       setShowPostMenu({});
-      // You could add more logic here to pre-fill other fields
     }
   };
 
   const handleReportPost = (postId) => {
-    alert('Post reported. Our team will review it shortly.');
+    toast.success('Post reported. Our team will review it shortly.');
     setShowPostMenu({});
   };
 
   const handleCopyLink = (postId) => {
-    const link = `${window.location.origin}/post/${postId}`;
+    const link = `${window.location.origin}/networking-arena/post/${postId}`;
     navigator.clipboard.writeText(link);
-    alert('Link copied to clipboard!');
+    toast.success('Link copied to clipboard');
     setShowPostMenu({});
   };
 
@@ -317,56 +315,59 @@ const FeedSection = ({ userRole, currentUser }) => {
     setShowCreatePost(true);
   };
 
-  const handleCreatePost = () => {
+  const handleCreatePost = async () => {
     if (!postText.trim() && !mediaFile && postType !== 'poll') return;
 
-    const newPost = {
-      id: Date.now(),
-      author: currentUser?.name || 'User',
-      avatar: currentUser?.avatar || '/api/placeholder/50/50',
-      title: 'Your Professional Title',
-      timestamp: 'Just now',
-      content: postText,
-      likes: 0,
-      comments: 0,
-      shares: 0,
-      liked: false,
-      bookmarked: false,
-      type: postType
-    };
+    try {
+      const postData = {
+        content: postText,
+        type: postType,
+        privacy: postPrivacy
+      };
 
-    if (postType === 'image' && mediaFile) {
-      newPost.image = URL.createObjectURL(mediaFile);
-    }
-
-    if (postType === 'video' && mediaFile) {
-      newPost.video = URL.createObjectURL(mediaFile);
-    }
-
-    if (postType === 'article') {
-      newPost.articleTitle = articleTitle;
-      newPost.articleLink = articleLink;
-    }
-
-    if (postType === 'poll') {
-      const validOptions = pollOptions.filter(opt => opt.trim());
-      if (validOptions.length >= 2) {
-        newPost.poll = {
+      if (postType === 'poll') {
+        const validOptions = pollOptions.filter(opt => opt.trim());
+        if (validOptions.length < 2) {
+          toast.error('Poll must have at least 2 options');
+          return;
+        }
+        postData.poll = {
           question: postText,
-          options: validOptions.map((text, index) => ({
-            id: index + 1,
-            text,
-            votes: 0,
-            percentage: 0
-          })),
-          totalVotes: 0,
-          userVoted: null
+          options: validOptions
         };
       }
-    }
 
-    setPosts([newPost, ...posts]);
-    resetPostForm();
+      if (postType === 'article') {
+        if (!articleTitle || !articleLink) {
+          toast.error('Article title and link are required');
+          return;
+        }
+        postData.article = {
+          title: articleTitle,
+          link: articleLink
+        };
+      }
+
+      const response = await feedApi.createPost(postData);
+      
+      if (response.success) {
+        setPosts([response.post, ...posts]);
+        
+        // Reset form
+        setPostText('');
+        setShowCreatePost(false);
+        setPostType('text');
+        setMediaFile(null);
+        setPollOptions(['', '']);
+        setArticleTitle('');
+        setArticleLink('');
+        
+        toast.success('Post created successfully');
+      }
+    } catch (error) {
+      console.error('Error creating post:', error);
+      // Silently fail
+    }
   };
 
   const resetPostForm = () => {
@@ -620,7 +621,17 @@ const FeedSection = ({ userRole, currentUser }) => {
 
       {/* Posts Feed */}
       <div className="posts-feed">
-        {posts.map((post) => (
+        {loading && posts.length === 0 ? (
+          <div className="loading-state">
+            <p>Loading feed...</p>
+          </div>
+        ) : posts.length === 0 ? (
+          <div className="empty-state">
+            <p>No posts yet. Start by creating your first post!</p>
+          </div>
+        ) : (
+          <>
+            {posts.map((post) => (
           <div key={post.id} className="post-card">
             {/* Post Header */}
             <div className="post-header">
@@ -843,7 +854,21 @@ const FeedSection = ({ userRole, currentUser }) => {
               </div>
             )}
           </div>
-        ))}
+            ))}
+            
+            {hasMore && (
+              <div className="load-more-container">
+                <button 
+                  className="load-more-btn"
+                  onClick={() => fetchFeed(page + 1)}
+                  disabled={loading}
+                >
+                  {loading ? 'Loading...' : 'Load More'}
+                </button>
+              </div>
+            )}
+          </>
+        )}
       </div>
 
       {/* Load More */}

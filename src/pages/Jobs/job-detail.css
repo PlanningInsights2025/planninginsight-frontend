@@ -1,0 +1,508 @@
+/*
+  job-detail.css
+  Professional, minimal, enterprise-ready Job Detail template
+  - Plain CSS only
+  - Scoped to page classes to avoid global overrides
+  - Uses CSS Grid / Flexbox
+*/
+
+:root{
+  --max-width: 1200px;
+  --page-bg: #f7fbfb;
+  --card-bg: #ffffff;
+  --muted: #6b7280;
+  --text: #0f1724;
+  --primary: #2b2f3a;
+  --primary-strong: #1f2227;
+  --accent: #b86b2f;
+  --radius: 12px;
+  --shadow: 0 10px 28px rgba(16,24,40,0.06);
+  --gap: 20px;
+  --line-height: 1.6;
+  --container-pad: 28px;
+  font-family: Inter, Roboto, -apple-system, 'Segoe UI', Arial, sans-serif;
+}
+
+/* Page container */
+.job-detail-page{
+  background: var(--page-bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding: var(--container-pad) 16px;
+}
+
+.job-detail-page .container{
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* Two-column layout: content + sidebar */
+.job-detail-content{
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 28px;
+  align-items: start;
+}
+
+@media (max-width: 880px){
+  .job-detail-content{ grid-template-columns: 1fr }
+}
+
+/* Card base */
+.main-content > .job-header,
+.main-content > .job-description-section,
+.recruiter-section,
+.similar-jobs-section,
+.quick-apply-card{
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 22px;
+  margin-bottom: var(--gap);
+  border: 1px solid rgba(11,59,102,0.04);
+}
+
+/* Header */
+.job-header{ display:flex; flex-direction:column; gap:12px }
+
+.back-navigation .back-button{
+  display:inline-flex; align-items:center; gap:8px;
+  background:transparent; border:none; color:var(--primary); cursor:pointer; font-weight:600;
+}
+
+.job-title-section{ display:flex; justify-content:space-between; align-items:flex-start; gap:16px }
+
+.title-content h1{ margin:0; font-size:24px; line-height:1.2; font-weight:800; color:var(--text) }
+
+.company-info{ display:flex; align-items:center; gap:8px; color:var(--muted); font-size:14px }
+
+.verified-badge{ display:inline-block; background:#eaf4ff; color:var(--primary); font-size:12px; padding:4px 8px; border-radius:999px; margin-left:6px }
+
+.job-actions{ display:flex; gap:8px }
+.icon-button{ background:transparent; border:1px solid rgba(11,59,102,0.04); border-radius:10px; padding:8px; display:inline-flex; align-items:center; cursor:pointer; color:var(--muted) }
+
+/* Meta */
+.job-meta{ display:flex; gap:18px; flex-wrap:wrap; padding-top:8px; border-top:1px solid #eef2f6; margin-top:12px }
+.job-meta .meta-item{ display:flex; align-items:center; gap:8px; color:var(--muted); font-size:14px }
+
+/* Actions */
+.application-section{ margin-top:14px; display:flex; justify-content:space-between; align-items:center }
+
+.btn{ display:inline-flex; align-items:center; gap:8px; padding:10px 14px; border-radius:10px; font-weight:700; cursor:pointer; border:1px solid transparent; transition:background .12s ease, transform .08s ease }
+/* Primary uses accent for visibility */
+.btn-primary{ background:#60a5fa; color:#fff; border:1px solid rgba(59,130,246,0.12); box-shadow: 0 6px 18px rgba(59,130,246,0.08) }
+.btn-primary:hover{ background:#3b82f6; transform: translateY(-1px) }
+.btn-outline{ background:#fff; border:1px solid rgba(15,23,42,0.06); color:var(--primary) }
+.btn-small{ padding:6px 10px; font-size:13px }
+.btn-large{ padding:12px 16px; font-size:16px }
+.btn:focus{ outline:3px solid rgba(25,119,210,0.10); outline-offset:2px }
+
+/* Description */
+.job-description-section h2{ margin:0 0 12px 0; font-size:18px }
+.description-content p{ margin:0 0 12px 0; line-height:var(--line-height); color:#374151 }
+
+.requirements h3, .responsibilities h3, .skills-section h3{ margin-top:12px; margin-bottom:8px; font-size:15px }
+.requirements ul, .responsibilities ul{ margin:0 0 12px 18px }
+
+.skill-tag{ display:inline-block; background:#fff7ed; color:var(--accent); padding:6px 10px; border-radius:999px; margin:4px 6px 4px 0; font-size:13px; border:1px solid rgba(184,107,47,0.06) }
+
+/* Sidebar / recruiter card */
+/* Professional dark recruiter card */
+/* Recruiter card: neutral, professional */
+.recruiter-card{ display:flex; gap:16px; align-items:center; border-radius:12px; padding:14px; background:var(--card-bg); border:1px solid var(--border); box-shadow: 0 8px 20px rgba(15,23,42,0.04) }
+.recruiter-header{ display:flex; gap:12px; align-items:center }
+.recruiter-details h3{ margin:0; font-size:16px; color:var(--text) }
+.recruiter-description{ color:var(--muted); font-size:14px }
+.recruiter-stats{ display:flex; gap:12px; justify-content:space-between }
+.stat{ text-align:center }
+.stat-value{ font-weight:700; display:block; color:var(--text) }
+.stat-label{ color:var(--muted); font-size:13px }
+.recruiter-actions{ display:flex; gap:10px; margin-left:auto; align-items:center }
+.recruiter-avatar{ width:52px; height:52px; border-radius:10px; background:linear-gradient(180deg,#fff7f0,#fff3e8); display:flex; align-items:center; justify-content:center; color:var(--primary); font-weight:800 }
+
+/* Make recruiter actions visible over card background */
+.recruiter-card{ overflow: visible; position: relative }
+.recruiter-actions .btn{ min-width:140px; white-space:nowrap; z-index:6; border-radius:10px; padding:10px 14px }
+/* Use consistent button styles */
+.recruiter-actions .btn.primary{ background:#60a5fa; color:#fff; border:1px solid rgba(59,130,246,0.12); box-shadow: 0 6px 18px rgba(59,130,246,0.06) }
+.recruiter-actions .btn.outline{ background:#fff; color:var(--primary); border:1px solid rgba(59,130,246,0.12) }
+.recruiter-actions .btn:hover{ background:#3b82f6; color:#fff }
+
+/* Ensure apply buttons are readable and aligned */
+.application-section .btn-primary{ min-width:140px }
+.application-section{ gap:12px; flex-wrap:wrap }
+
+@media (max-width: 880px){
+  .recruiter-card{ flex-direction:column; align-items:stretch }
+  .recruiter-actions{ flex-direction:row; justify-content:flex-end }
+  .recruiter-actions .btn{ width:48% }
+}
+
+/* Quick apply */
+.quick-apply-card h3{ margin:0 0 6px 0 }
+.quick-apply-card p{ margin:0 0 12px 0; color:var(--muted) }
+.btn.w-full{ width:100%; justify-content:center }
+.apply-info{ margin-top:10px; display:flex; gap:10px; flex-direction:column; color:var(--muted); font-size:13px }
+
+/* Similar jobs */
+.similar-jobs-grid{ display:flex; flex-direction:column; gap:12px; max-height:220px; overflow-y:auto; padding-right:6px }
+.similar-job-card{ background:#fafbfc; border-radius:10px; padding:14px; border:1px solid rgba(11,59,102,0.04); width:100% }
+
+/* Hide native scrollbars but keep scrolling */
+.similar-jobs-grid{ -ms-overflow-style: none; scrollbar-width: none; }
+.similar-jobs-grid::-webkit-scrollbar{ display:none }
+
+/* Fallback visible scrollbar if needed */
+.similar-jobs-grid.fallback-visible::-webkit-scrollbar{ width:8px }
+.similar-job-header h4{ margin:0; font-size:15px }
+.similar-job-meta{ margin-top:8px; display:flex; gap:10px; color:var(--muted); font-size:13px }
+
+/* Small screen tweaks */
+@media (max-width:520px){
+  .title-content h1{ font-size:18px }
+  .job-meta{ gap:10px }
+  .job-detail-page{ padding:20px 10px }
+  .similar-jobs-grid{ flex-direction:column }
+}
+
+/* ---------- Overrides: clearer buttons & recruiter layout for Job Detail sidebar ---------- */
+/* Appended to avoid conflicting with earlier user changes */
+.btn-primary{ background:#2563eb; color:#fff; border:1px solid rgba(37,99,235,0.12); box-shadow: 0 8px 20px rgba(37,99,235,0.08) }
+.btn-primary:hover{ background:#1e40af }
+.btn-outline{ background:#fff; color:var(--primary); border:1px solid rgba(37,99,235,0.12) }
+.btn{ cursor:pointer }
+
+/* Sidebar recruiter card - compact grid to avoid clipping */
+.recruiter-card{ display:grid; grid-template-columns:52px 1fr; grid-template-rows:auto auto; gap:8px 12px; align-items:start }
+.recruiter-avatar{ grid-row:1 / span 2; grid-column:1 }
+.recruiter-details{ grid-column:2 }
+.recruiter-actions{ grid-column:1 / -1; display:flex; justify-content:flex-end; gap:10px; margin:0 }
+.recruiter-actions .btn{ max-width:120px; min-width:0; padding:8px 12px }
+
+@media (max-width:880px){
+  .recruiter-card{ grid-template-columns:1fr; grid-template-rows:auto auto }
+  .recruiter-avatar{ grid-row:1 }
+  .recruiter-actions .btn{ width:48% }
+}
+
+/* Ensure quick-apply and application buttons are prominent */
+.application-section .btn-primary{ min-width:120px }
+.quick-apply-card .btn.w-full{ background:#2563eb; color:#fff }
+
+/* End overrides */
+
+/* ---------- Fix: Apply & Profile button structure for Job Detail ---------- */
+/* Keep Apply button inside the detail card and make it a pill button */
+.job-detail-page .main-content .application-section, .job-detail-page .main-content .job-actions{ display:flex; gap:12px; align-items:center; justify-content:flex-end }
+.job-detail-page .btn-primary, .job-detail-page .btn.apply-now{ background:#2563eb; color:#fff; padding:10px 18px; border-radius:999px; box-shadow:0 8px 20px rgba(37,99,235,0.08); max-width:260px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+.job-detail-page .btn-primary:hover, .job-detail-page .btn.apply-now:hover{ background:#1e40af }
+
+/* Sidebar recruiter actions: ensure pill outline + fixed width */
+.recruiter-actions .btn{ max-width:140px; min-width:0; padding:8px 12px; border-radius:999px }
+.recruiter-actions .btn.outline{ background:transparent; border:1px solid rgba(37,99,235,0.12); color:var(--primary) }
+
+/* Reset any off-canvas positioning that floated the button outside */
+.jp-card .btn, .job-detail-page .btn{ left:auto !important; right:auto !important; bottom:auto !important; transform:none !important }
+
+@media (max-width:880px){
+  .job-detail-page .btn-primary, .job-detail-page .btn.apply-now{ width:100%; max-width:100% }
+  .recruiter-actions .btn{ width:48% }
+}
+
+/* End: Apply & Profile button structure */
+
+/* ---------- Typography & content structure polish ---------- */
+/* Improve hierarchy in the job detail modal / page */
+.job-header .title-content h1{ font-size:26px; letter-spacing:-0.3px; color:var(--primary-strong) }
+.job-header .company-info{ font-size:14px; color:var(--muted) }
+
+.job-description-section h2, .similar-job-header h4{ font-size:16px; color:var(--primary-strong); margin-bottom:12px }
+.detail-section h4{ font-size:15px; font-weight:800; color:var(--primary-strong); padding-bottom:10px; border-bottom:1px solid rgba(15,23,42,0.04) }
+
+/* Clear spacing for meta rows */
+.additional-info{ display:flex; gap:28px; align-items:flex-start }
+.additional-info .info-item{ min-width:140px }
+
+/* Stats card — light with accent border */
+.stats-card{ background:linear-gradient(180deg,#ffffff,#fbfdff); border-radius:10px; padding:14px; border-left:4px solid var(--accent); box-shadow:0 8px 20px rgba(2,6,23,0.04) }
+
+/* Recruiter card (sidebar) — lighter, neutral appearance to fit the page */
+.recruiter-card{ background: linear-gradient(180deg,#ffffff,#fbfdff); border-radius:12px; padding:14px; display:grid; grid-template-columns:56px 1fr; grid-template-rows:auto auto; gap:10px }
+.recruiter-avatar{ width:56px; height:56px; border-radius:10px; grid-row:1 / span 2 }
+.recruiter-details{ grid-column:2 }
+.recruiter-details h3{ color:var(--primary-strong); margin:0 }
+.recruiter-description{ color:var(--muted) }
+
+/* Recruiter action buttons — pill outline + filled primary */
+.recruiter-actions .btn.primary{ background:#2563eb; color:#fff; box-shadow:0 8px 20px rgba(37,99,235,0.08) }
+.recruiter-actions .btn.outline{ background:transparent; border:1px solid rgba(37,99,235,0.12); color:var(--primary) }
+
+/* Similar job items — subtle rounded cards */
+.similar-jobs-grid .similar-job-card{ border-radius:10px; padding:12px; background:#fff }
+
+@media (max-width:880px){
+  .job-header .title-content h1{ font-size:20px }
+  .recruiter-card{ grid-template-columns:1fr }
+  .recruiter-actions .btn{ width:48% }
+}
+
+/* End typography & structure polish */
+
+/* ---------- Contrast & readability improvements for Job Detail ---------- */
+/* Darken body copy and increase line-height for readability */
+.job-detail-page, .job-detail-page p, .description-content p{ color:#263244; line-height:1.7 }
+
+/* Make section headings more distinct and provide breathing room */
+.job-description-section h2, .requirements h3, .responsibilities h3{ color:var(--primary-strong); font-size:17px; margin-bottom:14px }
+.detail-section{ padding-top:6px; padding-bottom:12px }
+
+/* Recruiter sidebar improvements: clearer separation and higher contrast */
+.recruiter-card{ background:linear-gradient(180deg,#ffffff,#fbfdff); border-radius:12px; padding:16px; box-shadow:0 10px 24px rgba(2,6,23,0.04); border:1px solid rgba(15,23,42,0.04) }
+.recruiter-details h3{ color:var(--primary-strong); font-size:16px }
+.recruiter-description{ color:#475569 }
+
+/* Make recruiter CTAs tighter and more visible */
+.recruiter-actions .btn{ padding:8px 14px; font-size:14px; border-radius:999px }
+.recruiter-actions .btn.primary{ background:#1d4ed8; color:#fff }
+.recruiter-actions .btn.outline{ background:transparent; border:1px solid rgba(29,78,216,0.12); color:var(--primary) }
+
+/* Increase spacing under header and between meta rows */
+.job-header{ margin-bottom:6px }
+.additional-info{ gap:20px }
+
+@media (max-width:880px){
+  .job-detail-page .description-content p{ font-size:15px }
+}
+
+/* End contrast & readability improvements */
+
+/* ---------- Hide Similar Jobs and polish Job Detail layout ---------- */
+/* Remove the similar jobs block visually as requested */
+.similar-list, .similar-item, .similar-job-card { display: none !important; }
+
+/* Container refinements for the job detail page/modal */
+.job-detail-page .container{ max-width:1000px; padding:0 20px }
+.job-detail-content{ gap:32px }
+.main-content > .job-header, .main-content > .job-description-section{ padding:26px }
+
+/* Clearer section spacing and improved typography */
+.detail-section{ padding:20px 0; border-bottom:1px solid rgba(15,23,42,0.04); margin-bottom:8px }
+.detail-section h4{ font-size:17px; color:var(--primary-strong); margin-bottom:12px }
+.detail-section .text{ color:#273142; line-height:1.8 }
+
+/* Recruiter card alignment and breathing room */
+.recruiter-card{ padding:18px; border-radius:12px }
+.recruiter-avatar{ width:64px; height:64px }
+
+/* Tidy application summary and stats spacing */
+.application-summary{ padding:16px; border-radius:10px }
+.stats-card{ margin-top:14px }
+
+@media (max-width:880px){
+  .job-detail-content{ grid-template-columns:1fr; gap:18px }
+  .main-content > .job-header, .main-content > .job-description-section{ padding:18px }
+}
+
+
+/* ---------- Apply modal: structured form layout and polished controls ---------- */
+/* Container improvements */
+.application-modal{ display:block }
+.application-summary{ background:linear-gradient(180deg,#ffffff,#fbfdff); border:1px solid rgba(15,23,42,0.04); padding:18px; border-radius:10px; box-shadow:0 8px 20px rgba(2,6,23,0.04); }
+.application-summary h4{ margin:0 0 10px 0; font-size:16px; color:var(--primary-strong); font-weight:800 }
+.application-summary .meta{ color:#475569; font-size:13px; margin-top:8px }
+
+/* Form card */
+.application-form{ background:var(--card-bg); border:1px solid rgba(15,23,42,0.04); padding:18px; border-radius:10px; box-shadow:0 8px 20px rgba(2,6,23,0.04) }
+.application-form .section-title{ font-size:18px; font-weight:800; color:var(--primary-strong); margin-bottom:12px }
+.application-form .form-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px }
+.application-form .form-group{ display:flex; flex-direction:column; gap:8px }
+.application-form label{ font-size:13px; color:#334155; font-weight:700 }
+.application-form input[type="text"], .application-form input[type="email"], .application-form input[type="tel"], .application-form select, .application-form textarea{ height:44px; padding:10px 12px; border-radius:8px; border:1px solid rgba(15,23,42,0.06); background:#fff; color:#0f1724; font-size:14px }
+.application-form textarea{ height:110px; padding-top:12px }
+.application-form input:focus, .application-form select:focus, .application-form textarea:focus{ outline:3px solid rgba(37,99,235,0.08); outline-offset:2px }
+
+/* File input styling */
+.file-input-wrapper{ background:#f8fafc; border:1px dashed rgba(15,23,42,0.04); padding:14px; border-radius:8px; display:flex; align-items:center; justify-content:space-between }
+.file-input-wrapper .file-label{ color:#334155; font-weight:700 }
+
+/* Left column (summary) and right column (form) layout */
+.application-container{ display:grid; grid-template-columns: 260px 1fr; gap:20px }
+@media (max-width:920px){ .application-container{ grid-template-columns:1fr } .application-form .form-grid{ grid-template-columns:1fr } }
+
+/* Action area — pinned on tall forms for easy access */
+.application-footer{ display:flex; justify-content:flex-end; gap:12px; padding:12px 0 0; border-top:1px solid rgba(15,23,42,0.04); margin-top:18px }
+.application-footer .btn.submit{ background:#1d4ed8; color:#fff; padding:12px 20px; border-radius:999px; font-weight:800 }
+.application-footer .btn.cancel{ background:transparent; border:1px solid rgba(15,23,42,0.06); color:var(--primary) }
+
+/* Make the left summary compact and legible on small screens */
+.application-summary .meta-row{ display:flex; justify-content:space-between; gap:10px; align-items:center; padding:8px 0 }
+.application-summary .meta-row .label{ color:var(--muted); font-size:12px }
+.application-summary .meta-row .value{ color:var(--primary-strong); font-weight:800 }
+
+/* Improve scrollable modal padding so content doesn't feel cramped */
+.jp-modal-body{ padding:20px 28px }
+
+/* Tidy up visual separators */
+.application-form .divider{ height:1px; background:rgba(15,23,42,0.04); margin:12px 0 }
+
+/* End apply modal polish */
+
+/* Emergency: when recruiter card is shown in a dark modal, force white text for legibility */
+.jp-modal.small.vertical .recruiter-card,
+.jp-modal.small.vertical .recruiter-card * {
+  color: #ffffff !important;
+}
+.jp-modal.small.vertical .recruiter-card .role { color: rgba(255,255,255,0.9) !important; }
+
+/* Modal-scoped layout & alignment fixes for professional template */
+/* Keep these scoped under .jp-modal to avoid global overrides */
+.jp-modal .job-detail-page, .jp-modal .job-detail-content {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.jp-modal .job-detail-content{
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 28px;
+  align-items: start;
+}
+
+@media (max-width: 920px){
+  .jp-modal .job-detail-content{ grid-template-columns: 1fr; }
+}
+
+/* Normalize card spacing inside modal */
+.jp-modal .main-content > .job-header,
+.jp-modal .main-content > .job-description-section,
+.jp-modal .recruiter-section,
+.jp-modal .stats-card,
+.jp-modal .application-section,
+.jp-modal .similar-jobs-section {
+  padding: 18px !important;
+  margin-bottom: 18px !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 20px rgba(2,6,23,0.04) !important;
+}
+
+/* Recruiter card: modern horizontal layout with professional spacing and gradient */
+.jp-modal .recruiter-card{
+  display: flex !important;
+  align-items: center !important;
+  gap: 16px !important;
+  padding: 18px 20px !important;
+  background: linear-gradient(135deg, #afb1b4 0%, #4e535f 100%);
+  color: #fff;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2) !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+}
+
+.jp-modal .recruiter-card .recruiter-avatar{ 
+  flex: 0 0 56px; 
+  width: 56px; 
+  height: 56px; 
+  border-radius: 12px;
+  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+}
+.jp-modal .recruiter-card .recruiter-details{ 
+  flex: 1 1 auto; 
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.jp-modal .recruiter-card .recruiter-details .org{ 
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.3;
+  display: block;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  letter-spacing: -0.01em;
+}
+
+.jp-modal .recruiter-card .recruiter-details .role{ 
+  color: rgba(255,255,255,0.7);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.4;
+  display: block;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.jp-modal .recruiter-actions{ margin-left:auto; display:flex; gap:10px; align-items:center }
+.jp-modal .recruiter-actions .btn{ min-width:110px; padding:8px 12px; white-space:nowrap }
+
+/* Stats card and premium note alignment */
+.jp-modal .stats-card{ background:#fff; color:var(--text); border-left:4px solid var(--accent); padding:14px }
+.jp-modal .card.premium-note{ background:#687d8d; color:#fff; padding:12px 16px; border-radius:10px }
+
+/* Prevent wide elements from overflowing the modal */
+.jp-modal .jp-modal-body, .jp-modal .job-detail-content, .jp-modal .main-content{ max-width:100%; box-sizing:border-box }
+.jp-modal .jp-modal-body *{ word-break:break-word; overflow-wrap:anywhere }
+
+/* Tidy header typography */
+.jp-modal .job-header .title-content h1{ font-size:20px; line-height:1.25; margin:0; white-space:normal }
+.jp-modal .job-header .company-info{ font-size:13px }
+
+/* Ensure application buttons visible and pill-shaped */
+.jp-modal .application-section .btn-primary, .jp-modal .btn.apply-now{ border-radius:999px; padding:10px 18px; min-width:140px }
+
+/* Ensure recruiter action buttons match size and visual weight */
+.jp-modal .recruiter-actions .btn {
+  min-width: 180px !important;
+  padding: 10px 18px !important;
+  border-radius: 999px !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.jp-modal .recruiter-actions .btn.outline {
+  background: transparent !important;
+  border: 1px solid rgba(255,255,255,0.12) !important;
+  color: #fff !important;
+}
+
+/* Make both recruiter buttons identical in size and alignment to the Apply button */
+.jp-modal .recruiter-actions {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin-left: 0 !important;
+}
+
+.jp-modal .recruiter-actions .btn {
+  width: 240px !important; /* same width for both buttons */
+  max-width: 90% !important;
+  box-sizing: border-box !important;
+}
+
+.jp-modal .recruiter-actions .btn.primary { /* ensure filled button matches Apply visual weight */
+  padding: 10px 18px !important;
+}
+
+.jp-modal .recruiter-actions .btn.outline { /* make outline visually balanced */
+  padding: 10px 18px !important;
+}
+
+
+

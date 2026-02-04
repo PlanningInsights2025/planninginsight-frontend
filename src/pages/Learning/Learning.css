@@ -670,23 +670,29 @@
 .top-nav a { color: rgba(255,255,255,0.8); margin-left:16px; text-decoration:none; padding:6px 10px; border-radius:8px }
 .top-nav a.active, .top-nav a:hover { background: rgba(255,255,255,0.06); color:#fff }
 
+/* Remove stray top border/shadow above navbar (thin black line) */
+.learning-header, .learning-header-inner, .top-nav {
+  border-top: 0 !important;
+  box-shadow: none !important;
+}
+
 .container.learning-main { max-width:1200px; margin:20px auto; display:grid; grid-template-columns: 1fr 320px; gap:12px; padding:0 20px }
-.hero { background: linear-gradient(180deg,#0f172a 0%, #071025 100%); color:#fff; border-radius:12px; padding:18px; box-shadow:0 12px 36px rgba(2,6,23,0.6) }
-.hero h1{ margin:0; font-size:1.6rem }
-.hero .sub{ margin:6px 0 12px; color:rgba(255,255,255,0.8) }
+.hero { background: linear-gradient(180deg,rgb(240, 245, 204) 100%) !important; color: #ffffff !important; margin-top: 20px !important; }
+.hero .sub{ margin:6px 0 12px; color: #1f2937 !important; }
 .hero-controls { display:flex; gap:12px; align-items:center }
 .search-wrap { display:flex; gap:8px; align-items:center; width:100% }
 .search-field { display:flex; align-items:center; gap:8px; background:#fff; padding:8px 12px; border-radius:10px; flex:1 }
-.search-field input{ border:0; outline:0; width:100%; font-size:0.95rem }
+.search-field input{ border:0; outline:0; width:100%; font-size:0.95rem; color: #0f172a; }
+.search-field input::placeholder { color: #94a3b8; }
 .btn-ghost{ background:transparent; border:1px solid rgba(255,255,255,0.06); color:#fff; padding:8px 10px; border-radius:8px }
 .hero-options select{ padding:8px 10px; border-radius:8px }
 
 .courses-section { margin-top:18px }
 .section-head { display:flex; justify-content:space-between; align-items:center }
 .courses-grid{ display:grid; grid-template-columns: repeat(2,1fr); gap:24px; margin-top:18px }
-.course-card{ background: linear-gradient(180deg,#061025, #071229); color:#fff; border-radius:12px; overflow:hidden; display:flex; flex-direction:column; position:relative; box-shadow:0 10px 30px rgba(2,6,23,0.6) }
+.course-card{ background: linear-gradient(180deg,#778c7c, #b1bace); color:#050505; border-radius:12px; overflow:hidden; display:flex; flex-direction:column; position:relative; box-shadow:0 10px 30px rgba(2,6,23,0.6) }
 .course-card .media { height:110px; display:flex; align-items:flex-start; justify-content:flex-end; padding:10px }
-.course-card .badge{ background: rgba(255,255,255,0.08); padding:6px 8px; border-radius:8px; font-size:0.8rem }
+.course-card .badge{ background: rgba(114, 136, 139, 0.011); padding:6px 8px; border-radius:8px; font-size:0.8rem }
 .course-card .content{ padding:12px }
 .course-card .title{ margin:0; font-size:1.05rem }
 .course-card .meta{ margin-top:6px; color:rgba(255,255,255,0.65); display:flex; gap:8px; align-items:center }
@@ -696,8 +702,7 @@
 .btn-outline{ background:transparent; color:#fff; border:1px solid rgba(255,255,255,0.08); padding:8px 10px; border-radius:8px }
 .price{ position:absolute; right:12px; bottom:12px; font-weight:700 }
 
-.job-filters { }
-.filters-panel { background:#fff; color:#0f172a; border-radius:10px; padding:12px; box-shadow:0 8px 20px rgba(15,23,42,0.06) }
+.filters-panel { background:#5b6980; color:#0f172a; border-radius:10px; padding:12px; box-shadow:0 8px 20px rgba(15,23,42,0.06) }
 .company-list { display:flex; gap:8px; flex-wrap:wrap }
 .company { background:#f1f5f9; padding:6px 8px; border-radius:8px; font-size:0.9rem }
 
@@ -713,7 +718,7 @@
 .image-placeholder { width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:28px; color:#0b1220; font-weight:700 }
 .course-content-modern { padding:0 4px }
 .course-title { font-size:1.1rem; font-weight:700; margin:0 0 6px; color:#0f172a }
-.course-instructor { font-size:0.9rem; color:#64748b; margin-bottom:8px }
+.course-instructor { font-size:0.9rem; color:#34383c; margin-bottom:8px }
 .divider { border:0; border-top:1px solid #eef2f7; margin:8px 0 }
 .course-bottom { display:flex; justify-content:space-between; align-items:center; gap:12px }
 .rating { display:flex; align-items:center; gap:8px }
@@ -735,3 +740,199 @@
 
 @media (max-width: 1000px){ .courses-grid{ grid-template-columns: repeat(2,1fr) } .container.learning-main{ grid-template-columns: 1fr 320px } }
 @media (max-width: 720px){ .container.learning-main{ grid-template-columns: 1fr } .courses-grid{ grid-template-columns: 1fr } .info-panel{ position:static } .job-filters{ margin-top:18px } }
+
+/* ===== Learning: layout & typographic improvements ===== */
+/* Scoped variables to keep a professional palette for the Learning page */
+.learning-page {
+  --primary-color: #2563eb; /* medium blue */
+  --accent-color: #06b6d4; /* teal */
+  --bg-color: #071027; /* deep navy */
+  --surface-color: #0b1220; /* dark card surface */
+  --card-bg: #ffffff; /* card background for light cards */
+  --text-primary: #0f1724; /* dark text for light cards */
+  --text-on-dark: #e6eef8; /* light text for dark surfaces */
+  --muted: #64748b; /* muted text */
+  --border-color: #e6e9f2; /* neutral border */
+  background-color: var(--bg-color);
+}
+
+/* Centered container with max width and consistent padding */
+.learning-page .container.learning-main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+  grid-template-columns: 1fr 320px;
+  gap: 24px;
+}
+
+/* Apply consistent 24px padding inside cards */
+.stat-item,
+.category-card,
+.filters-panel,
+.course-card,
+.course-card.modern-course,
+.modal,
+.course-content,
+.course-content-modern,
+.login-promotion,
+.no-courses-found {
+  padding: 24px;
+}
+
+/* Form alignment using CSS Grid */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+.form-grid .full {
+  grid-column: 1 / -1;
+}
+
+/* ===== User-provided color overrides for Learning Center (scoped) ===== */
+/* These are color/background-only changes to match requested palette */
+.learning-page-root .hero {
+  background: linear-gradient(180deg, #A9A2CD 100%) !important;
+  color: #ffffff !important;
+  margin-top: 20px !important;
+}
+.learning-page-root .btn-ghost {
+  padding: 1rem 2rem !important;
+  background: transparent !important;
+  color: #0f172a !important;
+  border: 2px solid var(--border-color) !important;
+  border-radius: 12px !important;
+  font-weight: 600 !important;
+  font-size: 1rem !important;
+  cursor: pointer !important;
+  transition: var(--transition, all 0.2s ease) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+}
+.learning-page-root .filters-panel {
+  background: #A9A2CD !important;
+}
+.learning-page-root .course-card {
+  background: linear-gradient(180deg, #C0BABC 0%) !important;
+  color: #050505 !important;
+}
+
+
+/* Inputs and labels spacing */
+.form-grid label,
+.filter-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.form-grid input,
+.form-grid textarea,
+.form-grid select,
+.search-input,
+.search-field input,
+.modal-body input,
+.modal-body textarea,
+.modal-body select {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: var(--card-bg);
+  color: var(--text-primary);
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+.input-group { margin-bottom: 12px; }
+
+/* Clear separation between sections */
+.section { padding: 24px 0; border-top: 1px solid rgba(255,255,255,0.03); }
+.section-title { font-size: 1.125rem; font-weight: 700; color: var(--text-primary); margin-bottom: 12px; }
+
+/* Typographic hierarchy */
+.page-header h1 { font-size: 2.25rem; line-height: 1.1; margin-bottom: 8px; color: var(--text-on-dark); }
+.page-header p { font-size: 1rem; color: var(--muted); }
+h2 { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); }
+h3 { font-size: 1.125rem; font-weight: 600; color: var(--text-primary); }
+
+/* Professional button colors */
+.btn-primary { background: linear-gradient(180deg, var(--primary-color), #1e4eda); color: #fff; }
+.btn-outline { border: 1px solid rgba(0,0,0,0.06); }
+
+/* Improve card content spacing and muted copy */
+.course-card .content p,
+.course-description p,
+.course-instructor,
+.rating-count,
+.course-meta .meta-item { color: var(--muted); }
+
+/* Responsive rules: collapse grids on small screens */
+@media (max-width: 900px) {
+  .form-grid { grid-template-columns: 1fr; }
+  .learning-page .container.learning-main { padding: 16px; grid-template-columns: 1fr; }
+  .learning-stats { grid-template-columns: repeat(2, 1fr); }
+  .courses-grid { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+}
+
+@media (max-width: 480px) {
+  .page-header h1 { font-size: 1.75rem; }
+  .learning-page .container.learning-main { padding: 12px; }
+}
+
+/* Small visual touch-ups */
+.category-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(2,6,23,0.12); }
+.course-card:hover { transform: translateY(-4px); box-shadow: 0 12px 36px rgba(2,6,23,0.12); }
+
+/* Ensure modal and small components respect the new padding */
+.modal { padding: 20px; }
+
+/* Form helper: full width buttons in forms */
+.form-actions { display:flex; gap:12px; align-items:center; }
+.form-actions .btn { flex: 1; }
+
+/* keep previous responsive fallbacks intact */
+
+/* ===== Filters-panel color-only overrides (user request) ===== */
+.filters-panel {
+  background: #EEF3CE !important;
+}
+.filters-header h3 {
+  color: #0f172a !important;
+}
+.filter-group label {
+  color: #1f2937 !important;
+  font-weight: 700 !important;
+  text-transform: none !important; /* preserve existing casing/layout */
+}
+
+/* ===== Course card, enroll button and filter select color-only overrides ===== */
+.course-card {
+  background: linear-gradient(180deg,#e0e9a3 0%) !important;
+  color: #050505 !important;
+}
+
+.btn-enroll {
+  background: #524393 !important;
+  color: #ffffff !important;
+}
+
+/* Saved item style requested by user (scoped to learning page) */
+.learning-page-root .saved-item {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding: 8px !important;
+  background: #EEF3CE !important;
+  border-radius: 8px !important;
+  border: 1px solid #eef2f6 !important;
+}
+
+
+.filter-group select {
+  background: #524393 !important;
+  color: var(--text-primary) !important;
+}
+

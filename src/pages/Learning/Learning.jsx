@@ -14,12 +14,18 @@ function svgPlaceholder(text = "Image", w = 600, h = 360, bg = "#f3f4f6", fg = "
 // replace with API wiring when ready.
 
 const SAMPLE_COURSES = [
-  { id: 'react-101', title: 'React for Built Environment', instructor: 'Dr. A. Kumar', company: 'PI Learning', location: 'Mumbai, IN', duration: 6, mode: 'Live', fees: 2999, excerpt: 'Intro to React and component-driven UI for planning tools.', type: 'live', tags: ['React','Frontend','UI'], posted: '2d', thumbnail: svgPlaceholder('React Course') },
-  { id: 'pm-basics', title: 'Project Management Essentials', instructor: 'M. Sharma', company: 'BuildOps', location: 'Remote', duration: 3, mode: 'Pre-recorded', fees: 0, excerpt: 'Agile and waterfall techniques for built environment projects.', type: 'recorded', tags: ['PM','Agile'], posted: '1w', thumbnail: svgPlaceholder('PM Essentials') },
-  { id: 'data-vis', title: 'Data Visualization for Urban Analytics', instructor: 'L. Rao', company: 'Urbanlytics', location: 'Bengaluru, IN', duration: 4.5, mode: 'Live', fees: 1999, excerpt: 'Charts, maps and dashboards to communicate insights.', type: 'live', tags: ['Data','Maps'], posted: '4d', thumbnail: svgPlaceholder('Data Visualization') },
-  { id: 'cert-workflow', title: 'Certification & Assessment Workflow', instructor: 'S. Verma', company: 'Credify', location: 'Delhi, IN', duration: 2, mode: 'On-site', fees: 1499, excerpt: 'Assessment design, digital signatures and verifiable credentials.', type: 'offline', tags: ['Assessments','Credentials'], posted: '3w', thumbnail: svgPlaceholder('Certification') },
-  { id: 'razorpay-demo', title: 'Payments & Enrollment (Razorpay)', instructor: 'F. Iqbal', company: 'PI Learning', location: 'Hyderabad, IN', duration: 1.5, mode: 'Pre-recorded', fees: 999, excerpt: 'Integrate Razorpay for course enrollment and invoicing.', type: 'recorded', tags: ['Payments','Razorpay'], posted: '6d', thumbnail: svgPlaceholder('Payments') },
-  { id: 'instr-dashboard', title: 'Instructor Dashboard & Revenue', instructor: 'R. Singh', company: 'TeachDesk', location: 'Chennai, IN', duration: 3, mode: 'Live', fees: 2499, excerpt: 'Manage classes, materials, chats and payouts.', type: 'live', tags: ['Instructor','Revenue'], posted: '2d', thumbnail: svgPlaceholder('Instructor Dashboard') }
+  { id: 'react-101', title: 'React for Built Environment', instructor: 'Dr. A. Kumar', company: 'PI Learning', location: 'Mumbai, IN', duration: 6, mode: 'Live', fees: 2999, rating: 4.5, excerpt: 'Intro to React and component-driven UI for planning tools.', type: 'live', tags: ['React','Frontend','UI'], posted: '2d', thumbnail: svgPlaceholder('React Course') },
+  { id: 'pm-basics', title: 'Project Management Essentials', instructor: 'M. Sharma', company: 'BuildOps', location: 'Remote', duration: 3, mode: 'Pre-recorded', fees: 0, rating: 4.5, excerpt: 'Agile and waterfall techniques for built environment projects.', type: 'recorded', tags: ['PM','Agile'], posted: '1w', thumbnail: svgPlaceholder('PM Essentials') },
+  { id: 'data-vis', title: 'Data Visualization for Urban Analytics', instructor: 'L. Rao', company: 'Urbanlytics', location: 'Bengaluru, IN', duration: 4.5, mode: 'Live', fees: 1999, rating: 4.5, excerpt: 'Charts, maps and dashboards to communicate insights.', type: 'live', tags: ['Data','Maps'], posted: '4d', thumbnail: svgPlaceholder('Data Visualization') },
+  { id: 'cert-workflow', title: 'Certification & Assessment Workflow', instructor: 'S. Verma', company: 'Credify', location: 'Delhi, IN', duration: 2, mode: 'On-site', fees: 1499, rating: 4.5, excerpt: 'Assessment design, digital signatures and verifiable credentials.', type: 'offline', tags: ['Assessments','Credentials'], posted: '3w', thumbnail: svgPlaceholder('Certification') },
+  { id: 'razorpay-demo', title: 'Payments & Enrollment (Razorpay)', instructor: 'F. Iqbal', company: 'PI Learning', location: 'Hyderabad, IN', duration: 1.5, mode: 'Pre-recorded', fees: 999, rating: 4.2, excerpt: 'Integrate Razorpay for course enrollment and invoicing.', type: 'recorded', tags: ['Payments','Razorpay'], posted: '6d', thumbnail: svgPlaceholder('Payments') },
+  { id: 'instr-dashboard', title: 'Instructor Dashboard & Revenue', instructor: 'R. Singh', company: 'TeachDesk', location: 'Chennai, IN', duration: 3, mode: 'Live', fees: 2499, rating: 4.7, excerpt: 'Manage classes, materials, chats and payouts.', type: 'live', tags: ['Instructor','Revenue'], posted: '2d', thumbnail: svgPlaceholder('Instructor Dashboard') }
+]
+
+const FEATURED_COMPANIES = [
+  'PI Learning',
+  'BuildOps',
+  'Urbanlytics'
 ]
 
 function useDebounce(value, ms = 300){
@@ -105,9 +111,23 @@ const JobFilters = ({filters, setFilters, clearFilters, savedCourses = [], saved
       <div style={{marginTop:12}}>
         <h4 style={{margin:'8px 0'}}>Featured Companies</h4>
         <div className="company-list">
-          <div className="company">PI Learning</div>
-          <div className="company">BuildOps</div>
-          <div className="company">Urbanlytics</div>
+          {FEATURED_COMPANIES.map(comp => (
+            <div
+              key={comp}
+              role="button"
+              tabIndex={0}
+              className={"company" + (filters.company === comp ? ' active' : '')}
+              onClick={() => setFilters(f => ({ ...f, company: comp }))}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+                  e.preventDefault()
+                  setFilters(f => ({ ...f, company: comp }))
+                }
+              }}
+            >
+              {comp}
+            </div>
+          ))}
         </div>
       </div>
 
@@ -258,7 +278,7 @@ export default function Learning(){
       setLoginPrompt(true)
       return
     }
-    navigate(`/learning/courses/${course.id}/enroll`, { state: { course } })
+    navigate('/learning/enroll', { state: { course } })
   }
 
   function handleEnquire(course){ setEnquireCourse(course) }

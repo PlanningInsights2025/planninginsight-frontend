@@ -42,19 +42,43 @@ export const authAPI = {
     return response.data
   },
 
-  // User registration
+  // User registration (DEPRECATED - use requestSignupOTP instead)
   signup: async (userData) => {
     const response = await api.post('/auth/signup', userData)
     return response.data
   },
 
-  // Request OTP
+  // Request Signup OTP - Step 1 of registration
+  requestSignupOTP: async (userData) => {
+    const response = await api.post('/auth/request-signup-otp', userData)
+    return response.data
+  },
+
+  // Verify Signup OTP - Step 2 of registration
+  verifySignupOTP: async (email, otp) => {
+    const response = await api.post('/auth/verify-signup', { email, otp })
+    return response.data
+  },
+
+  // Request Login OTP
+  requestLoginOTP: async (email) => {
+    const response = await api.post('/auth/request-login-otp', { email })
+    return response.data
+  },
+
+  // Verify Login OTP
+  verifyLoginOTP: async (email, otp) => {
+    const response = await api.post('/auth/verify-login-otp', { email, otp })
+    return response.data
+  },
+
+  // Request OTP (legacy)
   requestOTP: async (email) => {
     const response = await api.post('/auth/request-otp', { email })
     return response.data
   },
 
-  // Verify OTP
+  // Verify OTP (legacy)
   verifyOTP: async (email, otp) => {
     const response = await api.post('/auth/verify-otp', { email, otp })
     return response.data

@@ -1,275 +1,340 @@
-import api from './api';
+import api from './api'
 
 /**
- * Discussion Forum API Service
- * Handles all forum-related API calls including threads, comments, and user interactions
+ * Forum API Service
+ * Handles all forum-related API calls
  */
+
 export const forumAPI = {
+  // ==================== FORUM OPERATIONS ====================
+  
   /**
-   * Get all forums
-   */
-  getForums: async (params = {}) => {
-    const response = await api.get('/forum/forums', { params });
-    return response.data;
-  },
-
-  /**
-   * Get forum by ID
-   */
-  getForum: async (forumId) => {
-    const response = await api.get(`/forum/forums/${forumId}`);
-    return response.data;
-  },
-
-  /**
-   * Create new forum (admin only)
+   * Create a new forum
    */
   createForum: async (forumData) => {
-    const response = await api.post('/forum/forums', forumData);
-    return response.data;
+    const response = await api.post('/forum/create', forumData)
+    return response.data
   },
 
   /**
-   * Update forum (admin only)
+   * Get all forums with filters
    */
-  updateForum: async (forumId, forumData) => {
-    const response = await api.put(`/forum/forums/${forumId}`, forumData);
-    return response.data;
+  getForums: async (params = {}) => {
+    const response = await api.get('/forum/list', { params })
+    return response.data
   },
 
   /**
-   * Get all threads with optional filtering
+   * Get single forum by ID or slug
    */
-  getThreads: async (params = {}) => {
-    const response = await api.get('/forum/threads', { params });
-    return response.data;
+  getForum: async (id) => {
+    const response = await api.get(`/forum/${id}`)
+    return response.data
   },
 
   /**
-   * Get thread by ID
+   * Get trending forums
    */
-  getThread: async (threadId) => {
-    const response = await api.get(`/forum/threads/${threadId}`);
-    return response.data;
+  getTrendingForums: async (limit = 10) => {
+    const response = await api.get('/forum/trending', { params: { limit } })
+    return response.data
   },
 
   /**
-   * Create new thread
+   * Check if forum title is unique
    */
-  createThread: async (threadData) => {
-    const response = await api.post('/forum/threads', threadData);
-    return response.data;
+  checkTitleUniqueness: async (title) => {
+    const response = await api.get(`/forum/check-title/${encodeURIComponent(title)}`)
+    return response.data
   },
 
   /**
-   * Update thread
+   * Get forum suggestions (for duplicate detection)
    */
-  updateThread: async (threadId, threadData) => {
-    const response = await api.put(`/forum/threads/${threadId}`, threadData);
-    return response.data;
+  getForumSuggestions: async (query) => {
+    const response = await api.get('/forum/suggestions', { params: { query } })
+    return response.data
   },
 
   /**
-   * Delete thread
+   * Follow/unfollow a forum
    */
-  deleteThread: async (threadId) => {
-    const response = await api.delete(`/forum/threads/${threadId}`);
-    return response.data;
+  toggleFollow: async (forumId) => {
+    const response = await api.post(`/forum/${forumId}/follow`)
+    return response.data
   },
 
   /**
-   * Get thread comments
+   * Get forum analytics
    */
-  getComments: async (threadId, params = {}) => {
-    const response = await api.get(`/forum/threads/${threadId}/comments`, { params });
-    return response.data;
+  getForumAnalytics: async (forumId) => {
+    const response = await api.get(`/forum/${forumId}/analytics`)
+    return response.data
+  },
+
+  // ==================== QUESTION OPERATIONS ====================
+
+  /**
+   * Create a question in a forum
+   */
+  createQuestion: async (forumId, questionData) => {
+    const response = await api.post(`/forum/${forumId}/question`, questionData)
+    return response.data
   },
 
   /**
-   * Add comment to thread
+   * Get questions for a forum
    */
-  addComment: async (threadId, commentData) => {
-    const response = await api.post(`/forum/threads/${threadId}/comments`, commentData);
-    return response.data;
+  getQuestions: async (forumId, params = {}) => {
+    const response = await api.get(`/forum/${forumId}/questions`, { params })
+    return response.data
   },
 
   /**
-   * Update comment
+   * Get single question by ID
    */
-  updateComment: async (commentId, commentData) => {
-    const response = await api.put(`/forum/comments/${commentId}`, commentData);
-    return response.data;
+  getQuestion: async (questionId) => {
+    const response = await api.get(`/forum/question/${questionId}`)
+    return response.data
   },
 
   /**
-   * Delete comment
+   * Get question suggestions (duplicate detection)
    */
-  deleteComment: async (commentId) => {
-    const response = await api.delete(`/forum/comments/${commentId}`);
-    return response.data;
+  getQuestionSuggestions: async (query, forumId = null) => {
+    const response = await api.get('/forum/question/suggestions', { 
+      params: { query, forumId } 
+    })
+    return response.data
   },
 
   /**
-   * Like/unlike thread
+   * React to a question (like/dislike)
    */
-  likeThread: async (threadId) => {
-    const response = await api.post(`/forum/threads/${threadId}/like`);
-    return response.data;
+  reactToQuestion: async (questionId, type) => {
+    const response = await api.post(`/forum/question/${questionId}/react`, { type })
+    return response.data
   },
 
   /**
-   * Bookmark thread
+   * Follow/unfollow a question
    */
-  bookmarkThread: async (threadId) => {
-    const response = await api.post(`/forum/threads/${threadId}/bookmark`);
-    return response.data;
+  toggleQuestionFollow: async (questionId) => {
+    const response = await api.post(`/forum/question/${questionId}/follow`)
+    return response.data
   },
 
   /**
-   * Get user's bookmarks
+   * Delete a question
    */
-  getBookmarks: async (params = {}) => {
-    const response = await api.get('/forum/bookmarks', { params });
-    return response.data;
+  deleteQuestion: async (questionId) => {
+    const response = await api.delete(`/forum/question/${questionId}`)
+    return response.data
+  },
+
+  // ==================== ANSWER OPERATIONS ====================
+
+  /**
+   * Create an answer to a question
+   */
+  createAnswer: async (questionId, answerData) => {
+    const response = await api.post(`/forum/question/${questionId}/answer`, answerData)
+    return response.data
   },
 
   /**
-   * Mark thread as solved
+   * Get answers for a question
    */
-  markThreadSolved: async (threadId, commentId = null) => {
-    const response = await api.put(`/forum/threads/${threadId}/solved`, { solutionCommentId: commentId });
-    return response.data;
+  getAnswers: async (questionId, params = {}) => {
+    const response = await api.get(`/forum/question/${questionId}/answers`, { params })
+    return response.data
   },
 
   /**
-   * Pin thread (moderator only)
+   * Add a comment to an answer
    */
-  pinThread: async (threadId) => {
-    const response = await api.put(`/forum/threads/${threadId}/pin`);
-    return response.data;
+  addComment: async (answerId, commentData) => {
+    const response = await api.post(`/forum/answer/${answerId}/comment`, commentData)
+    return response.data
   },
 
   /**
-   * Unpin thread (moderator only)
+   * React to an answer (like/dislike)
    */
-  unpinThread: async (threadId) => {
-    const response = await api.put(`/forum/threads/${threadId}/unpin`);
-    return response.data;
+  reactToAnswer: async (answerId, type) => {
+    const response = await api.post(`/forum/answer/${answerId}/react`, { type })
+    return response.data
   },
 
   /**
-   * Lock thread (moderator only)
+   * Mark answer as best answer
    */
-  lockThread: async (threadId) => {
-    const response = await api.put(`/forum/threads/${threadId}/lock`);
-    return response.data;
+  markBestAnswer: async (answerId) => {
+    const response = await api.put(`/forum/answer/${answerId}/mark-best`)
+    return response.data
   },
 
   /**
-   * Unlock thread (moderator only)
+   * Delete an answer
    */
-  unlockThread: async (threadId) => {
-    const response = await api.put(`/forum/threads/${threadId}/unlock`);
-    return response.data;
+  deleteAnswer: async (answerId) => {
+    const response = await api.delete(`/forum/answer/${answerId}`)
+    return response.data
   },
 
   /**
-   * Follow thread
+   * React to a comment
    */
-  followThread: async (threadId) => {
-    const response = await api.post(`/forum/threads/${threadId}/follow`);
-    return response.data;
+  reactToComment: async (answerId, commentId) => {
+    const response = await api.post(`/forum/answer/${answerId}/comment/${commentId}/react`)
+    return response.data
+  },
+
+  // ==================== MODERATION ====================
+
+  /**
+   * Flag content
+   */
+  flagContent: async (flagData) => {
+    const response = await api.post('/forum/flag', flagData)
+    return response.data
   },
 
   /**
-   * Unfollow thread
+   * Submit an appeal
    */
-  unfollowThread: async (threadId) => {
-    const response = await api.delete(`/forum/threads/${threadId}/follow`);
-    return response.data;
+  submitAppeal: async (flagId, content) => {
+    const response = await api.post(`/forum/appeal/flag/${flagId}/appeal`, { content })
+    return response.data
+  },
+
+  // ==================== POLLS ====================
+
+  /**
+   * Get all polls
+   */
+  getPolls: async (params = {}) => {
+    const response = await api.get('/forum/polls', { params })
+    return response.data
   },
 
   /**
-   * Like/unlike comment
+   * Get single poll
    */
-  likeComment: async (commentId) => {
-    const response = await api.post(`/forum/comments/${commentId}/like`);
-    return response.data;
+  getPoll: async (pollId) => {
+    const response = await api.get(`/forum/poll/${pollId}`)
+    return response.data
   },
 
   /**
-   * Mark comment as solution
+   * Vote on a poll
    */
-  markCommentAsSolution: async (commentId) => {
-    const response = await api.put(`/forum/comments/${commentId}/solution`);
-    return response.data;
-  },
-
-  /**
-   * Report content
-   */
-  reportContent: async (reportData) => {
-    const response = await api.post('/forum/reports', reportData);
-    return response.data;
-  },
-
-  /**
-   * Search threads and comments
-   */
-  search: async (query, params = {}) => {
-    const response = await api.get('/forum/search', {
-      params: { q: query, ...params }
-    });
-    return response.data;
-  },
-
-  /**
-   * Get user's threads
-   */
-  getMyThreads: async (params = {}) => {
-    const response = await api.get('/forum/threads/my', { params });
-    return response.data;
-  },
-
-  /**
-   * Get user's comments
-   */
-  getMyComments: async (params = {}) => {
-    const response = await api.get('/forum/comments/my', { params });
-    return response.data;
-  },
-
-  /**
-   * Get forum statistics
-   */
-  getForumStats: async () => {
-    const response = await api.get('/forum/statistics');
-    return response.data;
-  },
-
-  /**
-   * Get user reputation
-   */
-  getUserReputation: async (userId) => {
-    const response = await api.get(`/forum/users/${userId}/reputation`);
-    return response.data;
-  },
-
-  /**
-   * Get trending threads
-   */
-  getTrendingThreads: async (params = {}) => {
-    const response = await api.get('/forum/threads/trending', { params });
-    return response.data;
-  },
-
-  /**
-   * Get popular tags
-   */
-  getPopularTags: async (params = {}) => {
-    const response = await api.get('/forum/tags/popular', { params });
-    return response.data;
+  votePoll: async (pollId, optionIndexes) => {
+    const response = await api.post(`/forum/poll/${pollId}/vote`, { optionIndexes })
+    return response.data
   }
-};
+}
 
-export default forumAPI;
+/**
+ * Admin Forum API Service
+ * Admin-only forum operations
+ */
+export const forumAdminAPI = {
+  /**
+   * Get pending forums for approval
+   */
+  getPendingForums: async (params = {}) => {
+    const response = await api.get('/admin/forum/forums/pending', { params })
+    return response.data
+  },
+
+  /**
+   * Get all forums (admin view)
+   */
+  getAllForums: async (params = {}) => {
+    const response = await api.get('/admin/forum/forums', { params })
+    return response.data
+  },
+
+  /**
+   * Approve a forum
+   */
+  approveForum: async (forumId) => {
+    const response = await api.put(`/admin/forum/forum/${forumId}/approve`)
+    return response.data
+  },
+
+  /**
+   * Reject a forum
+   */
+  rejectForum: async (forumId, reason) => {
+    const response = await api.put(`/admin/forum/forum/${forumId}/reject`, { reason })
+    return response.data
+  },
+
+  /**
+   * Delete a forum
+   */
+  deleteForum: async (forumId) => {
+    const response = await api.delete(`/admin/forum/forum/${forumId}`)
+    return response.data
+  },
+
+  /**
+   * Get all flagged content
+   */
+  getFlaggedContent: async (params = {}) => {
+    const response = await api.get('/admin/forum/flags', { params })
+    return response.data
+  },
+
+  /**
+   * Get anonymous user identity
+   */
+  getAnonymousIdentity: async (contentType, contentId) => {
+    const response = await api.get(`/admin/forum/flag/${contentType}/${contentId}/identity`)
+    return response.data
+  },
+
+  /**
+   * Resolve a flag
+   */
+  resolveFlag: async (flagId, action, adminNotes) => {
+    const response = await api.post(`/admin/forum/flag/${flagId}/resolve`, { action, adminNotes })
+    return response.data
+  },
+
+  /**
+   * Review an appeal
+   */
+  reviewAppeal: async (flagId, decision, adminNotes) => {
+    const response = await api.post(`/admin/forum/flag/${flagId}/appeal/review`, { decision, adminNotes })
+    return response.data
+  },
+
+  /**
+   * Create a poll (admin only)
+   */
+  createPoll: async (pollData) => {
+    const response = await api.post('/admin/forum/poll/create', pollData)
+    return response.data
+  },
+
+  /**
+   * Get poll analytics
+   */
+  getPollAnalytics: async (pollId) => {
+    const response = await api.get(`/admin/forum/poll/${pollId}/analytics`)
+    return response.data
+  },
+
+  /**
+   * Close a poll
+   */
+  closePoll: async (pollId) => {
+    const response = await api.put(`/admin/forum/poll/${pollId}/close`)
+    return response.data
+  }
+}
+
+export default forumAPI

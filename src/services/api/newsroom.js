@@ -22,21 +22,99 @@ export const newsroomAPI = {
   },
 
   /**
+   * Get published articles (public access)
+   */
+  getPublishedArticles: async (params = {}) => {
+    const response = await api.get('/newsroom/articles/published', { params });
+    return response.data;
+  },
+
+  /**
+   * Get public articles (alias for getPublishedArticles)
+   */
+  getPublicArticles: async (params = {}) => {
+    const response = await api.get('/newsroom/articles', { 
+      params: {
+        ...params,
+        status: 'published',
+        approvalStatus: 'approved'
+      }
+    });
+    return response.data;
+  },
+
+  /**
+   * Search users for co-author selection
+   */
+  searchUsers: async (query) => {
+    const response = await api.get('/user/search', { params: { q: query, limit: 10 } });
+    return response.data;
+  },
+
+  /**
+   * Like article
+   */
+  likeArticle: async (articleId) => {
+    const response = await api.post(`/newsroom/articles/${articleId}/like`);
+    return response.data;
+  },
+
+  /**
+   * Dislike article
+   */
+  dislikeArticle: async (articleId) => {
+    const response = await api.post(`/newsroom/articles/${articleId}/dislike`);
+    return response.data;
+  },
+
+  /**
+   * Flag article
+   */
+  flagArticle: async (articleId, reason, description) => {
+    const response = await api.post(`/newsroom/articles/${articleId}/flag`, { reason, description });
+    return response.data;
+  },
+
+  /**
+   * Track share
+   */
+  shareArticle: async (articleId) => {
+    const response = await api.post(`/newsroom/articles/${articleId}/share`);
+    return response.data;
+  },
+
+  /**
+   * Get article statistics
+   */
+  getArticleStats: async (articleId) => {
+    const response = await api.get(`/newsroom/articles/${articleId}/stats`);
+    return response.data;
+  },
+
+  /**
    * Create new article
    */
   createArticle: async (articleData) => {
-    const formData = new FormData();
+    // If articleData is already FormData, use it directly
+    // Otherwise, create FormData from the object
+    let formData;
     
-    // Append basic data
-    Object.keys(articleData).forEach(key => {
-      if (key === 'tags' || key === 'coAuthors') {
-        formData.append(key, JSON.stringify(articleData[key]));
-      } else if (key === 'featuredImage' && articleData[key]) {
-        formData.append('featuredImage', articleData[key]);
-      } else {
-        formData.append(key, articleData[key]);
-      }
-    });
+    if (articleData instanceof FormData) {
+      formData = articleData;
+    } else {
+      formData = new FormData();
+      
+      // Append basic data
+      Object.keys(articleData).forEach(key => {
+        if (key === 'tags' || key === 'coAuthors' || key === 'plagiarismReport') {
+          formData.append(key, JSON.stringify(articleData[key]));
+        } else if (key === 'featuredImage' && articleData[key]) {
+          formData.append('featuredImage', articleData[key]);
+        } else if (articleData[key] !== null && articleData[key] !== undefined) {
+          formData.append(key, articleData[key]);
+        }
+      });
+    }
 
     const response = await api.post('/newsroom/articles', formData, {
       headers: {
@@ -53,11 +131,11 @@ export const newsroomAPI = {
     const formData = new FormData();
     
     Object.keys(articleData).forEach(key => {
-      if (key === 'tags' || key === 'coAuthors') {
+      if (key === 'tags' || key === 'coAuthors' || key === 'plagiarismReport') {
         formData.append(key, JSON.stringify(articleData[key]));
       } else if (key === 'featuredImage' && articleData[key]) {
         formData.append('featuredImage', articleData[key]);
-      } else {
+      } else if (articleData[key] !== null && articleData[key] !== undefined) {
         formData.append(key, articleData[key]);
       }
     });
@@ -79,18 +157,18 @@ export const newsroomAPI = {
   },
 
   /**
-   * Get user's articles
+   * Get current user's articles (all statuses)
    */
-  getMyArticles: async (params = {}) => {
-    const response = await api.get('/newsroom/articles/my', { params });
+  getUserArticles: async (params = {}) => {
+    const response = await api.get('/newsroom/articles/user/my-articles', { params });
     return response.data;
   },
 
   /**
-   * Like/unlike article
+   * Get user's articles (alias for compatibility)
    */
-  likeArticle: async (articleId) => {
-    const response = await api.post(`/newsroom/articles/${articleId}/like`);
+  getMyArticles: async (params = {}) => {
+    const response = await api.get('/newsroom/articles/user/my-articles', { params });
     return response.data;
   },
 
@@ -253,6 +331,30 @@ export const newsroomAPI = {
    */
   clearReadingHistory: async () => {
     const response = await api.delete('/newsroom/history');
+    return response.data;
+  },
+
+  /**
+   * Check content for plagiarism
+   */
+  checkPlagiarism: async (content, title = '') => {
+    const response = await api.post('/newsroom/plagiarism/check', { content, title });
+    return response.data;
+  },
+
+  /**
+   * Get plagiarism check history
+   */
+  getPlagiarismHistory: async () => {
+    const response = await api.get('/newsroom/plagiarism/history');
+    return response.data;
+  },
+
+  /**
+   * Get plagiarism statistics (admin only)
+   */
+  getPlagiarismStats: async () => {
+    const response = await api.get('/newsroom/plagiarism/stats');
     return response.data;
   }
 };

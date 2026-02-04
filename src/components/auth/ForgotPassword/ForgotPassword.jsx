@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../../../hooks/useAuth'
 import { useNotification } from '../../../contexts/NotificationContext'
 import { validateEmail } from '../../../utils/helpers'
-import './Auth.css'
 import './ForgotPassword.css'
 
 import { 
@@ -17,7 +16,6 @@ import {
   EyeOff
 } from 'lucide-react'
 import Loader from '../../common/Loader/Loader'
-import './Login.css'
 import './ForgotPassword.css'
 
 /**

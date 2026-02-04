@@ -24,7 +24,6 @@ import Loader from '../../common/Loader/Loader'
  * Handles course enrollment process and payment integration
  */
 const Enrollment = () => {
-  const { id } = useParams()
   const navigate = useNavigate()
   const location = useLocation()
   const { isAuthenticated, user } = useAuth()
@@ -62,9 +61,9 @@ const Enrollment = () => {
   useEffect(() => {
     if (!isAuthenticated) {
       showNotification('Please sign in to enroll in courses', 'info')
-      navigate('/login', { state: { from: `/learning/courses/${id}/enroll` } })
+      navigate('/login', { state: { from: '/learning/enroll', course: courseFromState } })
     }
-  }, [isAuthenticated, navigate, id, showNotification])
+  }, [isAuthenticated, navigate, showNotification, courseFromState])
 
   /**
    * Fetch course details
@@ -73,35 +72,25 @@ const Enrollment = () => {
     if (isAuthenticated && !course) {
       loadCourseDetails()
     }
-  }, [id, isAuthenticated, course])
+  }, [isAuthenticated, course])
 
   /**
    * Load course details
    */
   const loadCourseDetails = async () => {
-    if (courseFromState) {
+    try {
+      // If no course data passed, redirect back to learning page
+      if (!courseFromState) {
+        showNotification('Please select a course to enroll', 'info')
+        navigate('/learning')
+        setLoading(false)
+        return
+      }
+
       setCourse(courseFromState)
       setLoading(false)
-      return
-    }
-    
-    try {
-      const courseData = await fetchCourseApi(id, {
-        showError: false
-      })
-
-      if (courseData) {
-        setCourse(courseData)
-        if (courseData.isEnrolled) {
-          showNotification('You are already enrolled in this course', 'info')
-          navigate(`/learning/courses/${id}/learn`)
-        }
-      } else {
-        setError('Failed to load course details')
-      }
     } catch (err) {
       setError('Failed to load course details')
-    } finally {
       setLoading(false)
     }
   }
@@ -180,7 +169,7 @@ const Enrollment = () => {
       }
 
       const result = await enrollCourseApi(
-        { courseId: id, ...paymentData },
+        { courseId: course.id, ...paymentData },
         {
           successMessage: 'Successfully enrolled in the course!',
           showError: true
@@ -189,7 +178,7 @@ const Enrollment = () => {
 
       if (result) {
         // Redirect to learning interface
-        navigate(`/learning/courses/${id}/learn`)
+        navigate(`/learning/courses/${course.id}/learn`)
       }
     } catch (error) {
       // Error handled by useApi hook
@@ -488,7 +477,7 @@ const Enrollment = () => {
       <div className="form-actions">
         <button
           type="button"
-          onClick={() => navigate(`/learning/courses/${id}`)}
+          onClick={() => navigate(`/learning/courses/${course.id}`)}
           className="btn btn-outline"
         >
           Cancel
@@ -538,7 +527,7 @@ const Enrollment = () => {
       <div className="container">
         {/* Back Navigation */}
         <div className="back-navigation">
-          <button onClick={() => navigate(`/learning/courses/${id}`)} className="back-button">
+          <button onClick={() => navigate(`/learning/courses/${course.id}`)} className="back-button">
             <ArrowLeft size={20} />
             Back to Course
           </button>
