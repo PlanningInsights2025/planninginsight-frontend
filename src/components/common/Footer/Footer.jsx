@@ -71,8 +71,8 @@ enable collaboration among students, educators, researchers, urban planners, arc
               </li>
               <li className="footer-contact-item-horizontal">
                 <Mail size={16} />
-                <a href="mailto:contact@planninginsights.in">
-                  contact@planninginsights.in
+                <a href="mailto:contact@theplanninginsights.com">
+                  contact@theplanninginsights.com
                 </a>
               </li>
               <li className="footer-contact-item-horizontal">

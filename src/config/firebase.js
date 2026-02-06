@@ -8,7 +8,7 @@ import { getAnalytics } from "firebase/analytics";
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyA-T2kCehqBiWDClMzyx6hUwDx7o2uf8lw",
-  authDomain: "planninginsight-4d5c2.firebaseapp.com",
+  authDomain: "theplanninginsights.com",
   projectId: "planninginsight-4d5c2",
   storageBucket: "planninginsight-4d5c2.firebasestorage.app",
   messagingSenderId: "763015079836",

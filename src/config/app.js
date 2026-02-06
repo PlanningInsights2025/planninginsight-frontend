@@ -9,8 +9,8 @@ const config = {
     name: 'Planning Insights',
     version: '1.0.0',
     description: 'Comprehensive platform for built environment professionals',
-    supportEmail: 'support@planninginsights.com',
-    contactEmail: 'contact@planninginsights.com'
+    supportEmail: 'support@theplanninginsights.com',
+    contactEmail: 'contact@theplanninginsights.com'
   },
 
   // API Configuration
