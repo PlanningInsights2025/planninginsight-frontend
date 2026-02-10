@@ -3,6 +3,8 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   signOut as firebaseSignOut,
   onAuthStateChanged,
   sendPasswordResetEmail,
@@ -32,11 +34,17 @@ export const signInWithEmail = async (email, password) => {
 }
 
 /**
- * Sign in with Google popup
+ * Sign in with Google redirect
  */
 export const signInWithGoogle = async () => {
-  const result = await signInWithPopup(auth, googleProvider)
-  return result.user
+  await signInWithRedirect(auth, googleProvider)
+}
+
+/**
+ * Get redirect result after Google sign-in
+ */
+export const getGoogleRedirectResult = async () => {
+  return await getRedirectResult(auth)
 }
 
 /**
@@ -66,6 +74,7 @@ export default {
   signUpWithEmail,
   signInWithEmail,
   signInWithGoogle,
+  getGoogleRedirectResult,
   signOut,
   sendResetEmail,
   onAuthChanged,

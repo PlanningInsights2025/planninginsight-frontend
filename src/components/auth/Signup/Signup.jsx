@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { signInWithGoogle } from "../../../services/api/firebaseAuth";
+import { signInWithGoogle, getGoogleRedirectResult } from "../../../services/api/firebaseAuth";
 import { useAuth } from '../../../hooks/useAuth'
 import { useNotification } from '../../../contexts/NotificationContext'
 import OTPVerification from './OTPVerification'
@@ -165,16 +165,57 @@ export default function Signup() {
 
   const handleGoogleSignIn = async () => {
     try {
-      const user = await signInWithGoogle()
-      console.log('Google sign-in user:', user)
-      // Optionally redirect after successful social login
-      showNotification('Signed in with Google', 'success')
-      navigate('/dashboard')
+      setLoading(true)
+      await signInWithGoogle() // Redirects to Google
     } catch (err) {
       console.error('Google sign-in error', err)
       showNotification(err?.message || 'Google sign-in failed', 'error')
+      setLoading(false)
     }
   }
+
+  // Handle Google OAuth redirect result
+  useEffect(() => {
+    const handleGoogleRedirect = async () => {
+      try {
+        const result = await getGoogleRedirectResult()
+        if (result && result.user) {
+          const user = result.user
+          console.log('Google sign-in redirect result:', user)
+          
+          // Call backend to create/login user
+          const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'https://planninginsight-backend.vercel.app/api'
+          const response = await fetch(`${apiBaseUrl}/auth/google-login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              uid: user.uid,
+              email: user.email,
+              displayName: user.displayName,
+              photoURL: user.photoURL
+            })
+          })
+          
+          const data = await response.json()
+          if (data.token) {
+            localStorage.setItem('authToken', data.token)
+            await checkAuthStatus?.()
+            showNotification('Signed in with Google', 'success')
+            navigate('/dashboard')
+          } else {
+            throw new Error(data.message || 'Google sign-in failed')
+          }
+        }
+      } catch (err) {
+        console.error('Google redirect error:', err)
+        if (err.message && err.message !== 'No redirect result available') {
+          showNotification(err?.message || 'Google sign-in failed', 'error')
+        }
+      }
+    }
+    
+    handleGoogleRedirect()
+  }, [navigate, checkAuthStatus, showNotification])
 
   // Handle LinkedIn OAuth redirect: capture ?token= or error, store it, hydrate auth, and navigate
   useEffect(() => {
