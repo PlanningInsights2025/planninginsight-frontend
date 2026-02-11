@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { signInWithGoogle, getGoogleRedirectResult } from "../../../services/api/firebaseAuth";
+import { signInWithGoogle } from "../../../services/api/firebaseAuth";
 import { useAuth } from '../../../hooks/useAuth';
 import { useNotification } from '../../../contexts/NotificationContext';
 
@@ -12,78 +12,6 @@ export default function Login() {
   const { login } = useAuth()
   const { showNotification } = useNotification()
   const [loading, setLoading] = useState(false)
-
-  // Handle Google redirect result
-  useEffect(() => {
-    const handleRedirectResult = async () => {
-      try {
-        setLoading(true);
-        const result = await getGoogleRedirectResult();
-        
-        if (result && result.user) {
-          const user = result.user;
-          console.log('✅ Google sign-in successful:', user);
-          
-          // Call backend to get JWT token
-          try {
-            console.log('🔄 Calling backend for JWT token...');
-            const apiUrl = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api'}/auth/google-login`;
-            console.log('Backend URL:', apiUrl);
-            
-            const response = await fetch(apiUrl, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                uid: user.uid,
-                email: user.email,
-                displayName: user.displayName,
-                photoURL: user.photoURL
-              })
-            });
-            
-            const data = await response.json();
-            console.log('Backend response:', data);
-            
-            if (response.ok && data.token) {
-              localStorage.setItem('authToken', data.token);
-              console.log('✅ JWT token stored successfully');
-              
-              // Update auth context with user data
-              if (data.data?.user) {
-                const userData = {
-                  id: data.data.user.id,
-                  email: data.data.user.email,
-                  role: data.data.user.role,
-                  firstName: data.data.user.profile?.firstName || '',
-                  lastName: data.data.user.profile?.lastName || '',
-                  displayName: `${data.data.user.profile?.firstName || ''} ${data.data.user.profile?.lastName || ''}`.trim(),
-                  photoURL: data.data.user.profile?.avatar || null
-                };
-                await login(userData);
-              }
-              
-              showNotification('Signed in with Google', 'success');
-              navigate('/dashboard');
-            } else {
-              console.error('❌ Backend did not return token:', data);
-              showNotification('Authentication failed. Please try again.', 'error');
-            }
-          } catch (backendError) {
-            console.error('❌ Backend token fetch failed:', backendError);
-            showNotification('Authentication failed. Please try again.', 'error');
-          }
-        }
-      } catch (err) {
-        if (err.code !== 'auth/popup-closed-by-user') {
-          console.error('Google redirect result error:', err);
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    handleRedirectResult();
-  }, [navigate, login, showNotification]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -164,13 +92,52 @@ export default function Login() {
   const handleGoogleSignIn = async () => {
     try {
       setLoading(true);
-      // This will redirect the user to Google sign-in page
-      // After successful sign-in, user will be redirected back
-      // and useEffect will handle the result
-      await signInWithGoogle();
+      const user = await signInWithGoogle()
+      console.log('✅ Google sign-in successful:', user)
+      
+      // Call backend to get JWT token
+      try {
+        console.log('🔄 Calling backend for JWT token...')
+        const apiUrl = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api'}/auth/google-login`
+        console.log('Backend URL:', apiUrl)
+        
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            uid: user.uid,
+            email: user.email,
+            displayName: user.displayName,
+            photoURL: user.photoURL
+          })
+        });
+        
+        const data = await response.json();
+        console.log('Backend response:', data)
+        
+        if (response.ok && data.token) {
+          localStorage.setItem('authToken', data.token);
+          console.log('✅ JWT token stored successfully')
+        } else {
+          console.error('❌ Backend did not return token:', data)
+        }
+      } catch (backendError) {
+        console.error('❌ Backend token fetch failed:', backendError);
+        showNotification('Warning: Backend authentication failed. Some features may be limited.', 'warning')
+      }
+      
+      showNotification('Signed in with Google', 'success')
+      navigate('/dashboard')
     } catch (err) {
-      console.error('Google sign-in error', err);
-      showNotification(err?.message || 'Google sign-in failed', 'error');
+      console.error('Google sign-in error', err)
+      if (err.code === 'auth/popup-closed-by-user') {
+        showNotification('Sign-in cancelled', 'info')
+      } else if (err.code === 'auth/cancelled-popup-request') {
+        // Ignore - user clicked button multiple times
+      } else {
+        showNotification(err?.message || 'Google sign-in failed', 'error')
+      }
+    } finally {
       setLoading(false);
     }
   }
