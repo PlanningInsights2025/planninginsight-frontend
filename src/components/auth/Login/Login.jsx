@@ -90,6 +90,11 @@ export default function Login() {
   };
 
   const handleGoogleSignIn = async () => {
+    // Prevent multiple simultaneous popup attempts
+    if (loading) {
+      return;
+    }
+    
     try {
       setLoading(true);
       const user = await signInWithGoogle()
@@ -134,6 +139,7 @@ export default function Login() {
         showNotification('Sign-in cancelled', 'info')
       } else if (err.code === 'auth/cancelled-popup-request') {
         // Ignore - user clicked button multiple times
+        console.log('ℹ️ Popup request cancelled - another popup is already open')
       } else {
         showNotification(err?.message || 'Google sign-in failed', 'error')
       }

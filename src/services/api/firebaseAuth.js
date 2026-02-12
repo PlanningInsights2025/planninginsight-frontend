@@ -32,11 +32,19 @@ export const signInWithEmail = async (email, password) => {
 }
 
 /**
- * Sign in with Google popup
+ * Sign in with Google - always uses popup (simpler and works everywhere)
  */
 export const signInWithGoogle = async () => {
-  const result = await signInWithPopup(auth, googleProvider)
-  return result.user
+  try {
+    googleProvider.setCustomParameters({
+      prompt: 'select_account'
+    });
+    const result = await signInWithPopup(auth, googleProvider)
+    return result.user
+  } catch (error) {
+    // Re-throw to be handled by calling component
+    throw error
+  }
 }
 
 /**
