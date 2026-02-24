@@ -44,9 +44,9 @@ const JobPortalManagement = () => {
     }
   }
 
-  const handleToggleFeatured = async (jobId) => {
+  const handleToggleFeatured = async (jobId, currentFeatured) => {
     try {
-      await adminService.toggleJobFeatured(jobId)
+      await adminService.toggleJobFeatured(jobId, !currentFeatured)
       toast.success('Featured status toggled')
       loadJobs()
     } catch (error) {
@@ -69,7 +69,7 @@ const JobPortalManagement = () => {
     return {
       total: jobs.length,
       active: jobs.filter(j => j.status === 'active').length,
-      featured: jobs.filter(j => j.isFeatured).length,
+      featured: jobs.filter(j => j.featured).length,
       applications: jobs.reduce((sum, j) => sum + (j.applications?.length || 0), 0)
     }
   }
@@ -80,12 +80,12 @@ const JobPortalManagement = () => {
     <div style={{ padding: '24px' }}>
       {/* Header Section */}
       <div style={{
-        background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+        background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 60%, #4338ca 100%)',
         borderRadius: '20px',
         padding: '32px',
         marginBottom: '24px',
-        color: 'white',
-        boxShadow: '0 10px 40px rgba(245, 158, 11, 0.3)'
+        color: '#ffffff',
+        boxShadow: '0 10px 40px rgba(79, 70, 229, 0.25)'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px' }}>
           <div style={{
@@ -101,10 +101,10 @@ const JobPortalManagement = () => {
             <Briefcase size={28} />
           </div>
           <div>
-            <h2 style={{ fontSize: '28px', fontWeight: '700', margin: '0 0 8px 0' }}>
+            <h2 style={{ fontSize: '28px', fontWeight: '800', margin: '0 0 8px 0', color: '#ffffff', letterSpacing: '-0.01em' }}>
               Job Portal Management
             </h2>
-            <p style={{ margin: 0, opacity: 0.9, fontSize: '15px' }}>
+            <p style={{ margin: 0, fontSize: '15px', color: 'rgba(255,255,255,0.82)', fontWeight: '500' }}>
               Manage job postings and applications
             </p>
           </div>
@@ -268,7 +268,7 @@ const JobPortalManagement = () => {
                 }}
               >
                 {/* Featured Badge */}
-                {job.isFeatured && (
+                {job.featured && (
                   <div style={{
                     position: 'absolute',
                     top: '16px',
@@ -374,14 +374,14 @@ const JobPortalManagement = () => {
                 {/* Action Buttons */}
                 <div style={{ display: 'flex', gap: '8px' }}>
                   <button
-                    onClick={() => handleToggleFeatured(job._id)}
+                    onClick={() => handleToggleFeatured(job._id, job.featured)}
                     style={{
                       flex: 1,
                       padding: '10px',
                       borderRadius: '10px',
-                      border: job.isFeatured ? '1px solid #fbbf24' : '1px solid #e2e8f0',
-                      background: job.isFeatured ? '#fffbeb' : 'white',
-                      color: job.isFeatured ? '#f59e0b' : '#64748b',
+                      border: job.featured ? '1px solid #fbbf24' : '1px solid #e2e8f0',
+                      background: job.featured ? '#fffbeb' : 'white',
+                      color: job.featured ? '#f59e0b' : '#64748b',
                       fontSize: '14px',
                       fontWeight: '600',
                       cursor: 'pointer',
@@ -392,14 +392,14 @@ const JobPortalManagement = () => {
                       transition: 'all 0.2s'
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.background = job.isFeatured ? '#fef3c7' : '#f8fafc'
+                      e.currentTarget.style.background = job.featured ? '#fef3c7' : '#f8fafc'
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.background = job.isFeatured ? '#fffbeb' : 'white'
+                      e.currentTarget.style.background = job.featured ? '#fffbeb' : 'white'
                     }}
                   >
-                    <Star size={16} fill={job.isFeatured ? '#f59e0b' : 'none'} />
-                    {job.isFeatured ? 'Featured' : 'Feature'}
+                    <Star size={16} fill={job.featured ? '#f59e0b' : 'none'} />
+                    {job.featured ? 'Featured' : 'Feature'}
                   </button>
                   
                   <button
@@ -478,7 +478,7 @@ const JobPortalManagement = () => {
                         borderRadius: '10px',
                         border: currentPage === pageNum ? 'none' : '1px solid #e2e8f0',
                         background: currentPage === pageNum 
-                          ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)' 
+                          ? 'linear-gradient(135deg, #4338ca 0%, #6366f1 100%)' 
                           : 'white',
                         color: currentPage === pageNum ? 'white' : '#0f172a',
                         cursor: 'pointer',

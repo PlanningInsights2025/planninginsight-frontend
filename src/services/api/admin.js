@@ -113,6 +113,78 @@ export const adminAPI = {
   },
 
   /**
+   * Get realtime website analytics
+   */
+  getRealtimeAnalytics: async (stream = 'public') => {
+    try {
+      const response = await api.get('/admin/analytics/realtime', {
+        params: { stream }
+      });
+      return response.data;
+    } catch (error) {
+      if (error?.response?.status !== 404) {
+        throw error
+      }
+
+      const fallbackResponse = await api.get('/admin/analytics', {
+        params: { stream }
+      })
+
+      return {
+        success: true,
+        realtime: fallbackResponse.data?.analytics?.website?.realtime || {
+          configured: false,
+          activeUsers: 0,
+          pageViews: 0,
+          eventCount: 0,
+          devices: [],
+          countries: []
+        }
+      }
+    }
+  },
+
+  /**
+   * Get overview website analytics by period
+   */
+  getAnalyticsOverview: async (period = '7d', stream = 'public') => {
+    try {
+      const response = await api.get('/admin/analytics/overview', {
+        params: { period, stream }
+      });
+      return response.data;
+    } catch (error) {
+      if (error?.response?.status !== 404) {
+        throw error
+      }
+
+      const fallbackResponse = await api.get('/admin/analytics', {
+        params: { period, stream }
+      })
+
+      return {
+        success: true,
+        overview: fallbackResponse.data?.analytics?.website?.overview || {
+          configured: false,
+          period,
+          totals: {
+            users: 0,
+            newUsers: 0,
+            sessions: 0,
+            pageViews: 0,
+            eventCount: 0
+          },
+          trends: [],
+          topPages: [],
+          channels: [],
+          devices: [],
+          countries: []
+        }
+      }
+    }
+  },
+
+  /**
    * Export analytics data
    */
   exportAnalytics: async (format = 'csv', params = {}) => {
@@ -502,3 +574,65 @@ export const adminAPI = {
 };
 
 export default adminAPI;
+
+// -------------------------------------------------
+// Legacy helper exports expected by admin dashboard
+// -------------------------------------------------
+
+export const getDashboardStats = () => api.get('/admin/dashboard-stats');
+
+export const getAllUsers = (params = {}) => api.get('/admin/users', { params });
+
+export const updateUserStatus = (userId, status) =>
+  api.patch(`/admin/users/${userId}/status`, { status });
+
+export const updateUserRole = (userId, role) =>
+  api.patch(`/admin/users/${userId}/role`, { role });
+
+export const deleteUser = (userId) => api.delete(`/admin/users/${userId}`);
+
+export const getAllJobsAdmin = (params = {}) => api.get('/admin/jobs', { params });
+
+export const updateJobStatus = (jobId, status) =>
+  api.patch(`/admin/jobs/${jobId}/status`, { status });
+
+export const toggleJobFeatured = (jobId, featured = true) =>
+  api.patch(`/admin/jobs/${jobId}/featured`, { featured });
+
+export const deleteJob = (jobId) => api.delete(`/admin/jobs/${jobId}`);
+
+export const getAllCoursesAdmin = (params = {}) => api.get('/admin/courses', { params });
+
+export const updateCourseStatus = (courseId, status) =>
+  api.patch(`/admin/courses/${courseId}/status`, { status });
+
+export const deleteCourse = (courseId) => api.delete(`/admin/courses/${courseId}`);
+
+export const deleteArticle = (articleId) => api.delete(`/admin/articles/${articleId}`);
+
+export const getAllConnectionsAdmin = (params = {}) =>
+  api.get('/admin/connections', { params });
+
+export const getAllGroupsAdmin = (params = {}) => api.get('/admin/groups', { params });
+
+export const deleteGroup = (groupId) => api.delete(`/admin/groups/${groupId}`);
+
+export const getAnalytics = (periodOrParams = {}) => {
+  const params = typeof periodOrParams === 'string'
+    ? { period: periodOrParams }
+    : periodOrParams;
+
+  return api.get('/admin/analytics', { params });
+};
+
+export const getRealtimeAnalytics = (stream = 'public') => {
+  return api.get('/admin/analytics/realtime', {
+    params: { stream }
+  })
+}
+
+export const getAnalyticsOverview = (period = '7d', stream = 'public') => {
+  return api.get('/admin/analytics/overview', {
+    params: { period, stream }
+  })
+}

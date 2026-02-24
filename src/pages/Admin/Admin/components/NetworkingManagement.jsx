@@ -86,12 +86,12 @@ const NetworkingManagement = () => {
     <div style={{ padding: '24px' }}>
       {/* Header Section */}
       <div style={{
-        background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+        background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 60%, #4338ca 100%)',
         borderRadius: '20px',
         padding: '32px',
         marginBottom: '24px',
-        color: 'white',
-        boxShadow: '0 10px 40px rgba(245, 158, 11, 0.3)'
+        color: '#ffffff',
+        boxShadow: '0 10px 40px rgba(79, 70, 229, 0.25)'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px' }}>
           <div style={{
@@ -107,10 +107,10 @@ const NetworkingManagement = () => {
             <Network size={28} />
           </div>
           <div>
-            <h2 style={{ fontSize: '28px', fontWeight: '700', margin: '0 0 8px 0' }}>
+            <h2 style={{ fontSize: '28px', fontWeight: '800', margin: '0 0 8px 0', color: '#ffffff', letterSpacing: '-0.01em' }}>
               Networking Arena Management
             </h2>
-            <p style={{ margin: 0, opacity: 0.9, fontSize: '15px' }}>
+            <p style={{ margin: 0, fontSize: '15px', color: 'rgba(255,255,255,0.82)', fontWeight: '500' }}>
               Manage connections and professional groups
             </p>
           </div>
@@ -176,7 +176,7 @@ const NetworkingManagement = () => {
             padding: '12px 20px',
             borderRadius: '12px',
             border: 'none',
-            background: activeTab === 'connections' ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)' : 'transparent',
+            background: activeTab === 'connections' ? 'linear-gradient(135deg, #4338ca 0%, #6366f1 100%)' : 'transparent',
             color: activeTab === 'connections' ? 'white' : '#64748b',
             fontSize: '14px',
             fontWeight: '600',
@@ -201,7 +201,7 @@ const NetworkingManagement = () => {
             padding: '12px 20px',
             borderRadius: '12px',
             border: 'none',
-            background: activeTab === 'groups' ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)' : 'transparent',
+            background: activeTab === 'groups' ? 'linear-gradient(135deg, #4338ca 0%, #6366f1 100%)' : 'transparent',
             color: activeTab === 'groups' ? 'white' : '#64748b',
             fontSize: '14px',
             fontWeight: '600',

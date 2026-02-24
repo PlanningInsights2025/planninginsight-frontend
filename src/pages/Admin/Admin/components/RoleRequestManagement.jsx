@@ -141,22 +141,25 @@ const RoleRequestManagement = () => {
     }
   };
 
-  const getRoleBadgeColor = (role) => {
-    const colors = {
-      editor: 'bg-purple-500',
-      instructor: 'bg-teal-500',
-      recruiter: 'bg-blue-500'
+  const getRoleBadgeStyle = (role) => {
+    const map = {
+      editor:      { bg: 'rgba(139,92,246,0.15)',  color: '#c4b5fd', border: 'rgba(139,92,246,0.35)' },
+      chiefeditor: { bg: 'rgba(79,70,229,0.15)',   color: '#818cf8', border: 'rgba(79,70,229,0.35)'  },
+      instructor:  { bg: 'rgba(20,184,166,0.15)',  color: '#5eead4', border: 'rgba(20,184,166,0.35)' },
+      recruiter:   { bg: 'rgba(59,130,246,0.15)',  color: '#93c5fd', border: 'rgba(59,130,246,0.35)' },
     };
-    return colors[role] || 'bg-gray-500';
+    const c = map[role] || { bg: 'rgba(107,114,128,0.15)', color: '#9ca3af', border: 'rgba(107,114,128,0.35)' };
+    return { background: c.bg, color: c.color, border: `1px solid ${c.border}`, padding: '4px 12px', borderRadius: '20px', fontSize: '12px', fontWeight: '600', display: 'inline-block', whiteSpace: 'nowrap' };
   };
 
-  const getStatusBadgeColor = (status) => {
-    const colors = {
-      pending: 'bg-yellow-500',
-      approved: 'bg-green-500',
-      rejected: 'bg-red-500'
+  const getStatusBadgeStyle = (status) => {
+    const map = {
+      pending:  { bg: 'rgba(245,158,11,0.15)',  color: '#fbbf24', border: 'rgba(245,158,11,0.35)'  },
+      approved: { bg: 'rgba(16,185,129,0.15)',  color: '#34d399', border: 'rgba(16,185,129,0.35)'  },
+      rejected: { bg: 'rgba(239,68,68,0.15)',   color: '#f87171', border: 'rgba(239,68,68,0.35)'   },
     };
-    return colors[status] || 'bg-gray-500';
+    const c = map[status] || { bg: 'rgba(107,114,128,0.15)', color: '#9ca3af', border: 'rgba(107,114,128,0.35)' };
+    return { background: c.bg, color: c.color, border: `1px solid ${c.border}`, padding: '4px 12px', borderRadius: '20px', fontSize: '12px', fontWeight: '600', display: 'inline-block', whiteSpace: 'nowrap' };
   };
 
   const getRoleDisplayName = (role) => {
@@ -256,879 +259,313 @@ const RoleRequestManagement = () => {
 
   if (loading) {
     return (
-      <div className="role-requests-container">
-        <div className="loading-spinner">
-          <div className="spinner"></div>
-          <p>Loading role requests...</p>
-        </div>
+      <div style={{ minHeight: '300px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '16px', color: '#94a3b8' }}>
+        <div style={{ width: '48px', height: '48px', borderRadius: '50%', border: '4px solid rgba(99,102,241,0.2)', borderTopColor: '#6366f1', animation: 'spin 0.9s linear infinite' }} />
+        <p style={{ fontSize: '14px', fontWeight: '500' }}>Loading role requests…</p>
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );
   }
 
   return (
-    <div className="role-requests-container">
-      <div className="role-requests-header">
-        <h2>Role Upgrade Requests</h2>
-        <p>Review and manage user role upgrade requests</p>
-      </div>
+    <div style={{ padding: '24px', background: '#0f172a', minHeight: '100vh', fontFamily: 'inherit' }}>
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
 
-      {/* Stats Cards */}
-      <div className="stats-grid">
-        <div className="stat-card neu-card">
-          <div className="stat-icon" style={{ background: '#f59e0b' }}>⏳</div>
-          <div className="stat-details">
-            <p className="stat-label">Pending</p>
-            <h3 className="stat-value">{stats.pending}</h3>
+      {/* ── Header Banner ── */}
+      <div style={{ background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 60%, #4338ca 100%)', borderRadius: '20px', padding: '36px 40px 32px', marginBottom: '28px', boxShadow: '0 10px 40px rgba(79,70,229,0.25)', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', top: '-60px', right: '-60px', width: '220px', height: '220px', borderRadius: '50%', background: 'rgba(255,255,255,0.04)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', bottom: '-40px', left: '30%', width: '160px', height: '160px', borderRadius: '50%', background: 'rgba(255,255,255,0.03)', pointerEvents: 'none' }} />
+
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '24px', position: 'relative' }}>
+          <div>
+            <h2 style={{ margin: 0, fontSize: '28px', fontWeight: '800', color: '#ffffff', letterSpacing: '-0.01em', lineHeight: 1.2 }}>Role Upgrade Requests</h2>
+            <p style={{ margin: '8px 0 0', fontSize: '15px', color: 'rgba(255,255,255,0.82)', fontWeight: '500' }}>Review and manage user role upgrade requests</p>
+          </div>
+
+          {/* Stats inside banner */}
+          <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
+            {/* Total */}
+            <div style={{ background: 'rgba(255,255,255,0.10)', border: '1px solid rgba(255,255,255,0.20)', borderRadius: '14px', padding: '14px 20px', minWidth: '90px', textAlign: 'center', backdropFilter: 'blur(6px)' }}>
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '6px' }}>
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.85)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+                  <rect x="9" y="3" width="6" height="4" rx="1" ry="1"/>
+                  <line x1="9" y1="12" x2="15" y2="12"/>
+                  <line x1="9" y1="16" x2="13" y2="16"/>
+                </svg>
+              </div>
+              <div style={{ fontSize: '24px', fontWeight: '800', color: '#ffffff', lineHeight: 1 }}>{requests.length}</div>
+              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.7)', fontWeight: '600', marginTop: '4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Total</div>
+            </div>
+            {/* Pending */}
+            <div style={{ background: 'rgba(255,255,255,0.10)', border: '1px solid rgba(245,158,11,0.4)', borderRadius: '14px', padding: '14px 20px', minWidth: '90px', textAlign: 'center', backdropFilter: 'blur(6px)' }}>
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '6px' }}>
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <polyline points="12 6 12 12 16 14"/>
+                </svg>
+              </div>
+              <div style={{ fontSize: '24px', fontWeight: '800', color: '#ffffff', lineHeight: 1 }}>{stats.pending}</div>
+              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.7)', fontWeight: '600', marginTop: '4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Pending</div>
+            </div>
+            {/* Approved */}
+            <div style={{ background: 'rgba(255,255,255,0.10)', border: '1px solid rgba(16,185,129,0.4)', borderRadius: '14px', padding: '14px 20px', minWidth: '90px', textAlign: 'center', backdropFilter: 'blur(6px)' }}>
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '6px' }}>
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#34d399" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                  <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+              </div>
+              <div style={{ fontSize: '24px', fontWeight: '800', color: '#ffffff', lineHeight: 1 }}>{stats.approved}</div>
+              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.7)', fontWeight: '600', marginTop: '4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Approved</div>
+            </div>
+            {/* Rejected */}
+            <div style={{ background: 'rgba(255,255,255,0.10)', border: '1px solid rgba(239,68,68,0.4)', borderRadius: '14px', padding: '14px 20px', minWidth: '90px', textAlign: 'center', backdropFilter: 'blur(6px)' }}>
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '6px' }}>
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#f87171" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="15" y1="9" x2="9" y2="15"/>
+                  <line x1="9" y1="9" x2="15" y2="15"/>
+                </svg>
+              </div>
+              <div style={{ fontSize: '24px', fontWeight: '800', color: '#ffffff', lineHeight: 1 }}>{stats.rejected}</div>
+              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.7)', fontWeight: '600', marginTop: '4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Rejected</div>
+            </div>
           </div>
         </div>
-        <div className="stat-card neu-card">
-          <div className="stat-icon" style={{ background: '#10b981' }}>✓</div>
-          <div className="stat-details">
-            <p className="stat-label">Approved</p>
-            <h3 className="stat-value">{stats.approved}</h3>
-          </div>
-        </div>
-        <div className="stat-card neu-card">
-          <div className="stat-icon" style={{ background: '#ef4444' }}>✗</div>
-          <div className="stat-details">
-            <p className="stat-label">Rejected</p>
-            <h3 className="stat-value">{stats.rejected}</h3>
-          </div>
-        </div>
       </div>
 
-      {/* Filter Tabs */}
-      <div className="filter-tabs neu-card">
-        <button 
-          className={`filter-tab ${filter === 'all' ? 'active' : ''}`}
-          onClick={() => setFilter('all')}
-        >
-          All ({requests.length})
-        </button>
-        <button 
-          className={`filter-tab ${filter === 'pending' ? 'active' : ''}`}
-          onClick={() => setFilter('pending')}
-        >
-          Pending ({stats.pending})
-        </button>
-        <button 
-          className={`filter-tab ${filter === 'approved' ? 'active' : ''}`}
-          onClick={() => setFilter('approved')}
-        >
-          Approved ({stats.approved})
-        </button>
-        <button 
-          className={`filter-tab ${filter === 'rejected' ? 'active' : ''}`}
-          onClick={() => setFilter('rejected')}
-        >
-          Rejected ({stats.rejected})
-        </button>
+
+      {/* ── Filter Tabs ── */}
+      <div style={{ background: 'rgba(15,23,42,0.85)', border: '1px solid rgba(99,102,241,0.18)', borderRadius: '14px', padding: '8px', display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '24px' }}>
+        {[
+          { key: 'all',      label: `All (${requests.length})`    },
+          { key: 'pending',  label: `Pending (${stats.pending})`  },
+          { key: 'approved', label: `Approved (${stats.approved})` },
+          { key: 'rejected', label: `Rejected (${stats.rejected})` },
+        ].map(tab => (
+          <button
+            key={tab.key}
+            onClick={() => setFilter(tab.key)}
+            style={{
+              padding: '9px 20px',
+              borderRadius: '10px',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: '13px',
+              fontWeight: '600',
+              transition: 'all 0.2s',
+              background: filter === tab.key ? 'linear-gradient(135deg, #4338ca 0%, #6366f1 100%)' : 'transparent',
+              color: filter === tab.key ? '#ffffff' : '#94a3b8',
+              boxShadow: filter === tab.key ? '0 4px 12px rgba(99,102,241,0.3)' : 'none',
+            }}
+          >
+            {tab.label}
+          </button>
+        ))}
       </div>
 
-      {/* Requests Table */}
-      <div className="requests-table-container neu-card">
+      {/* ── Requests Table ── */}
+      <div style={{ background: 'rgba(15,23,42,0.88)', border: '1px solid rgba(99,102,241,0.18)', borderRadius: '16px', overflow: 'hidden', marginBottom: '24px' }}>
         {filteredRequests.length === 0 ? (
-          <div className="empty-state">
-            <p>No {filter !== 'all' ? filter : ''} requests found</p>
+          <div style={{ padding: '60px 24px', textAlign: 'center' }}>
+            <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'rgba(99,102,241,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', fontSize: '28px' }}>📋</div>
+            <p style={{ color: '#94a3b8', fontSize: '15px', fontWeight: '500', margin: 0 }}>No {filter !== 'all' ? filter : ''} requests found</p>
           </div>
         ) : (
-          <table className="requests-table">
-            <thead>
-              <tr>
-                <th>User</th>
-                <th>Email</th>
-                <th>Requested Role</th>
-                <th>Reason</th>
-                <th>Status</th>
-                <th>Requested Date</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredRequests.map((request) => (
-                <tr key={request._id}>
-                  <td>
-                    <div className="user-cell">
-                      <div className="user-avatar">
-                        {request.userId?.profile?.avatar ? (
-                          <img src={request.userId.profile.avatar} alt="User" />
-                        ) : (
-                          request.userId?.profile?.firstName?.charAt(0) || 
-                          request.userId?.email?.charAt(0).toUpperCase() || 'U'
-                        )}
-                      </div>
-                      <span>
-                        {request.userId?.profile?.firstName && request.userId?.profile?.lastName
-                          ? `${request.userId.profile.firstName} ${request.userId.profile.lastName}`
-                          : request.userId?.email || 'Unknown User'}
-                      </span>
-                    </div>
-                  </td>
-                  <td>{request.userId?.email || 'N/A'}</td>
-                  <td>
-                    <span className={`role-badge ${getRoleBadgeColor(request.requestedRole)}`}>
-                      {getRoleDisplayName(request.requestedRole)}
-                    </span>
-                  </td>
-                  <td>
-                    <div className="reason-cell" title={request.reason || 'No reason provided'}>
-                      {request.reason ? (
-                        <span className="reason-text">
-                          {request.reason.length > 50 
-                            ? `${request.reason.substring(0, 50)}...` 
-                            : request.reason}
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr style={{ background: 'rgba(99,102,241,0.08)' }}>
+                  {['User', 'Email', 'Requested Role', 'Reason', 'Status', 'Requested Date', 'Actions'].map(h => (
+                    <th key={h} style={{ padding: '14px 16px', textAlign: 'left', fontSize: '12px', fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid rgba(99,102,241,0.15)', whiteSpace: 'nowrap' }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {filteredRequests.map((request, idx) => (
+                  <tr key={request._id} style={{ borderBottom: '1px solid rgba(99,102,241,0.10)', background: idx % 2 === 0 ? 'transparent' : 'rgba(99,102,241,0.03)', transition: 'background 0.15s' }}>
+                    {/* User */}
+                    <td style={{ padding: '14px 16px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: 'linear-gradient(135deg, #4338ca 0%, #6366f1 100%)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '700', fontSize: '14px', flexShrink: 0, overflow: 'hidden' }}>
+                          {request.userId?.profile?.avatar
+                            ? <img src={request.userId.profile.avatar} alt="User" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            : (request.userId?.profile?.firstName?.charAt(0) || request.userId?.email?.charAt(0)?.toUpperCase() || 'U')}
+                        </div>
+                        <span style={{ fontSize: '14px', fontWeight: '600', color: '#e2e8f0', whiteSpace: 'nowrap' }}>
+                          {request.userId?.profile?.firstName && request.userId?.profile?.lastName
+                            ? `${request.userId.profile.firstName} ${request.userId.profile.lastName}`
+                            : request.userId?.email || 'Unknown User'}
                         </span>
-                      ) : (
-                        <span className="no-reason">No reason provided</span>
-                      )}
-                    </div>
-                  </td>
-                  <td>
-                    <span className={`status-badge ${getStatusBadgeColor(request.status)}`}>
-                      {request.status.toUpperCase()}
-                    </span>
-                  </td>
-                  <td>{new Date(request.createdAt).toLocaleDateString()}</td>
-                  <td>
-                    <div className="action-buttons">
-                      <button 
-                        className="neu-btn-info"
-                        onClick={() => handleViewDetails(request)}
-                        title="View Full Details"
-                      >
-                        👁 View Details
-                      </button>
-                      {request.status === 'pending' && (
-                        <>
-                          <button 
-                            className="neu-btn-success"
+                      </div>
+                    </td>
+                    {/* Email */}
+                    <td style={{ padding: '14px 16px', fontSize: '13px', color: '#94a3b8' }}>{request.userId?.email || 'N/A'}</td>
+                    {/* Role */}
+                    <td style={{ padding: '14px 16px' }}>
+                      <span style={getRoleBadgeStyle(request.requestedRole)}>{getRoleDisplayName(request.requestedRole)}</span>
+                    </td>
+                    {/* Reason */}
+                    <td style={{ padding: '14px 16px', maxWidth: '240px' }}>
+                      {request.reason
+                        ? <span title={request.reason} style={{ display: 'block', fontSize: '13px', color: '#cbd5e1', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', cursor: 'help' }}>
+                            {request.reason.length > 50 ? `${request.reason.substring(0, 50)}…` : request.reason}
+                          </span>
+                        : <span style={{ fontSize: '13px', color: '#64748b', fontStyle: 'italic' }}>No reason provided</span>}
+                    </td>
+                    {/* Status */}
+                    <td style={{ padding: '14px 16px' }}>
+                      <span style={getStatusBadgeStyle(request.status)}>{request.status.toUpperCase()}</span>
+                    </td>
+                    {/* Date */}
+                    <td style={{ padding: '14px 16px', fontSize: '13px', color: '#94a3b8', whiteSpace: 'nowrap' }}>
+                      {new Date(request.createdAt).toLocaleDateString()}
+                    </td>
+                    {/* Actions */}
+                    <td style={{ padding: '14px 16px' }}>
+                      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+                        <button
+                          onClick={() => handleViewDetails(request)}
+                          title="View Full Details"
+                          style={{ padding: '7px 14px', borderRadius: '8px', border: '1px solid rgba(99,102,241,0.3)', background: 'rgba(99,102,241,0.15)', color: '#818cf8', fontSize: '12px', fontWeight: '600', cursor: 'pointer', whiteSpace: 'nowrap' }}
+                        >👁 View</button>
+                        {request.status === 'pending' && (<>
+                          <button
                             onClick={() => handleReviewRequest(request._id, 'approved')}
                             title="Approve Request"
-                          >
-                            ✓ Approve
-                          </button>
-                          <button 
-                            className="neu-btn-danger"
+                            style={{ padding: '7px 14px', borderRadius: '8px', border: '1px solid rgba(16,185,129,0.3)', background: 'rgba(16,185,129,0.15)', color: '#34d399', fontSize: '12px', fontWeight: '600', cursor: 'pointer', whiteSpace: 'nowrap' }}
+                          >✓ Approve</button>
+                          <button
                             onClick={() => handleReviewRequest(request._id, 'rejected')}
                             title="Reject Request"
-                          >
-                            ✗ Reject
-                          </button>
-                        </>
+                            style={{ padding: '7px 14px', borderRadius: '8px', border: '1px solid rgba(239,68,68,0.3)', background: 'rgba(239,68,68,0.15)', color: '#f87171', fontSize: '12px', fontWeight: '600', cursor: 'pointer', whiteSpace: 'nowrap' }}
+                          >✗ Reject</button>
+                        </>)}
+                        {request.status === 'approved' && (
+                          <button
+                            onClick={() => handleRevokeRole(request)}
+                            title="Revoke Role"
+                            style={{ padding: '7px 14px', borderRadius: '8px', border: '1px solid rgba(245,158,11,0.3)', background: 'rgba(245,158,11,0.15)', color: '#fbbf24', fontSize: '12px', fontWeight: '600', cursor: 'pointer', whiteSpace: 'nowrap' }}
+                          >🚫 Revoke</button>
+                        )}
+                        <button
+                          onClick={(e) => { e.stopPropagation(); handleDeleteRequest(request); }}
+                          title="Delete Request"
+                          style={{ padding: '7px 14px', borderRadius: '8px', border: '1px solid rgba(239,68,68,0.25)', background: 'rgba(239,68,68,0.12)', color: '#f87171', fontSize: '12px', fontWeight: '600', cursor: 'pointer', whiteSpace: 'nowrap' }}
+                        >🗑️</button>
+                      </div>
+                      {request.status !== 'pending' && request.reviewedAt && (
+                        <div style={{ fontSize: '11px', color: '#64748b', marginTop: '6px' }}>
+                          {request.status === 'approved' ? 'Approved' : 'Rejected'} on {new Date(request.reviewedAt).toLocaleDateString()}
+                        </div>
                       )}
-                      {request.status === 'approved' && (
-                        <button 
-                          className="neu-btn-warning"
-                          onClick={() => handleRevokeRole(request)}
-                          title="Revoke Editor Role"
-                        >
-                          🚫 Revoke Role
-                        </button>
-                      )}
-                      <button 
-                        className="neu-btn-danger"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteRequest(request);
-                        }}
-                        title="Delete Request"
-                      >
-                        🗑️ Delete
-                      </button>
-                    </div>
-                    {request.status !== 'pending' && (
-                      <span className="reviewed-text">
-                        {request.status === 'approved' ? 'Approved' : 'Rejected'}
-                        {request.reviewedAt && ` on ${new Date(request.reviewedAt).toLocaleDateString()}`}
-                      </span>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
 
-      {/* Details Modal */}
+      {/* ── Details Modal ── */}
       {showDetailsModal && selectedRequest && (
-        <div className="details-modal-overlay" onClick={handleCloseModal}>
-          <div className="details-modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="details-modal-header">
-              <h2>Role Request Details</h2>
-              <button className="modal-close-btn" onClick={handleCloseModal}>×</button>
+        <div
+          onClick={handleCloseModal}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(6px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, padding: '20px' }}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{ background: '#0f172a', border: '1px solid rgba(99,102,241,0.25)', borderRadius: '18px', maxWidth: '680px', width: '100%', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 24px 64px rgba(0,0,0,0.6)' }}
+          >
+            {/* Modal Header */}
+            <div style={{ background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 60%, #4338ca 100%)', padding: '24px 28px', borderRadius: '18px 18px 0 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h2 style={{ margin: 0, fontSize: '20px', fontWeight: '800', color: '#ffffff', letterSpacing: '-0.01em' }}>Role Request Details</h2>
+              <button
+                onClick={handleCloseModal}
+                style={{ background: 'rgba(255,255,255,0.15)', border: 'none', color: '#ffffff', fontSize: '22px', width: '36px', height: '36px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              >×</button>
             </div>
-            
-            <div className="details-modal-body">
-              <div className="detail-section">
-                <h3>User Information</h3>
-                <div className="detail-row">
-                  <span className="detail-label">Name:</span>
-                  <span className="detail-value">
-                    {selectedRequest.userId?.profile?.firstName && selectedRequest.userId?.profile?.lastName
-                      ? `${selectedRequest.userId.profile.firstName} ${selectedRequest.userId.profile.lastName}`
-                      : selectedRequest.userId?.email || 'Unknown User'}
-                  </span>
-                </div>
-                <div className="detail-row">
-                  <span className="detail-label">Email:</span>
-                  <span className="detail-value">{selectedRequest.userId?.email || 'N/A'}</span>
-                </div>
-                {selectedRequest.userId?.profile?.organization && (
-                  <div className="detail-row">
-                    <span className="detail-label">Organization:</span>
-                    <span className="detail-value">{selectedRequest.userId.profile.organization}</span>
+
+            {/* Modal Body */}
+            <div style={{ padding: '28px' }}>
+              {/* User Info */}
+              <div style={{ marginBottom: '24px' }}>
+                <h3 style={{ fontSize: '13px', fontWeight: '700', color: '#6366f1', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '14px', paddingBottom: '8px', borderBottom: '1px solid rgba(99,102,241,0.18)' }}>User Information</h3>
+                {[
+                  { label: 'Name', value: selectedRequest.userId?.profile?.firstName && selectedRequest.userId?.profile?.lastName ? `${selectedRequest.userId.profile.firstName} ${selectedRequest.userId.profile.lastName}` : selectedRequest.userId?.email || 'Unknown User' },
+                  { label: 'Email', value: selectedRequest.userId?.email || 'N/A' },
+                  ...(selectedRequest.userId?.profile?.organization ? [{ label: 'Organization', value: selectedRequest.userId.profile.organization }] : []),
+                  ...(selectedRequest.userId?.profile?.position ? [{ label: 'Position', value: selectedRequest.userId.profile.position }] : []),
+                ].map(row => (
+                  <div key={row.label} style={{ display: 'flex', gap: '16px', padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                    <span style={{ minWidth: '130px', fontSize: '13px', fontWeight: '600', color: '#64748b' }}>{row.label}</span>
+                    <span style={{ fontSize: '14px', color: '#e2e8f0', flex: 1 }}>{row.value}</span>
                   </div>
-                )}
-                {selectedRequest.userId?.profile?.position && (
-                  <div className="detail-row">
-                    <span className="detail-label">Position:</span>
-                    <span className="detail-value">{selectedRequest.userId.profile.position}</span>
-                  </div>
-                )}
+                ))}
               </div>
 
-              <div className="detail-section">
-                <h3>Request Information</h3>
-                <div className="detail-row">
-                  <span className="detail-label">Requested Role:</span>
-                  <span className={`role-badge ${getRoleBadgeColor(selectedRequest.requestedRole)}`}>
-                    {getRoleDisplayName(selectedRequest.requestedRole)}
-                  </span>
+              {/* Request Info */}
+              <div style={{ marginBottom: '24px' }}>
+                <h3 style={{ fontSize: '13px', fontWeight: '700', color: '#6366f1', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '14px', paddingBottom: '8px', borderBottom: '1px solid rgba(99,102,241,0.18)' }}>Request Information</h3>
+                <div style={{ display: 'flex', gap: '16px', padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                  <span style={{ minWidth: '130px', fontSize: '13px', fontWeight: '600', color: '#64748b' }}>Requested Role</span>
+                  <span style={getRoleBadgeStyle(selectedRequest.requestedRole)}>{getRoleDisplayName(selectedRequest.requestedRole)}</span>
                 </div>
-                <div className="detail-row">
-                  <span className="detail-label">Request Date:</span>
-                  <span className="detail-value">
-                    {new Date(selectedRequest.createdAt).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}
-                  </span>
+                <div style={{ display: 'flex', gap: '16px', padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                  <span style={{ minWidth: '130px', fontSize: '13px', fontWeight: '600', color: '#64748b' }}>Request Date</span>
+                  <span style={{ fontSize: '14px', color: '#e2e8f0' }}>{new Date(selectedRequest.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
                 </div>
-                <div className="detail-row">
-                  <span className="detail-label">Status:</span>
-                  <span className={`status-badge ${getStatusBadgeColor(selectedRequest.status)}`}>
-                    {selectedRequest.status.toUpperCase()}
-                  </span>
+                <div style={{ display: 'flex', gap: '16px', padding: '10px 0' }}>
+                  <span style={{ minWidth: '130px', fontSize: '13px', fontWeight: '600', color: '#64748b' }}>Status</span>
+                  <span style={getStatusBadgeStyle(selectedRequest.status)}>{selectedRequest.status.toUpperCase()}</span>
                 </div>
               </div>
 
-              <div className="detail-section">
-                <h3>Why User Wants This Role</h3>
-                <div className="reason-box">
-                  {selectedRequest.reason && selectedRequest.reason.trim() ? (
-                    selectedRequest.reason
-                  ) : (
-                    <div style={{ color: '#9ca3af', fontStyle: 'italic' }}>
-                      No reason provided (This request was submitted before the reason field was required)
-                    </div>
-                  )}
+              {/* Reason */}
+              <div style={{ marginBottom: '24px' }}>
+                <h3 style={{ fontSize: '13px', fontWeight: '700', color: '#6366f1', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '14px', paddingBottom: '8px', borderBottom: '1px solid rgba(99,102,241,0.18)' }}>Why User Wants This Role</h3>
+                <div style={{ background: 'rgba(99,102,241,0.07)', border: '1px solid rgba(99,102,241,0.18)', borderRadius: '12px', padding: '18px', color: '#cbd5e1', fontSize: '14px', lineHeight: '1.7', whiteSpace: 'pre-wrap', wordBreak: 'break-word', minHeight: '90px' }}>
+                  {selectedRequest.reason && selectedRequest.reason.trim()
+                    ? selectedRequest.reason
+                    : <span style={{ color: '#64748b', fontStyle: 'italic' }}>No reason provided (submitted before the reason field was required)</span>}
                 </div>
               </div>
 
+              {/* Review Info */}
               {selectedRequest.status !== 'pending' && selectedRequest.reviewedAt && (
-                <div className="detail-section">
-                  <h3>Review Information</h3>
-                  <div className="detail-row">
-                    <span className="detail-label">Reviewed On:</span>
-                    <span className="detail-value">
-                      {new Date(selectedRequest.reviewedAt).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })}
-                    </span>
+                <div>
+                  <h3 style={{ fontSize: '13px', fontWeight: '700', color: '#6366f1', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '14px', paddingBottom: '8px', borderBottom: '1px solid rgba(99,102,241,0.18)' }}>Review Information</h3>
+                  <div style={{ display: 'flex', gap: '16px', padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                    <span style={{ minWidth: '130px', fontSize: '13px', fontWeight: '600', color: '#64748b' }}>Reviewed On</span>
+                    <span style={{ fontSize: '14px', color: '#e2e8f0' }}>{new Date(selectedRequest.reviewedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
                   </div>
                   {selectedRequest.adminNotes && (
-                    <div className="detail-row">
-                      <span className="detail-label">Admin Notes:</span>
-                      <span className="detail-value">{selectedRequest.adminNotes}</span>
+                    <div style={{ display: 'flex', gap: '16px', padding: '10px 0' }}>
+                      <span style={{ minWidth: '130px', fontSize: '13px', fontWeight: '600', color: '#64748b' }}>Admin Notes</span>
+                      <span style={{ fontSize: '14px', color: '#e2e8f0' }}>{selectedRequest.adminNotes}</span>
                     </div>
                   )}
                 </div>
               )}
             </div>
 
-            <div className="details-modal-footer">
-              {selectedRequest.status === 'pending' ? (
-                <>
-                  <button className="modal-btn-reject" onClick={handleRejectFromModal}>
-                    ✗ Reject Request
-                  </button>
-                  <button className="modal-btn-approve" onClick={handleApproveFromModal}>
-                    ✓ Approve Request
-                  </button>
-                </>
-              ) : selectedRequest.status === 'approved' ? (
-                <>
-                  <button className="modal-btn-close" onClick={handleCloseModal}>
-                    Close
-                  </button>
-                  <button className="modal-btn-revoke" onClick={() => {
-                    handleRevokeRole(selectedRequest);
-                    handleCloseModal();
-                  }}>
-                    🚫 Revoke Editor Role
-                  </button>
-                </>
-              ) : (
-                <button className="modal-btn-close" onClick={handleCloseModal}>
-                  Close
-                </button>
+            {/* Modal Footer */}
+            <div style={{ padding: '18px 28px', borderTop: '1px solid rgba(99,102,241,0.18)', display: 'flex', gap: '12px', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+              {selectedRequest.status === 'pending' ? (<>
+                <button onClick={handleRejectFromModal} style={{ padding: '11px 22px', borderRadius: '10px', border: '1px solid rgba(239,68,68,0.3)', background: 'rgba(239,68,68,0.15)', color: '#f87171', fontSize: '14px', fontWeight: '600', cursor: 'pointer' }}>✗ Reject Request</button>
+                <button onClick={handleApproveFromModal} style={{ padding: '11px 22px', borderRadius: '10px', border: 'none', background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)', color: '#ffffff', fontSize: '14px', fontWeight: '600', cursor: 'pointer', boxShadow: '0 4px 12px rgba(16,185,129,0.3)' }}>✓ Approve Request</button>
+              </>) : selectedRequest.status === 'approved' ? (<>
+                <button onClick={handleCloseModal} style={{ padding: '11px 22px', borderRadius: '10px', border: '1px solid rgba(100,116,139,0.3)', background: 'rgba(100,116,139,0.15)', color: '#94a3b8', fontSize: '14px', fontWeight: '600', cursor: 'pointer' }}>Close</button>
+                <button onClick={() => { handleRevokeRole(selectedRequest); handleCloseModal(); }} style={{ padding: '11px 22px', borderRadius: '10px', border: '1px solid rgba(245,158,11,0.3)', background: 'rgba(245,158,11,0.15)', color: '#fbbf24', fontSize: '14px', fontWeight: '600', cursor: 'pointer' }}>🚫 Revoke Role</button>
+              </>) : (
+                <button onClick={handleCloseModal} style={{ padding: '11px 22px', borderRadius: '10px', border: '1px solid rgba(100,116,139,0.3)', background: 'rgba(100,116,139,0.15)', color: '#94a3b8', fontSize: '14px', fontWeight: '600', cursor: 'pointer' }}>Close</button>
               )}
             </div>
           </div>
         </div>
       )}
-
-      <style jsx>{`
-        .role-requests-container {
-          padding: 20px;
-        }
-
-        .role-requests-header {
-          margin-bottom: 30px;
-        }
-
-        .role-requests-header h2 {
-          font-size: 28px;
-          font-weight: 700;
-          color: #1e293b;
-          margin-bottom: 8px;
-        }
-
-        .role-requests-header p {
-          color: #64748b;
-          font-size: 14px;
-        }
-
-        .stats-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-          gap: 20px;
-          margin-bottom: 30px;
-        }
-
-        .stat-card {
-          padding: 20px;
-          display: flex;
-          align-items: center;
-          gap: 15px;
-        }
-
-        .stat-icon {
-          width: 50px;
-          height: 50px;
-          border-radius: 12px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 24px;
-          color: white;
-        }
-
-        .stat-details {
-          flex: 1;
-        }
-
-        .stat-label {
-          font-size: 14px;
-          color: #64748b;
-          margin-bottom: 4px;
-        }
-
-        .stat-value {
-          font-size: 28px;
-          font-weight: 700;
-          color: #1e293b;
-        }
-
-        .filter-tabs {
-          display: flex;
-          gap: 10px;
-          padding: 15px;
-          margin-bottom: 20px;
-        }
-
-        .filter-tab {
-          padding: 10px 20px;
-          border: none;
-          background: transparent;
-          border-radius: 8px;
-          cursor: pointer;
-          font-weight: 500;
-          color: #64748b;
-          transition: all 0.3s;
-        }
-
-        .filter-tab:hover {
-          background: #f1f5f9;
-          color: #1e293b;
-        }
-
-        .filter-tab.active {
-          background: #8b5cf6;
-          color: white;
-        }
-
-        .requests-table-container {
-          padding: 0;
-          overflow-x: auto;
-        }
-
-        .requests-table {
-          width: 100%;
-          border-collapse: collapse;
-        }
-
-        .requests-table th,
-        .requests-table td {
-          padding: 15px;
-          text-align: left;
-          border-bottom: 1px solid #e2e8f0;
-        }
-
-        .requests-table th {
-          background: #f8fafc;
-          font-weight: 600;
-          color: #475569;
-          font-size: 14px;
-        }
-
-        .user-cell {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-        }
-
-        .user-avatar {
-          width: 40px;
-          height: 40px;
-          border-radius: 50%;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          color: white;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-weight: 600;
-          overflow: hidden;
-        }
-
-        .user-avatar img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-        }
-
-        .role-badge,
-        .status-badge {
-          padding: 6px 12px;
-          border-radius: 20px;
-          font-size: 12px;
-          font-weight: 600;
-          color: white;
-          display: inline-block;
-        }
-
-        .bg-purple-500 { background: #8b5cf6; }
-        .bg-teal-500 { background: #14b8a6; }
-        .bg-blue-500 { background: #3b82f6; }
-        .bg-yellow-500 { background: #f59e0b; }
-        .bg-green-500 { background: #10b981; }
-        .bg-red-500 { background: #ef4444; }
-        .bg-gray-500 { background: #6b7280; }
-
-        .action-buttons {
-          display: flex;
-          gap: 10px;
-          flex-wrap: wrap;
-          align-items: center;
-        }
-
-        .neu-btn-success,
-        .neu-btn-danger,
-        .neu-btn-info,
-        .neu-btn-warning {
-          padding: 8px 16px;
-          border: none;
-          border-radius: 8px;
-          font-weight: 500;
-          cursor: pointer;
-          transition: all 0.3s;
-          font-size: 13px;
-          white-space: nowrap;
-          position: relative;
-          z-index: 1;
-        }
-
-        .neu-btn-success {
-          background: #10b981;
-          color: white;
-        }
-
-        .neu-btn-success:hover {
-          background: #059669;
-          transform: translateY(-2px);
-        }
-
-        .neu-btn-danger {
-          background: #ef4444;
-          color: white;
-        }
-
-        .neu-btn-danger:hover {
-          background: #dc2626;
-          transform: translateY(-2px);
-        }
-
-        .neu-btn-info {
-          padding: 8px 16px;
-          border: none;
-          border-radius: 8px;
-          cursor: pointer;
-          font-size: 13px;
-          font-weight: 600;
-          transition: all 0.2s;
-          background: #3b82f6;
-          color: white;
-        }
-
-        .neu-btn-info:hover {
-          background: #2563eb;
-          transform: translateY(-2px);
-        }
-
-        .neu-btn-warning {
-          padding: 8px 16px;
-          border: none;
-          border-radius: 8px;
-          cursor: pointer;
-          font-size: 13px;
-          font-weight: 600;
-          transition: all 0.2s;
-          background: #f59e0b;
-          color: white;
-        }
-
-        .neu-btn-warning:hover {
-          background: #d97706;
-          transform: translateY(-2px);
-        }
-
-        .reviewed-text {
-          color: #64748b;
-          font-size: 13px;
-        }
-
-        .empty-state {
-          padding: 60px 20px;
-          text-align: center;
-          color: #94a3b8;
-        }
-
-        .loading-spinner {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          padding: 60px;
-          gap: 20px;
-        }
-
-        .spinner {
-          width: 50px;
-          height: 50px;
-          border: 4px solid #e2e8f0;
-          border-top-color: #8b5cf6;
-          border-radius: 50%;
-          animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-          to { transform: rotate(360deg); }
-        }
-
-        .reason-cell {
-          max-width: 250px;
-        }
-
-        .reason-text {
-          display: block;
-          color: #475569;
-          font-size: 13px;
-          line-height: 1.5;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          cursor: help;
-        }
-
-        .no-reason {
-          color: #94a3b8;
-          font-style: italic;
-          font-size: 13px;
-        }
-
-        /* Details Modal Styles */
-        .details-modal-overlay {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: rgba(0, 0, 0, 0.7);
-          backdrop-filter: blur(8px);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 9999;
-          padding: 20px;
-          animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
-        }
-
-        .details-modal-content {
-          background: white;
-          border-radius: 16px;
-          max-width: 700px;
-          width: 100%;
-          max-height: 90vh;
-          overflow-y: auto;
-          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-          animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        @keyframes slideUp {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        .details-modal-header {
-          padding: 24px 30px;
-          border-bottom: 1px solid #e5e7eb;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          color: white;
-          border-radius: 16px 16px 0 0;
-        }
-
-        .details-modal-header h2 {
-          margin: 0;
-          font-size: 22px;
-          font-weight: 700;
-        }
-
-        .modal-close-btn {
-          background: rgba(255, 255, 255, 0.2);
-          border: none;
-          color: white;
-          font-size: 28px;
-          width: 36px;
-          height: 36px;
-          border-radius: 8px;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: all 0.2s;
-        }
-
-        .modal-close-btn:hover {
-          background: rgba(255, 255, 255, 0.3);
-          transform: rotate(90deg);
-        }
-
-        .details-modal-body {
-          padding: 30px;
-        }
-
-        .detail-section {
-          margin-bottom: 28px;
-        }
-
-        .detail-section:last-child {
-          margin-bottom: 0;
-        }
-
-        .detail-section h3 {
-          font-size: 16px;
-          font-weight: 700;
-          color: #1f2937;
-          margin-bottom: 16px;
-          padding-bottom: 8px;
-          border-bottom: 2px solid #e5e7eb;
-        }
-
-        .detail-row {
-          display: flex;
-          align-items: center;
-          padding: 12px 0;
-          border-bottom: 1px solid #f3f4f6;
-        }
-
-        .detail-row:last-child {
-          border-bottom: none;
-        }
-
-        .detail-label {
-          font-weight: 600;
-          color: #6b7280;
-          min-width: 150px;
-          font-size: 14px;
-        }
-
-        .detail-value {
-          color: #1f2937;
-          font-size: 14px;
-          flex: 1;
-        }
-
-        .reason-box {
-          background: #f9fafb;
-          border: 1px solid #e5e7eb;
-          border-radius: 12px;
-          padding: 20px;
-          color: #374151;
-          font-size: 14px;
-          line-height: 1.7;
-          white-space: pre-wrap;
-          word-wrap: break-word;
-          min-height: 100px;
-        }
-
-        .details-modal-footer {
-          padding: 20px 30px;
-          border-top: 1px solid #e5e7eb;
-          display: flex;
-          gap: 12px;
-          justify-content: flex-end;
-          background: #f9fafb;
-          border-radius: 0 0 16px 16px;
-        }
-
-        .modal-btn-approve,
-        .modal-btn-reject,
-        .modal-btn-close {
-          padding: 12px 24px;
-          border: none;
-          border-radius: 8px;
-          font-size: 14px;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.2s;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        }
-
-        .modal-btn-approve {
-          background: #10b981;
-          color: white;
-        }
-
-        .modal-btn-approve:hover {
-          background: #059669;
-          transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
-        }
-
-        .modal-btn-reject {
-          background: #ef4444;
-          color: white;
-        }
-
-        .modal-btn-reject:hover {
-          background: #dc2626;
-          transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
-        }
-
-        .modal-btn-close {
-          background: #6b7280;
-          color: white;
-        }
-
-        .modal-btn-close:hover {
-          background: #4b5563;
-          transform: translateY(-2px);
-        }
-
-        .modal-btn-revoke {
-          padding: 12px 24px;
-          border: none;
-          border-radius: 8px;
-          font-size: 14px;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.2s;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          background: #f59e0b;
-          color: white;
-        }
-
-        .modal-btn-revoke:hover {
-          background: #d97706;
-          transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
-        }
-
-        @media (max-width: 768px) {
-          .details-modal-content {
-            max-width: 95%;
-            margin: 10px;
-          }
-
-          .details-modal-header,
-          .details-modal-body,
-          .details-modal-footer {
-            padding: 20px;
-          }
-
-          .detail-row {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 8px;
-          }
-
-          .detail-label {
-            min-width: auto;
-          }
-
-          .details-modal-footer {
-            flex-direction: column;
-          }
-
-          .modal-btn-approve,
-          .modal-btn-reject,
-          .modal-btn-close {
-            width: 100%;
-            justify-content: center;
-          }
-        }
-      `}</style>
     </div>
   );
 };

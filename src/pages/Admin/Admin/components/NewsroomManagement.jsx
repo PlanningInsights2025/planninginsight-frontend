@@ -101,7 +101,7 @@ const NewsroomManagement = () => {
   const handleDeleteArticle = async (articleId) => {
     if (!window.confirm('Are you sure you want to delete this article?')) return
     try {
-      await adminService.deleteArticle(articleId)
+      await adminAPI.deleteArticleAdmin(articleId)
       toast.success('Article deleted successfully')
       loadArticles()
     } catch (error) {
@@ -144,12 +144,12 @@ const NewsroomManagement = () => {
     <div style={{ padding: '24px' }}>
       {/* Header Section */}
       <div style={{
-        background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+        background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 60%, #4338ca 100%)',
         borderRadius: '20px',
         padding: '32px',
         marginBottom: '24px',
-        color: 'white',
-        boxShadow: '0 10px 40px rgba(245, 158, 11, 0.3)'
+        color: '#ffffff',
+        boxShadow: '0 10px 40px rgba(79, 70, 229, 0.25)'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px' }}>
           <div style={{
@@ -165,10 +165,10 @@ const NewsroomManagement = () => {
             <Newspaper size={28} />
           </div>
           <div>
-            <h2 style={{ fontSize: '28px', fontWeight: '700', margin: '0 0 8px 0' }}>
+            <h2 style={{ fontSize: '28px', fontWeight: '800', margin: '0 0 8px 0', color: '#ffffff', letterSpacing: '-0.01em' }}>
               Newsroom Management
             </h2>
-            <p style={{ margin: 0, opacity: 0.9, fontSize: '15px' }}>
+            <p style={{ margin: 0, fontSize: '15px', color: 'rgba(255,255,255,0.82)', fontWeight: '500' }}>
               Review, approve, and manage submitted articles
             </p>
           </div>
@@ -339,7 +339,7 @@ const NewsroomManagement = () => {
               width: '48px',
               height: '48px',
               border: '4px solid #e5e7eb',
-              borderTopColor: '#f59e0b',
+              borderTopColor: '#6366f1',
               borderRadius: '50%',
               margin: '0 auto 16px',
               animation: 'spin 1s linear infinite'
@@ -364,13 +364,13 @@ const NewsroomManagement = () => {
             width: '80px',
             height: '80px',
             borderRadius: '50%',
-            background: 'linear-gradient(135deg, #f59e0b20 0%, #d9770620 100%)',
+            background: 'linear-gradient(135deg, #6366f120 0%, #4338ca20 100%)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             margin: '0 auto 20px'
           }}>
-            <Newspaper size={36} color="#f59e0b" />
+            <Newspaper size={36} color="#6366f1" />
           </div>
           <p style={{ fontSize: '20px', fontWeight: '600', color: '#1f2937', marginBottom: '8px' }}>
             No articles found
@@ -701,7 +701,7 @@ const NewsroomManagement = () => {
                 padding: '8px 16px',
                 borderRadius: '8px',
                 border: '1px solid #e5e7eb',
-                background: currentPage === i + 1 ? '#f59e0b' : 'white',
+                background: currentPage === i + 1 ? 'linear-gradient(135deg, #4338ca 0%, #6366f1 100%)' : 'white',
                 color: currentPage === i + 1 ? 'white' : '#1f2937',
                 cursor: 'pointer',
                 fontWeight: currentPage === i + 1 ? '600' : '400'
