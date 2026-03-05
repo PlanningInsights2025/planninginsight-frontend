@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../../hooks/useAuth';
 import { newsroomAPI } from '../../../services/api/newsroom';
-import { ThumbsUp, ThumbsDown, MessageCircle, Flag, Share2, Eye, Calendar, User, X, ChevronUp } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, MessageCircle, Flag, Share2, Eye, Calendar, User, X, ChevronUp, BookOpen, Clock, Award } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import './ArticleDetail.css';
 
@@ -14,9 +14,11 @@ const ArticleDetail = () => {
   const [article, setArticle] = useState(null);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [recommendedArticles, setRecommendedArticles] = useState([]);
   const [userInteractions, setUserInteractions] = useState({ liked: false, disliked: false });
   const [comment, setComment] = useState('');
   const [showComments, setShowComments] = useState(true);
+  const [showShareMenu, setShowShareMenu] = useState(false);
   const [showFlagModal, setShowFlagModal] = useState(false);
   const [flagReason, setFlagReason] = useState('');
   const [flagDescription, setFlagDescription] = useState('');
@@ -27,6 +29,13 @@ const ArticleDetail = () => {
     loadArticle();
     loadStats();
   }, [articleId]);
+
+  // Load recommended articles once we have the main article
+  useEffect(() => {
+    if (article?.category) {
+      loadRecommendedArticles(article.category);
+    }
+  }, [article?.category]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -61,6 +70,16 @@ const ArticleDetail = () => {
       setStats(response.data);
     } catch (error) {
       console.error('Failed to load stats:', error);
+    }
+  };
+
+  const loadRecommendedArticles = async (category) => {
+    try {
+      const response = await newsroomAPI.getArticles({ category, limit: 4 });
+      const others = (response.data?.articles || []).filter(a => a._id !== articleId);
+      setRecommendedArticles(others.slice(0, 3));
+    } catch (error) {
+      // Silently fail - recommended articles are supplementary
     }
   };
 
@@ -141,26 +160,35 @@ const ArticleDetail = () => {
   const handleShare = async (platform) => {
     try {
       await newsroomAPI.shareArticle(articleId);
-      const shareText = `${article.title} by ${article.author.profile?.firstName || article.author.email}`;
+      const authorName = article.author.profile?.firstName
+        ? `${article.author.profile.firstName} ${article.author.profile.lastName || ''}`
+        : article.author.email;
+      const excerpt = article.excerpt ? ` — "${article.excerpt.slice(0, 120)}..."` : '';
+      const shareText = `${article.title} by ${authorName}${excerpt}`;
       const shareUrl = window.location.href;
 
       let url = '';
       switch (platform) {
         case 'twitter':
-          url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
+          url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}&hashtags=PlanningInsights,BuiltEnvironment`;
           break;
         case 'linkedin':
-          url = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
+          url = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent(article.title)}&summary=${encodeURIComponent(article.excerpt || '')}`;
           break;
         case 'facebook':
-          url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
+          url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`;
+          break;
+        case 'whatsapp':
+          url = `https://wa.me/?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`;
           break;
         default:
           navigator.clipboard.writeText(shareUrl);
           toast.success('Link copied to clipboard');
+          setShowShareMenu(false);
           return;
       }
       window.open(url, '_blank', 'width=600,height=400');
+      setShowShareMenu(false);
     } catch (error) {
       console.error('Failed to track share:', error);
     }
@@ -172,20 +200,14 @@ const ArticleDetail = () => {
 
   const getBlurredContent = () => {
     if (!article) return '';
-    const paragraphs = article.content.split('</p>');
+    const paragraphs = article.content.split('</p>').filter(p => p.trim());
     if (paragraphs.length <= 2) return article.content;
 
     const firstPara = paragraphs[0] + '</p>';
-    const lastPara = paragraphs[paragraphs.length - 2] + '</p>';
-    const middleCount = paragraphs.length - 2;
+    const lastPara = paragraphs[paragraphs.length - 1] + '</p>';
+    const middleParas = paragraphs.slice(1, -1).map(p => p + '</p>').join('');
 
-    return `
-      ${firstPara}
-      <div class="blur-overlay">
-        ${Array(middleCount).fill('<p>Lorem ipsum dolor sit amet...</p>').join('')}
-      </div>
-      ${lastPara}
-    `;
+    return `${firstPara}<div class="blur-overlay">${middleParas}</div>${lastPara}`;
   };
 
   if (loading) {
@@ -265,6 +287,39 @@ const ArticleDetail = () => {
           )}
         </header>
 
+        {/* Author Top Panel */}
+        <div className="author-top-panel slide-up">
+          <div className="author-top-avatar">
+            {article.author.profile?.profilePicture || article.author.profile?.avatar ? (
+              <img
+                src={article.author.profile.profilePicture || article.author.profile.avatar}
+                alt={article.author.profile?.firstName || 'Author'}
+              />
+            ) : (
+              <span>{(article.author.profile?.firstName?.[0] || 'U').toUpperCase()}</span>
+            )}
+          </div>
+          <div className="author-top-info">
+            <div className="author-top-names">
+              <Link to={`/profile/${article.author._id}`} className="author-top-name">
+                {article.author.profile?.firstName
+                  ? `${article.author.profile.firstName} ${article.author.profile.lastName || ''}`
+                  : article.author.email}
+              </Link>
+              {article.coAuthors?.map(ca => (
+                <span key={ca._id} className="co-author-chip">
+                  &amp; <Link to={`/profile/${ca._id}`}>
+                    {ca.profile?.firstName ? `${ca.profile.firstName} ${ca.profile.lastName || ''}` : ca.email}
+                  </Link>
+                </span>
+              ))}
+            </div>
+            <span className="author-pi-id">
+              <Award size={13} /> PI‑{article.author._id?.slice(-8)?.toUpperCase()}
+            </span>
+          </div>
+        </div>
+
         {/* Featured Image */}
         {article.featuredImage && (
           <div className="featured-image zoom-in">
@@ -322,16 +377,22 @@ const ArticleDetail = () => {
           </button>
 
           <div className="share-dropdown">
-            <button className="interaction-btn">
+            <button
+              className="interaction-btn"
+              onClick={() => setShowShareMenu(prev => !prev)}
+            >
               <Share2 size={20} />
               <span>Share</span>
             </button>
-            <div className="share-menu">
-              <button onClick={() => handleShare('twitter')}>Twitter</button>
-              <button onClick={() => handleShare('linkedin')}>LinkedIn</button>
-              <button onClick={() => handleShare('facebook')}>Facebook</button>
-              <button onClick={() => handleShare('copy')}>Copy Link</button>
-            </div>
+            {showShareMenu && (
+              <div className="share-menu">
+                <button onClick={() => handleShare('twitter')}>𝕏 Twitter</button>
+                <button onClick={() => handleShare('linkedin')}>LinkedIn</button>
+                <button onClick={() => handleShare('facebook')}>Facebook</button>
+                <button onClick={() => handleShare('whatsapp')}>WhatsApp</button>
+                <button onClick={() => handleShare('copy')}>📋 Copy Link</button>
+              </div>
+            )}
           </div>
 
           <button className="interaction-btn" onClick={() => setShowFlagModal(true)}>
@@ -348,26 +409,116 @@ const ArticleDetail = () => {
           </div>
         )}
 
-        {/* Author Section */}
+        {/* Author Section - Bottom */}
         <section className="author-section slide-up">
-          <h3>About the Author</h3>
+          <h3>About the Author{article.coAuthors?.length > 0 ? 's' : ''}</h3>
+
+          {/* Primary Author */}
           <div className="author-card">
             <div className="author-avatar">
-              {article.author.profile?.avatar ? (
-                <img src={article.author.profile.avatar} alt={article.author.profile.firstName} />
+              {article.author.profile?.profilePicture || article.author.profile?.avatar ? (
+                <img
+                  src={article.author.profile.profilePicture || article.author.profile.avatar}
+                  alt={article.author.profile?.firstName || 'Author'}
+                />
               ) : (
                 <span>{(article.author.profile?.firstName?.[0] || 'U').toUpperCase()}</span>
               )}
             </div>
             <div className="author-details">
-              <h4>{article.author.profile?.firstName || article.author.email}</h4>
-              <p className="author-bio">{article.author.profile?.bio || 'No bio available'}</p>
+              <h4>
+                <Link to={`/profile/${article.author._id}`} className="author-name-link">
+                  {article.author.profile?.firstName
+                    ? `${article.author.profile.firstName} ${article.author.profile.lastName || ''}`
+                    : article.author.email}
+                </Link>
+              </h4>
+              <span className="author-unique-id">
+                <Award size={13} /> Planning Insights ID: PI‑{article.author._id?.slice(-8)?.toUpperCase()}
+              </span>
+              <p className="author-bio">{article.author.profile?.bio || 'Planning professional contributing to Planning Insights.'}</p>
               <Link to={`/profile/${article.author._id}`} className="view-profile">
-                View Profile →
+                View Full Profile →
               </Link>
             </div>
           </div>
+
+          {/* Co-Authors */}
+          {article.coAuthors?.length > 0 && (
+            <div className="co-authors-section">
+              <h4 className="co-authors-heading">Co-Authors</h4>
+              {article.coAuthors.map(ca => (
+                <div key={ca._id} className="author-card co-author-card">
+                  <div className="author-avatar">
+                    {ca.profile?.profilePicture || ca.profile?.avatar ? (
+                      <img
+                        src={ca.profile.profilePicture || ca.profile.avatar}
+                        alt={ca.profile?.firstName || 'Co-Author'}
+                      />
+                    ) : (
+                      <span>{(ca.profile?.firstName?.[0] || 'C').toUpperCase()}</span>
+                    )}
+                  </div>
+                  <div className="author-details">
+                    <h4>
+                      <Link to={`/profile/${ca._id}`} className="author-name-link">
+                        {ca.profile?.firstName
+                          ? `${ca.profile.firstName} ${ca.profile.lastName || ''}`
+                          : ca.email}
+                      </Link>
+                    </h4>
+                    <span className="author-unique-id">
+                      <Award size={13} /> PI‑{ca._id?.slice(-8)?.toUpperCase()}
+                    </span>
+                    <p className="author-bio">{ca.profile?.bio || 'Planning professional contributing to Planning Insights.'}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </section>
+
+        {/* Recommended Readings */}
+        {recommendedArticles.length > 0 && (
+          <section className="recommended-readings slide-up">
+            <h3 className="recommended-heading">
+              <BookOpen size={20} /> Recommended Readings
+            </h3>
+            <div className="recommended-grid">
+              {recommendedArticles.map(rec => (
+                <Link
+                  key={rec._id}
+                  to={`/news/article/${rec._id}`}
+                  className="recommended-card"
+                >
+                  {rec.featuredImage && (
+                    <div className="recommended-card-image">
+                      <img src={rec.featuredImage} alt={rec.title} />
+                    </div>
+                  )}
+                  <div className="recommended-card-body">
+                    <span className="recommended-category">{rec.category}</span>
+                    <h4 className="recommended-title">{rec.title}</h4>
+                    {rec.excerpt && (
+                      <p className="recommended-excerpt">
+                        {rec.excerpt.slice(0, 100)}{rec.excerpt.length > 100 ? '...' : ''}
+                      </p>
+                    )}
+                    <div className="recommended-meta">
+                      <Clock size={13} />
+                      <span>{rec.readingTime || 5} min read</span>
+                      {rec.author && (
+                        <span className="recommended-author">
+                          by {rec.author.profile?.firstName || rec.author.email}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Comments Section */}
         {showComments && (

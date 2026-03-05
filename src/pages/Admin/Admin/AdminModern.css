@@ -26,14 +26,19 @@
 	font-family: 'Inter', 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
-body, .admin-dashboard {
+.admin-dashboard {
 	background: radial-gradient(circle at top, rgba(67, 56, 202, 0.45), transparent 45%),
-							radial-gradient(circle at 20% 20%, rgba(14, 165, 233, 0.3), transparent 35%),
-							var(--bg-base);
+						radial-gradient(circle at 20% 20%, rgba(14, 165, 233, 0.3), transparent 35%),
+						var(--bg-base);
 	color: var(--text-body);
 }
 
-h1, h2, h3, h4, h5, h6 {
+.admin-dashboard h1,
+.admin-dashboard h2,
+.admin-dashboard h3,
+.admin-dashboard h4,
+.admin-dashboard h5,
+.admin-dashboard h6 {
 	color: var(--text-primary);
 	font-weight: 650;
 }
@@ -561,7 +566,7 @@ h1, h2, h3, h4, h5, h6 {
 	color: #ffffff;
 }
 
-.hero-actions {
+.hero-card .hero-actions {
 	display: flex;
 	flex-direction: column;
 	gap: 12px;
@@ -576,25 +581,25 @@ h1, h2, h3, h4, h5, h6 {
 	max-width: 260px;
 }
 
-.hero-actions .cta-btn,
-.hero-actions .ghost-btn {
+.hero-card .hero-actions .cta-btn,
+.hero-card .hero-actions .ghost-btn {
 	width: 100%;
 	justify-content: center;
 	font-size: 0.95rem;
 }
 
-.hero-actions .cta-btn {
+.hero-card .hero-actions .cta-btn {
 	padding: 13px 20px;
 }
 
-.hero-actions .ghost-btn {
+.hero-card .hero-actions .ghost-btn {
 	color: rgba(226, 232, 240, 0.85);
 	border-color: rgba(148, 163, 184, 0.3);
 	background: transparent;
 	font-weight: 500;
 }
 
-.hero-actions .ghost-btn:hover {
+.hero-card .hero-actions .ghost-btn:hover {
 	background: rgba(148, 163, 184, 0.12);
 	border-color: rgba(148, 163, 184, 0.6);
 }
@@ -1228,7 +1233,7 @@ h1, h2, h3, h4, h5, h6 {
 		width: 100%;
 	}
 
-	.hero-actions {
+	.hero-card .hero-actions {
 		flex-direction: row;
 		max-width: none;
 		width: 100%;

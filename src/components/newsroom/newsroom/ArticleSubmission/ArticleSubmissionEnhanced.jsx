@@ -1,7 +1,36 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import ReactQuill from 'react-quill';
+import ReactQuill, { Quill } from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+
+// ── Register all fonts with Quill ──────────────────────────────────────────
+const QuillFont = Quill.import('formats/font');
+const FONT_WHITELIST = [
+  // ── Modern Sans-Serif (Google) ──
+  'roboto', 'inter', 'open-sans', 'lato', 'montserrat', 'poppins',
+  'nunito', 'raleway', 'oswald', 'ubuntu', 'dm-sans', 'space-grotesk',
+  'outfit', 'manrope', 'plus-jakarta-sans', 'source-sans', 'barlow',
+  'exo-2', 'josefin-sans', 'karla', 'mulish', 'pt-sans', 'work-sans',
+  'quicksand', 'cabin', 'noto-sans', 'rubik', 'titillium',
+  // ── Classic Web-Safe Sans ──
+  'arial', 'verdana', 'tahoma', 'trebuchet', 'impact', 'helvetica',
+  // ── Serif (Google) ──
+  'merriweather', 'playfair-display', 'lora', 'pt-serif', 'libre-baskerville',
+  'crimson-text', 'eb-garamond', 'cardo', 'cormorant', 'gfs-didot',
+  'spectral', 'alice', 'bitter', 'domine', 'forum',
+  // ── Classic Web-Safe Serif ──
+  'georgia', 'times-new-roman', 'palatino', 'book-antiqua', 'garamond',
+  // ── Monospace ──
+  'courier-new', 'source-code-pro', 'fira-code', 'jetbrains-mono',
+  'ibm-plex-mono', 'roboto-mono', 'space-mono', 'inconsolata', 'anonymous-pro',
+  // ── Display / Decorative ──
+  'lobster', 'pacifico', 'dancing-script', 'abril-fatface', 'righteous',
+  'fredoka-one', 'boogaloo', 'satisfy', 'great-vibes', 'sacramento',
+  'courgette', 'kaushan-script', 'permanent-marker',
+];
+QuillFont.whitelist = FONT_WHITELIST;
+Quill.register(QuillFont, true);
+// ───────────────────────────────────────────────────────────────────────────
 import { useAuth } from '../../../../hooks/useAuth';
 import { useNotification } from '../../../../contexts/NotificationContext';
 import { useApi } from '../../../../hooks/useApi';
@@ -24,7 +53,7 @@ import {
   Share2
 } from 'lucide-react';
 import Loader from '../../../common/Loader/Loader';
-import './ArticleSubmission.css';
+import './ArticleSubmissionEnhanced.css';
 
 /**
  * Enhanced Article Submission Component with WYSIWYG Editor & Plagiarism Check
@@ -144,7 +173,7 @@ const ArticleSubmissionEnhanced = () => {
     toolbar: {
       container: [
         [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-        [{ 'font': [] }],
+        [{ 'font': FONT_WHITELIST }],
         [{ 'size': ['small', false, 'large', 'huge'] }],
         ['bold', 'italic', 'underline', 'strike'],
         [{ 'color': [] }, { 'background': [] }],
@@ -486,8 +515,10 @@ const ArticleSubmissionEnhanced = () => {
       newErrors.excerpt = 'Excerpt must be at least 50 characters';
     }
 
-    if (!formData.content || formData.content.replace(/<[^>]*>/g, '').trim().length < 200) {
-      newErrors.content = 'Content must be at least 200 characters';
+    // Allow submission via uploaded document (no text content required)
+    const hasUploadedDocs = uploadedFiles.length > 0;
+    if (!hasUploadedDocs && (!formData.content || formData.content.replace(/<[^>]*>/g, '').trim().length < 200)) {
+      newErrors.content = 'Content must be at least 200 characters, or upload a document';
     }
 
     if (!formData.category) {
@@ -538,11 +569,18 @@ const ArticleSubmissionEnhanced = () => {
         plagiarismScore: plagiarismCheck.score
       })
 
+      // If no text content but docs uploaded, generate a content placeholder
+      let contentToSubmit = formData.content;
+      if ((!contentToSubmit || contentToSubmit.replace(/<[^>]*>/g, '').trim().length < 10) && uploadedFiles.length > 0) {
+        const fileList = uploadedFiles.map(f => f.name).join(', ');
+        contentToSubmit = `<p>Content submitted via uploaded document(s): <strong>${fileList}</strong>.</p><p>Please refer to the attached document(s) for the full article content.</p>`;
+      }
+
       // Create data object for submission
       const submitData = {
         title: formData.title,
         excerpt: formData.excerpt,
-        content: formData.content,
+        content: contentToSubmit,
         category: formData.category,
         tags: formData.tags,
         isPublished: !isDraft,
@@ -554,6 +592,25 @@ const ArticleSubmissionEnhanced = () => {
       if (formData.coAuthors && formData.coAuthors.length > 0) {
         submitData.coAuthors = formData.coAuthors;
       }
+
+      // Attach uploaded documents as FormData
+      if (uploadedFiles.length > 0) {
+        const fd = new FormData();
+        Object.keys(submitData).forEach(key => {
+          if (key === 'tags' || key === 'coAuthors') {
+            fd.append(key, JSON.stringify(submitData[key]));
+          } else if (key === 'featuredImage' && submitData[key]) {
+            fd.append('featuredImage', submitData[key]);
+          } else if (submitData[key] !== null && submitData[key] !== undefined) {
+            fd.append(key, submitData[key]);
+          }
+        });
+        uploadedFiles.forEach((docFile) => {
+          fd.append('documents', docFile.file);
+        });
+        // Replace submitData with FormData so API sends it correctly
+        submitData._formData = fd;
+      }
       
       // Plagiarism check happens on backend automatically
       // No need to send plagiarism data from frontend
@@ -562,12 +619,15 @@ const ArticleSubmissionEnhanced = () => {
       console.log('About to call API with data:', submitData);
       console.log('Calling API...')
       
+      // Use pre-built FormData (with documents) or plain submitData
+      const payload = submitData._formData || submitData;
+
       // Call appropriate API based on mode
       let response;
       if (isEditMode) {
-        response = await newsroomAPI.updateArticle(articleId, submitData);
+        response = await newsroomAPI.updateArticle(articleId, payload);
       } else {
-        response = await newsroomAPI.createArticle(submitData);
+        response = await newsroomAPI.createArticle(payload);
       }
       
       console.log('API Response:', response)
@@ -630,6 +690,30 @@ const ArticleSubmissionEnhanced = () => {
         <div className="submission-header">
           <h1>{isEditMode ? 'Edit Article' : 'Submit Article to Newsroom'}</h1>
           <p>{isEditMode ? 'Update your article and resubmit for review' : 'Share your insights with the Planning Insights community'}</p>
+        </div>
+
+        {/* Author auto-fill panel */}
+        <div className="author-autofill-banner">
+          <div className="author-autofill-avatar">
+            {user?.profile?.profilePicture ? (
+              <img src={user.profile.profilePicture} alt="Author" />
+            ) : (
+              <span>{(user?.profile?.firstName?.[0] || user?.email?.[0] || 'U').toUpperCase()}</span>
+            )}
+          </div>
+          <div className="author-autofill-info">
+            <span className="author-autofill-label">Submitting as</span>
+            <strong className="author-autofill-name">
+              {user?.profile?.firstName && user?.profile?.lastName
+                ? `${user.profile.firstName} ${user.profile.lastName}`
+                : user?.email}
+            </strong>
+            <span className="author-autofill-id">ID: {user?._id?.slice(-8)?.toUpperCase() || 'N/A'}</span>
+          </div>
+          <div className="author-autofill-note">
+            <CheckCircle size={15} />
+            <span>Author details auto-filled</span>
+          </div>
         </div>
 
         <div className="submission-layout">
@@ -949,7 +1033,7 @@ const ArticleSubmissionEnhanced = () => {
               </button>
               <button
                 onClick={() => handleSubmit(false)}
-                disabled={loading || (!isEditMode && !plagiarismCheck.checked)}
+                disabled={loading}
                 className="btn-primary full-width"
               >
                 {loading ? (

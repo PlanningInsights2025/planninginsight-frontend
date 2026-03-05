@@ -3,6 +3,83 @@
    Matching Home Page Color Scheme
    ========================================== */
 
+/* ==========================================
+   SUBMIT BLOG / OPINION BANNER
+   ========================================== */
+.news-page .submit-blog-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  background: linear-gradient(135deg, #524393 0%, #3d3070 100%);
+  border-radius: 16px;
+  padding: 24px 30px;
+  margin: 24px 0 32px;
+  flex-wrap: wrap;
+}
+
+.news-page .submit-blog-left {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.news-page .submit-blog-emoji {
+  font-size: 2.2rem;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.news-page .submit-blog-text h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 4px;
+}
+
+.news-page .submit-blog-text p {
+  font-size: 0.88rem;
+  color: rgba(255, 255, 255, 0.82);
+  margin: 0;
+  max-width: 480px;
+  line-height: 1.5;
+}
+
+.news-page .btn-submit-blog {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #BDD337;
+  color: #1B1528;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 22px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.news-page .btn-submit-blog:hover {
+  background: #cce63f;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(189, 211, 55, 0.35);
+}
+
+@media (max-width: 640px) {
+  .news-page .submit-blog-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px;
+  }
+  .news-page .btn-submit-blog {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
 /* Color Variables - Matching Home Page */
 .news-page {
   --primary-color: #524393;
@@ -33,7 +110,7 @@
   padding: 2rem 0 4rem;
 }
 
-.container {
+.news-page .container {
   max-width: 1280px;
   margin: 0 auto;
   padding: 0 2rem;
@@ -1731,7 +1808,7 @@ textarea.form-input-modern {
    RESPONSIVE DESIGN
    ========================================== */
 @media (max-width: 1024px) {
-  .container {
+  .news-page .container {
     padding: 0 1.5rem;
   }
 
@@ -1797,7 +1874,7 @@ textarea.form-input-modern {
 }
 
 @media (max-width: 768px) {
-  .container {
+  .news-page .container {
     padding: 0 1rem;
   }
 
@@ -2098,7 +2175,7 @@ textarea.form-input-modern {
 }
 
 @media (max-width: 480px) {
-  .container {
+  .news-page .container {
     padding: 0 0.75rem;
   }
 

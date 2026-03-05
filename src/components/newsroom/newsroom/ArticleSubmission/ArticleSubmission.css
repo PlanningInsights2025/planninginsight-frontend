@@ -1,25 +1,28 @@
 /* ============================================
-   ARTICLE SUBMISSION - PROFESSIONAL IT COMPANY DESIGN
+   ARTICLE SUBMISSION - LEGACY DARK THEME
+   NOTE: Active form uses ArticleSubmissionEnhanced.css (light theme)
+   This file is kept only for ArticleSubmission.jsx (legacy component).
+   Variables below are LIGHT theme to prevent bleeding if bundled.
    ============================================ */
 
-:root {
-  --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --primary-color: #667eea;
-  --primary-dark: #5568d3;
-  --secondary-color: #764ba2;
-  --accent-color: #06b6d4;
+.article-submission-page {
+  --primary-gradient: linear-gradient(135deg, #524393 0%, #A2A2D0 100%);
+  --primary-color: #524393;
+  --primary-dark: #3d3070;
+  --secondary-color: #A2A2D0;
+  --accent-color: #BDD337;
   --success-color: #10b981;
   --error-color: #ef4444;
   --warning-color: #f59e0b;
-  --text-primary: #e2e8f0;
-  --text-secondary: #94a3b8;
-  --bg-dark: #0f172a;
-  --bg-card: rgba(15, 23, 42, 0.9);
-  --border-color: rgba(255, 255, 255, 0.1);
-  --surface-bg: rgba(255, 255, 255, 0.05);
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.15);
-  --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.25);
+  --text-primary: #1B1528;
+  --text-secondary: #64748b;
+  --bg-dark: #f8fafc;
+  --bg-card: #ffffff;
+  --border-color: #e2e8f0;
+  --surface-bg: #f8fafc;
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 16px rgba(82,67,147,.1);
+  --shadow-lg: 0 10px 40px rgba(82,67,147,.12);
   --radius-sm: 0.5rem;
   --radius-md: 0.75rem;
   --radius-lg: 1rem;
@@ -33,12 +36,12 @@
 
 .article-submission-page {
   min-height: 100vh;
-  background: linear-gradient(180deg, rgba(7, 16, 37, 0.95) 0%, rgba(3, 6, 18, 0.95) 100%);
+  background: #f8fafc;
   padding: 3rem 0;
-  color: var(--text-primary);
+  color: #1B1528;
 }
 
-.container {
+.article-submission-page .container {
   max-width: 1400px;
   margin: 0 auto;
   padding: 0 2rem;
@@ -1155,7 +1158,7 @@
 }
 
 @media (max-width: 768px) {
-  .container {
+  .article-submission-page .container {
     padding: 0 1rem;
   }
 

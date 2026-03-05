@@ -388,12 +388,6 @@ const News = () => {
   const filteredArticles = getFilteredArticles();
   const featuredArticle = filteredArticles[0];
 
-  console.log('=== RENDER STATE ===');
-  console.log('Articles state:', articles);
-  console.log('Filtered articles:', filteredArticles);
-  console.log('Featured article:', featuredArticle);
-  console.log('Loading:', loading);
-
   if (loading) {
     return (
       <div className="loading-state">
@@ -483,6 +477,24 @@ const News = () => {
             </div>
           </div>
         )}
+
+        {/* Submit Your Blog / Opinion Banner */}
+        <div className="submit-blog-banner">
+          <div className="submit-blog-left">
+            <span className="submit-blog-emoji">✍️</span>
+            <div className="submit-blog-text">
+              <h3>Share Your Perspective</h3>
+              <p>Submit your opinion piece, research findings, or case study to the Planning Insights Newsroom — open to all planning professionals.</p>
+            </div>
+          </div>
+          <button
+            className="btn-submit-blog"
+            onClick={() => isAuthenticated ? navigate('/news/submit') : navigate('/login', { state: { from: { pathname: '/news/submit' } } })}
+          >
+            Submit Your Blog / Opinion
+            <ArrowRight size={18} />
+          </button>
+        </div>
 
         {/* Write New Article Modal */}
         {showCollabModal && (
