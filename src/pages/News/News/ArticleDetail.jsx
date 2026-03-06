@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../../hooks/useAuth';
 import { newsroomAPI } from '../../../services/api/newsroom';
 import useArticleSocket from '../../../hooks/useArticleSocket';
-import { ThumbsUp, ThumbsDown, MessageCircle, Flag, Share2, Eye, Calendar, User, X, ChevronUp, BookOpen, Clock, Award, Lock, Send, Trash2 } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, MessageCircle, Flag, Share2, Eye, Calendar, User, X, ChevronUp, BookOpen, Clock, Award, Lock, Send, Trash2, CornerDownRight } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import './ArticleDetail.css';
 
@@ -42,6 +42,8 @@ const ArticleDetail = () => {
   const [flagDescription, setFlagDescription] = useState('');
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [readingProgress, setReadingProgress] = useState(0);
+  const [replyingTo, setReplyingTo] = useState(null); // commentId
+  const [replyTexts, setReplyTexts] = useState({}); // { [commentId]: string }
 
   useEffect(() => {
     loadArticle();
@@ -231,7 +233,6 @@ const ArticleDetail = () => {
     if (!window.confirm('Delete this comment?')) return;
     try {
       await newsroomAPI.deleteComment(articleId, commentId);
-      // Socket will broadcast deletion; optimistically remove locally too
       setArticle(prev => ({
         ...prev,
         comments: (prev.comments || []).filter(c => c._id !== commentId)
@@ -239,6 +240,48 @@ const ArticleDetail = () => {
       toast.success('Comment deleted');
     } catch (error) {
       toast.error('Failed to delete comment');
+    }
+  };
+
+  const handleAddReply = async (e, commentId) => {
+    e.preventDefault();
+    if (!isAuthenticated) { toast.error('Please login to reply'); return; }
+    const replyContent = replyTexts[commentId]?.trim();
+    if (!replyContent) { toast.error('Reply cannot be empty'); return; }
+    try {
+      const res = await newsroomAPI.addReply(articleId, commentId, replyContent);
+      const newReply = res.data?.reply;
+      setArticle(prev => ({
+        ...prev,
+        comments: (prev.comments || []).map(c =>
+          c._id === commentId
+            ? { ...c, replies: [...(c.replies || []), newReply] }
+            : c
+        )
+      }));
+      setReplyTexts(prev => ({ ...prev, [commentId]: '' }));
+      setReplyingTo(null);
+      toast.success('Reply posted');
+    } catch (error) {
+      toast.error('Failed to post reply');
+    }
+  };
+
+  const handleDeleteReply = async (commentId, replyId) => {
+    if (!window.confirm('Delete this reply?')) return;
+    try {
+      await newsroomAPI.deleteReply(articleId, commentId, replyId);
+      setArticle(prev => ({
+        ...prev,
+        comments: (prev.comments || []).map(c =>
+          c._id === commentId
+            ? { ...c, replies: (c.replies || []).filter(r => r._id !== replyId) }
+            : c
+        )
+      }));
+      toast.success('Reply deleted');
+    } catch (error) {
+      toast.error('Failed to delete reply');
     }
   };
 
@@ -779,13 +822,17 @@ const ArticleDetail = () => {
                 </div>
               ) : (
                 [...(article.comments || [])].reverse().map((c) => {
-                  const commenterName = c.user?.profile?.firstName
-                    ? `${c.user.profile.firstName} ${c.user.profile.lastName || ''}`.trim()
-                    : c.user?.email?.split('@')[0] || 'User';
-                  const commenterInitial = commenterName[0]?.toUpperCase() || 'U';
-                  const avatar = c.user?.profile?.profilePicture || c.user?.profile?.avatar;
-                  const isOwn = c.user?._id?.toString() === (user?._id?.toString() || user?.id?.toString());
-                  const piId = c.user?._id ? `PI-${c.user._id.toString().slice(-6).toUpperCase()}` : null;
+                  // Support both populated user object and raw ObjectId
+                  const commentUser = c.user;
+                  const commentUserId = commentUser?._id?.toString() || commentUser?.toString();
+                  const commenterName = commentUser?.profile?.firstName
+                    ? `${commentUser.profile.firstName} ${commentUser.profile.lastName || ''}`.trim()
+                    : commentUser?.email?.split('@')[0] || 'Anonymous';
+                  const commenterInitial = commenterName[0]?.toUpperCase() || 'A';
+                  const avatar = commentUser?.profile?.profilePicture || commentUser?.profile?.avatar;
+                  const currentUserId = user?._id?.toString() || user?.id?.toString();
+                  const isOwn = !!currentUserId && commentUserId === currentUserId;
+                  const piId = commentUserId ? `PI-${commentUserId.slice(-6).toUpperCase()}` : null;
 
                   return (
                     <div key={c._id} className={`comment-item fade-in${isOwn ? ' comment-own' : ''}`}>
@@ -798,22 +845,94 @@ const ArticleDetail = () => {
                       </div>
                       <div className="comment-body">
                         <div className="comment-meta">
-                          <Link to={c.user?._id ? `/profile/${c.user._id}` : '#'} className="comment-author-name">
+                          <Link to={commentUserId ? `/profile/${commentUserId}` : '#'} className="comment-author-name">
                             {commenterName}
                           </Link>
                           {piId && <span className="comment-pi-id">{piId}</span>}
                           <span className="comment-time">{relativeTime(c.createdAt)}</span>
-                          {isOwn && (
-                            <button
-                              className="comment-delete-btn"
-                              onClick={() => handleDeleteComment(c._id)}
-                              title="Delete comment"
-                            >
-                              <Trash2 size={13} />
-                            </button>
-                          )}
+                          <div className="comment-actions-inline">
+                            {isAuthenticated && (
+                              <button
+                                className="comment-reply-btn"
+                                onClick={() => setReplyingTo(replyingTo === c._id ? null : c._id)}
+                                title="Reply"
+                              >
+                                <CornerDownRight size={13} /> Reply
+                              </button>
+                            )}
+                            {isOwn && (
+                              <button
+                                className="comment-delete-btn"
+                                onClick={() => handleDeleteComment(c._id)}
+                                title="Delete comment"
+                              >
+                                <Trash2 size={13} />
+                              </button>
+                            )}
+                          </div>
                         </div>
                         <p className="comment-text">{c.content}</p>
+
+                        {/* Replies */}
+                        {(c.replies?.length > 0) && (
+                          <div className="replies-list">
+                            {c.replies.map(r => {
+                              const replyUser = r.user;
+                              const replyUserId = replyUser?._id?.toString() || replyUser?.toString();
+                              const replyName = replyUser?.profile?.firstName
+                                ? `${replyUser.profile.firstName} ${replyUser.profile.lastName || ''}`.trim()
+                                : replyUser?.email?.split('@')[0] || 'Anonymous';
+                              const replyInitial = replyName[0]?.toUpperCase() || 'A';
+                              const replyAvatar = replyUser?.profile?.profilePicture || replyUser?.profile?.avatar;
+                              const isOwnReply = !!currentUserId && replyUserId === currentUserId;
+                              return (
+                                <div key={r._id} className={`reply-item${isOwnReply ? ' reply-own' : ''}`}>
+                                  <div className="reply-avatar">
+                                    {replyAvatar ? (
+                                      <img src={replyAvatar} alt={replyName} />
+                                    ) : (
+                                      <span>{replyInitial}</span>
+                                    )}
+                                  </div>
+                                  <div className="reply-body">
+                                    <div className="reply-meta">
+                                      <Link to={replyUserId ? `/profile/${replyUserId}` : '#'} className="reply-author-name">
+                                        {replyName}
+                                      </Link>
+                                      <span className="comment-time">{relativeTime(r.createdAt)}</span>
+                                      {isOwnReply && (
+                                        <button className="comment-delete-btn" onClick={() => handleDeleteReply(c._id, r._id)} title="Delete reply">
+                                          <Trash2 size={12} />
+                                        </button>
+                                      )}
+                                    </div>
+                                    <p className="reply-text">{r.content}</p>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+
+                        {/* Reply compose */}
+                        {replyingTo === c._id && (
+                          <form className="reply-compose" onSubmit={(e) => handleAddReply(e, c._id)}>
+                            <textarea
+                              value={replyTexts[c._id] || ''}
+                              onChange={(e) => setReplyTexts(prev => ({ ...prev, [c._id]: e.target.value }))}
+                              placeholder={`Reply to ${commenterName}…`}
+                              rows="2"
+                              autoFocus
+                              onKeyDown={(e) => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) handleAddReply(e, c._id); }}
+                            />
+                            <div className="reply-compose-actions">
+                              <button type="button" className="reply-cancel-btn" onClick={() => setReplyingTo(null)}>Cancel</button>
+                              <button type="submit" className="compose-submit" disabled={!replyTexts[c._id]?.trim()}>
+                                <Send size={13} /> Reply
+                              </button>
+                            </div>
+                          </form>
+                        )}
                       </div>
                     </div>
                   );

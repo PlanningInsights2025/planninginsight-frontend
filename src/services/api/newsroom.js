@@ -221,6 +221,22 @@ export const newsroomAPI = {
   },
 
   /**
+   * Add reply to a comment
+   */
+  addReply: async (articleId, commentId, content) => {
+    const response = await api.post(`/newsroom/articles/${articleId}/comments/${commentId}/replies`, { content });
+    return response.data;
+  },
+
+  /**
+   * Delete a reply
+   */
+  deleteReply: async (articleId, commentId, replyId) => {
+    const response = await api.delete(`/newsroom/articles/${articleId}/comments/${commentId}/replies/${replyId}`);
+    return response.data;
+  },
+
+  /**
    * Like/unlike comment
    */
   likeComment: async (commentId) => {
