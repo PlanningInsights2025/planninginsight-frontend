@@ -71,11 +71,11 @@ const Admin = () => {
     }
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api'}/auth/me`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api'}/admin/dashboard-stats`, {
         headers: { 'Authorization': `Bearer ${token}` }
       })
       
-      if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
         console.log('Auth check failed, clearing tokens')
         localStorage.removeItem('authToken')
         localStorage.removeItem('adminToken')
@@ -84,17 +84,12 @@ const Admin = () => {
         return
       }
 
-      const data = await response.json()
-      console.log('User data:', data)
-      
-      if (data.role === 'admin') {
-        setAdminUser(data)
+      // Token is valid — load user from localStorage
+      const storedUser = localStorage.getItem('user')
+      if (storedUser) {
+        setAdminUser(JSON.parse(storedUser))
       } else {
-        toast.error('Access denied: Admin privileges required')
-        localStorage.removeItem('authToken')
-        localStorage.removeItem('adminToken')
-        localStorage.removeItem('isAdminSession')
-        navigate('/admin/login')
+        setAdminUser({ role: 'admin' })
       }
     } catch (error) {
       console.error('Auth check failed:', error)

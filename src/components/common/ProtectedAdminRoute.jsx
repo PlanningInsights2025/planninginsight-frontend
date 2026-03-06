@@ -15,51 +15,33 @@ const ProtectedAdminRoute = ({ children }) => {
   }, []);
 
   const checkAuth = async () => {
-    const token = localStorage.getItem('adminToken') || localStorage.getItem('authToken');
-    console.log('🔒 ProtectedAdminRoute - Checking auth...');
-    console.log('🔒 Token exists:', !!token);
+    const token = localStorage.getItem('adminToken');
+    const isAdminSession = localStorage.getItem('isAdminSession');
+    const userRole = localStorage.getItem('userRole');
 
-    if (!token) {
-      console.log('🔒 No token found - BLOCKING ACCESS');
-      setIsChecking(false);
-      setIsAuthenticated(false);
-      return;
-    }
-
-    console.log('🔒 Token found, verifying with backend...');
-    try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api'}/auth/me`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-
-      console.log('🔒 Backend response status:', response.status);
-
-      if (!response.ok) {
-        console.log('🔒 Token invalid - BLOCKING ACCESS');
-        localStorage.removeItem('authToken');
-        setIsAuthenticated(false);
-        setIsChecking(false);
-        return;
-      }
-
-      const data = await response.json();
-      console.log('🔒 User role:', data.role);
-
-      if (data.role === 'admin') {
-        console.log('🔒 Admin verified - GRANTING ACCESS');
+    if (token && (isAdminSession === 'true' || userRole === 'admin')) {
+      // Verify the token is still valid by calling a protected admin endpoint
+      try {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api'}/admin/dashboard-stats`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (response.ok || response.status === 500) {
+          // 500 means DB issue but token is valid; 401/403 means token is bad
+          setIsAuthenticated(true);
+        } else {
+          localStorage.removeItem('adminToken');
+          localStorage.removeItem('isAdminSession');
+          localStorage.removeItem('userRole');
+          setIsAuthenticated(false);
+        }
+      } catch (error) {
+        // Network error — trust the stored token
         setIsAuthenticated(true);
-      } else {
-        console.log('🔒 Not admin - BLOCKING ACCESS');
-        localStorage.removeItem('authToken');
-        setIsAuthenticated(false);
       }
-    } catch (error) {
-      console.error('🔒 Auth check failed:', error);
-      localStorage.removeItem('authToken');
+    } else {
       setIsAuthenticated(false);
-    } finally {
-      setIsChecking(false);
     }
+    setIsChecking(false);
   };
 
   if (isChecking) {
