@@ -1,80 +1,32 @@
-import { auth, googleProvider } from '../../config/firebase'
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signInWithPopup,
-  signOut as firebaseSignOut,
-  onAuthStateChanged,
-  sendPasswordResetEmail,
-  updateProfile,
-} from 'firebase/auth'
-
 /**
- * Sign up with email & password using Firebase Auth
- * @param {string} email
- * @param {string} password
- * @param {object} extraProfile - optional { displayName, photoURL }
+ * firebaseAuth.js  — Firebase removed, stubs kept for backward compat.
+ *
+ * Google sign-in is now handled via @react-oauth/google in Login.jsx / Signup.jsx.
+ * AuthContext no longer uses Firebase; it relies solely on backend JWT.
  */
-export const signUpWithEmail = async (email, password, extraProfile = {}) => {
-  const userCredential = await createUserWithEmailAndPassword(auth, email, password)
-  if (extraProfile && (extraProfile.displayName || extraProfile.photoURL)) {
-    await updateProfile(userCredential.user, extraProfile)
-  }
-  return userCredential.user
+
+export const signUpWithEmail = async () => {
+  throw new Error('Direct email signup removed. Use OTP flow via authAPI.')
 }
 
-/**
- * Sign in with email & password
- */
-export const signInWithEmail = async (email, password) => {
-  const userCredential = await signInWithEmailAndPassword(auth, email, password)
-  return userCredential.user
+export const signInWithEmail = async () => {
+  throw new Error('Direct email login removed. Use OTP flow via authAPI.')
 }
 
-/**
- * Sign in with Google - always uses popup (simpler and works everywhere)
- */
 export const signInWithGoogle = async () => {
-  try {
-    googleProvider.setCustomParameters({
-      prompt: 'select_account'
-    });
-    const result = await signInWithPopup(auth, googleProvider)
-    return result.user
-  } catch (error) {
-    // Re-throw to be handled by calling component
-    throw error
-  }
+  throw new Error('Use useGoogleLogin() from @react-oauth/google in your component.')
 }
 
-/**
- * Sign out
- */
 export const signOut = async () => {
-  await firebaseSignOut(auth)
+  localStorage.removeItem('authToken')
 }
 
-/**
- * Send password reset email
- */
-export const sendResetEmail = async (email) => {
-  await sendPasswordResetEmail(auth, email)
-}
+export const sendResetEmail = async () => {}
 
-/**
- * Subscribe to auth state changes
- * callback receives the firebase user or null
- * returns the unsubscribe function
- */
+// No-op: auth state is now managed by JWT stored in localStorage
 export const onAuthChanged = (callback) => {
-  return onAuthStateChanged(auth, callback)
+  callback(null) // immediately signal "no firebase user"
+  return () => {} // unsubscribe no-op
 }
 
-export default {
-  signUpWithEmail,
-  signInWithEmail,
-  signInWithGoogle,
-  signOut,
-  sendResetEmail,
-  onAuthChanged,
-}
+export default { signUpWithEmail, signInWithEmail, signInWithGoogle, signOut, sendResetEmail, onAuthChanged }

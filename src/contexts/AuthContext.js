@@ -1,20 +1,11 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import { authAPI } from '../services/api/auth'
-import {
-  signUpWithEmail,
-  signInWithEmail,
-  signInWithGoogle,
-  signOut as firebaseSignOut,
-  onAuthChanged,
-} from '../services/api/firebaseAuth'
 
 const AuthContext = createContext()
 
 export const useAuth = () => {
   const context = useContext(AuthContext)
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider')
-  }
+  if (!context) throw new Error('useAuth must be used within an AuthProvider')
   return context
 }
 
@@ -24,226 +15,82 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
 
   useEffect(() => {
-    // Subscribe to Firebase auth state changes; fall back to backend token check if needed
-    const unsubscribe = onAuthChanged(async (fbUser) => {
-      if (fbUser) {
-        // Map Firebase user to app user shape
-        const displayName = fbUser.displayName || ''
-        const [firstName, ...rest] = displayName.split(' ')
-        const lastName = rest.join(' ')
-        
-        const mapped = {
-          id: fbUser.uid,
-          email: fbUser.email,
-          firstName: firstName || fbUser.email,
-          lastName: lastName || '',
-          displayName: fbUser.displayName || `${firstName} ${lastName}`,
-          photoURL: fbUser.photoURL || null,
-          role: 'user' // Default role for Firebase users
-        }
-        
-        console.log('👤 Firebase user logged in:', mapped)
-        setUser(mapped)
-        setIsAuthenticated(true)
-        
-        // Try to fetch additional user data from backend (non-blocking)
-        try {
-          const token = localStorage.getItem('authToken')
-          if (token) {
-            const userData = await authAPI.getCurrentUser()
-            if (userData && userData.role) {
-              // Update user with backend data
-              setUser(prev => ({ ...prev, role: userData.role, ...userData }))
-              console.log('✅ Updated user with backend role:', userData.role)
-            }
-          }
-        } catch (error) {
-          console.log('ℹ️ Could not fetch backend user data (using Firebase data only)')
-        }
-      } else {
-        // No Firebase user; try backend token check
-        await checkAuthStatus()
-      }
-      setLoading(false)
-    })
-
-    return () => unsubscribe()
+    checkAuthStatus().finally(() => setLoading(false))
   }, [])
 
   const checkAuthStatus = async () => {
     try {
-      // Don't load user data if this is an admin session
       const isAdminSession = localStorage.getItem('isAdminSession') === 'true'
-      if (isAdminSession) {
-        console.log('🔐 Admin session detected, skipping user auth check')
-        return
-      }
+      if (isAdminSession) return
 
       const token = localStorage.getItem('authToken')
-      if (token) {
-        const userData = await authAPI.getCurrentUser()
-        // Extra check: Don't set admin users in regular user context
-        if (userData.role === 'admin') {
-          console.log('🔐 Admin user detected in user context, clearing session')
-          localStorage.removeItem('authToken')
-          localStorage.removeItem('isAdminSession')
-          return
-        }
-        setUser(userData)
-        setIsAuthenticated(true)
+      if (!token) return
+
+      const userData = await authAPI.getCurrentUser()
+      if (!userData) return
+      if (userData.role === 'admin') {
+        localStorage.removeItem('authToken')
         return
       }
-    } catch (error) {
-      console.error('Auth check failed:', error)
+      const formatted = formatUser(userData)
+      setUser(formatted)
+      setIsAuthenticated(true)
+    } catch {
       localStorage.removeItem('authToken')
-    } finally {
-      // leave loading state to onAuthChanged handler where appropriate
     }
   }
 
-  // Manual auth state setter for custom login flows
+  // Accepts a plain user object (from backend response) and sets auth state
+  const login = (userData) => {
+    if (!userData) return
+    const formatted = userData.email ? formatUser(userData) : userData
+    setUser(formatted)
+    setIsAuthenticated(true)
+  }
+
   const setAuthState = (userData) => {
-    console.log('🔐 AuthContext: Setting auth state manually', userData)
+    if (!userData) return
     setUser(userData)
     setIsAuthenticated(true)
   }
 
-  const login = async (email, password) => {
-    try {
-      const fbUser = await signInWithEmail(email, password)
-      const displayName = fbUser.displayName || ''
-      const [firstName, ...rest] = displayName.split(' ')
-      const lastName = rest.join(' ')
-      const mapped = {
-        id: fbUser.uid,
-        email: fbUser.email,
-        firstName: firstName || fbUser.email,
-        lastName: lastName || '',
-        displayName: fbUser.displayName || `${firstName} ${lastName}`,
-        photoURL: fbUser.photoURL || null,
-      }
-      setUser(mapped)
-      setIsAuthenticated(true)
-      return { success: true, user: mapped }
-    } catch (error) {
-      console.error('Firebase login error', error)
-      return { 
-        success: false, 
-        error: error.message || 'Login failed' 
-      }
-    }
+  const logout = () => {
+    localStorage.removeItem('authToken')
+    localStorage.removeItem('isAdminSession')
+    localStorage.removeItem('adminToken')
+    setUser(null)
+    setIsAuthenticated(false)
   }
 
-  const signup = async (userData) => {
-    try {
-      // Use Firebase to create account
-      const extraProfile = { displayName: `${userData.firstName || ''} ${userData.lastName || ''}`.trim() }
-      const fbUser = await signUpWithEmail(userData.email, userData.password, extraProfile)
-      const displayName = fbUser.displayName || ''
-      const [firstName, ...rest] = displayName.split(' ')
-      const lastName = rest.join(' ')
-      const mapped = {
-        id: fbUser.uid,
-        email: fbUser.email,
-        firstName: firstName || fbUser.email,
-        lastName: lastName || '',
-        displayName: fbUser.displayName || `${firstName} ${lastName}`,
-        photoURL: fbUser.photoURL || null,
-      }
-      setUser(mapped)
-      setIsAuthenticated(true)
-      return { success: true, user: mapped }
-    } catch (error) {
-      console.error('Firebase signup error', error)
-      // Map common Firebase auth errors to friendly messages
-      const code = error?.code || ''
-      let friendly = error?.message || 'Signup failed'
-      if (code === 'auth/operation-not-allowed') {
-        friendly = 'Email/password sign-in is not enabled in Firebase. Enable it in the Firebase Console -> Authentication -> Sign-in method.'
-      } else if (code === 'auth/email-already-in-use') {
-        friendly = 'This email is already in use. Try logging in or use a different email.'
-      } else if (code === 'auth/invalid-email') {
-        friendly = 'The email address is invalid. Please enter a valid email.'
-      } else if (code === 'auth/weak-password') {
-        friendly = 'The password is too weak. Please use at least 6 characters.'
-      }
-      return { 
-        success: false, 
-        error: friendly,
-        raw: error
-      }
-    }
-  }
-
-  // New Email Verification Signup Flow
+  // OTP-based signup
   const requestSignupOTP = async (userData) => {
     try {
       const response = await authAPI.requestSignupOTP(userData)
       return { success: true, data: response }
     } catch (error) {
-      return { 
-        success: false, 
-        error: error.response?.data?.message || 'Failed to send verification code' 
-      }
+      return { success: false, error: error.response?.data?.message || 'Failed to send verification code' }
     }
   }
 
   const verifySignupOTP = async (email, otp) => {
-    console.log('🔐 AuthContext: verifySignupOTP called', { email, otp })
     try {
-      console.log('📡 AuthContext: Calling API...')
       const response = await authAPI.verifySignupOTP(email, otp)
-      console.log('📥 AuthContext: API Response:', response)
-      
       if (response.success && response.data?.token) {
-        console.log('✅ AuthContext: Token found, saving...')
-        const token = response.data.token
-        const userData = response.data.user
-        
-        // Save token to localStorage
-        localStorage.setItem('authToken', token)
-        
-        // Set user data with proper structure
-        const formattedUser = {
-          id: userData.id || userData._id,
-          email: userData.email,
-          firstName: userData.profile?.firstName || userData.firstName || '',
-          lastName: userData.profile?.lastName || userData.lastName || '',
-          displayName: `${userData.profile?.firstName || ''} ${userData.profile?.lastName || ''}`.trim() || userData.email,
-          role: userData.role || 'user',
-          emailVerified: userData.emailVerified || true,
-          status: userData.status || 'active',
-          photoURL: userData.profile?.avatar || null,
-          profile: userData.profile || {}
-        }
-        
-        console.log('👤 AuthContext: Setting user:', formattedUser)
-        setUser(formattedUser)
+        localStorage.setItem('authToken', response.data.token)
+        const ud = response.data.user
+        const formatted = formatUser({ ...ud, profile: ud.profile || {} })
+        setUser(formatted)
         setIsAuthenticated(true)
-        console.log('✅ AuthContext: User authenticated!')
         return { success: true, data: response.data }
       }
-      console.log('⚠️ AuthContext: Invalid response structure')
       return { success: false, error: 'Invalid response from server' }
     } catch (error) {
-      console.error('❌ AuthContext: Error caught:', error)
-      return { 
-        success: false, 
+      return {
+        success: false,
         error: error.response?.data?.message || 'Verification failed',
         remainingAttempts: error.response?.data?.remainingAttempts
       }
     }
-  }
-
-  const logout = async () => {
-    try {
-      await firebaseSignOut()
-    } catch (err) {
-      console.warn('Firebase signOut failed', err)
-    }
-    localStorage.removeItem('authToken')
-    setUser(null)
-    setIsAuthenticated(false)
   }
 
   const requestOTP = async (email) => {
@@ -251,10 +98,7 @@ export const AuthProvider = ({ children }) => {
       await authAPI.requestOTP(email)
       return { success: true }
     } catch (error) {
-      return { 
-        success: false, 
-        error: error.response?.data?.message || 'OTP request failed' 
-      }
+      return { success: false, error: error.response?.data?.message || 'OTP request failed' }
     }
   }
 
@@ -263,10 +107,7 @@ export const AuthProvider = ({ children }) => {
       const response = await authAPI.verifyOTP(email, otp)
       return { success: true, data: response }
     } catch (error) {
-      return { 
-        success: false, 
-        error: error.response?.data?.message || 'OTP verification failed' 
-      }
+      return { success: false, error: error.response?.data?.message || 'OTP verification failed' }
     }
   }
 
@@ -275,7 +116,6 @@ export const AuthProvider = ({ children }) => {
     loading,
     isAuthenticated,
     login,
-    signup,
     logout,
     requestOTP,
     verifyOTP,
@@ -283,7 +123,7 @@ export const AuthProvider = ({ children }) => {
     verifySignupOTP,
     checkAuthStatus,
     setAuthState,
-    refreshUser: checkAuthStatus // Add alias for refreshing user data
+    refreshUser: checkAuthStatus
   }
 
   return (
@@ -291,4 +131,20 @@ export const AuthProvider = ({ children }) => {
       {children}
     </AuthContext.Provider>
   )
+}
+
+// Helper — normalise backend user object to a consistent shape
+function formatUser(u) {
+  return {
+    id: u.id || u._id,
+    email: u.email,
+    role: u.role || 'user',
+    firstName: u.profile?.firstName || u.firstName || '',
+    lastName: u.profile?.lastName || u.lastName || '',
+    displayName: `${u.profile?.firstName || u.firstName || ''} ${u.profile?.lastName || u.lastName || ''}`.trim() || u.email,
+    photoURL: u.profile?.avatar || u.photoURL || null,
+    profile: u.profile || {},
+    emailVerified: u.emailVerified || false,
+    status: u.status || 'active'
+  }
 }

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { signInWithGoogle } from "../../../services/api/firebaseAuth";
+import { useGoogleLogin } from "@react-oauth/google";
 import { useAuth } from '../../../hooks/useAuth';
 import { useNotification } from '../../../contexts/NotificationContext';
 
@@ -13,16 +13,48 @@ export default function Login() {
   const { showNotification } = useNotification()
   const [loading, setLoading] = useState(false)
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData({ ...formData, [name]: type === "checkbox" ? checked : value });
-  };
+  // Google OAuth — fires popup and exchanges access_token with backend
+  const googleLogin = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      try {
+        const apiUrl = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api'}/auth/google-login`
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ access_token: tokenResponse.access_token })
+        })
+        const data = await response.json()
+        if (response.ok && data.token) {
+          localStorage.removeItem('isAdminSession')
+          localStorage.removeItem('adminToken')
+          localStorage.setItem('authToken', data.token)
+          login(data.data?.user)
+          showNotification('Signed in with Google', 'success')
+          navigate('/dashboard')
+        } else {
+          showNotification(data.message || 'Google sign-in failed', 'error')
+        }
+      } catch (err) {
+        showNotification('Failed to authenticate with backend', 'error')
+      } finally {
+        setLoading(false)
+      }
+    },
+    onError: () => {
+      showNotification('Google sign-in failed', 'error')
+      setLoading(false)
+    }
+  })
 
+  const handleGoogleSignIn = () => {
+    if (loading) return
+    setLoading(true)
+    googleLogin()
+  }
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
-
     try {
       const endpoint = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api'}/auth/login`;
 
@@ -88,65 +120,6 @@ export default function Login() {
       setLoading(false);
     }
   };
-
-  const handleGoogleSignIn = async () => {
-    // Prevent multiple simultaneous popup attempts
-    if (loading) {
-      return;
-    }
-    
-    try {
-      setLoading(true);
-      const user = await signInWithGoogle()
-      console.log('✅ Google sign-in successful:', user)
-      
-      // Call backend to get JWT token
-      try {
-        console.log('🔄 Calling backend for JWT token...')
-        const apiUrl = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api'}/auth/google-login`
-        console.log('Backend URL:', apiUrl)
-        
-        const response = await fetch(apiUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            uid: user.uid,
-            email: user.email,
-            displayName: user.displayName,
-            photoURL: user.photoURL
-          })
-        });
-        
-        const data = await response.json();
-        console.log('Backend response:', data)
-        
-        if (response.ok && data.token) {
-          localStorage.setItem('authToken', data.token);
-          console.log('✅ JWT token stored successfully')
-        } else {
-          console.error('❌ Backend did not return token:', data)
-        }
-      } catch (backendError) {
-        console.error('❌ Backend token fetch failed:', backendError);
-        showNotification('Warning: Backend authentication failed. Some features may be limited.', 'warning')
-      }
-      
-      showNotification('Signed in with Google', 'success')
-      navigate('/dashboard')
-    } catch (err) {
-      console.error('Google sign-in error', err)
-      if (err.code === 'auth/popup-closed-by-user') {
-        showNotification('Sign-in cancelled', 'info')
-      } else if (err.code === 'auth/cancelled-popup-request') {
-        // Ignore - user clicked button multiple times
-        console.log('ℹ️ Popup request cancelled - another popup is already open')
-      } else {
-        showNotification(err?.message || 'Google sign-in failed', 'error')
-      }
-    } finally {
-      setLoading(false);
-    }
-  }
 
   const styles = {
     container: {

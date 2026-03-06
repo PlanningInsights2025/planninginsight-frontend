@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { signInWithGoogle } from "../../../services/api/firebaseAuth";
+import { useGoogleLogin } from "@react-oauth/google";
 import { useAuth } from '../../../hooks/useAuth'
 import { useNotification } from '../../../contexts/NotificationContext'
 import OTPVerification from './OTPVerification'
@@ -26,8 +26,36 @@ export default function Signup() {
   });
 
   const navigate = useNavigate();
-  const { requestSignupOTP, verifySignupOTP, checkAuthStatus } = useAuth()
+  const { requestSignupOTP, verifySignupOTP, checkAuthStatus, login } = useAuth()
   const { showNotification } = useNotification()
+
+  // Google OAuth via @react-oauth/google
+  const googleOAuth = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      try {
+        const apiUrl = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api'}/auth/google-login`
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ access_token: tokenResponse.access_token })
+        })
+        const data = await response.json()
+        if (response.ok && data.token) {
+          localStorage.setItem('authToken', data.token)
+          login(data.data?.user)
+          showNotification('Signed in with Google!', 'success')
+          navigate('/dashboard')
+        } else {
+          showNotification(data.message || 'Google sign-in failed', 'error')
+        }
+      } catch {
+        showNotification('Failed to authenticate with Google', 'error')
+      }
+    },
+    onError: () => showNotification('Google sign-in failed', 'error')
+  })
+
+  const handleGoogleSignIn = () => googleOAuth()
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -161,19 +189,6 @@ export default function Signup() {
     setShowOTPScreen(false)
     setOtpError('')
     setRemainingAttempts(null)
-  }
-
-  const handleGoogleSignIn = async () => {
-    try {
-      const user = await signInWithGoogle()
-      console.log('Google sign-in user:', user)
-      // Optionally redirect after successful social login
-      showNotification('Signed in with Google', 'success')
-      navigate('/dashboard')
-    } catch (err) {
-      console.error('Google sign-in error', err)
-      showNotification(err?.message || 'Google sign-in failed', 'error')
-    }
   }
 
   // Handle LinkedIn OAuth redirect: capture ?token= or error, store it, hydrate auth, and navigate
