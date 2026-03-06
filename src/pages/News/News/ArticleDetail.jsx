@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../../hooks/useAuth';
 import { newsroomAPI } from '../../../services/api/newsroom';
-import { ThumbsUp, ThumbsDown, MessageCircle, Flag, Share2, Eye, Calendar, User, X, ChevronUp, BookOpen, Clock, Award } from 'lucide-react';
+import useArticleSocket from '../../../hooks/useArticleSocket';
+import { ThumbsUp, ThumbsDown, MessageCircle, Flag, Share2, Eye, Calendar, User, X, ChevronUp, BookOpen, Clock, Award, Lock } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import './ArticleDetail.css';
 
@@ -10,6 +11,9 @@ const ArticleDetail = () => {
   const { articleId } = useParams();
   const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+
+  // Real-time socket connection for this article
+  const { liveStats, newComment, deletedCommentId } = useArticleSocket(articleId);
 
   const [article, setArticle] = useState(null);
   const [stats, setStats] = useState(null);
@@ -50,6 +54,60 @@ const ArticleDetail = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // ─── Real-time socket updates ────────────────────────────────────────────
+
+  // Sync live like/dislike stats from socket
+  useEffect(() => {
+    if (!liveStats) return;
+    setStats(prev => ({
+      ...prev,
+      likesCount: liveStats.likesCount,
+      likes: liveStats.likesCount,
+      dislikesCount: liveStats.dislikesCount,
+      dislikes: liveStats.dislikesCount,
+    }));
+    // Update user interaction state if the event came from someone else
+    // (own actions already update via handleLike/handleDislike)
+  }, [liveStats]);
+
+  // Append incoming comment in real-time
+  useEffect(() => {
+    if (!newComment) return;
+    setArticle(prev => {
+      if (!prev) return prev;
+      // Avoid duplicates (our own comment may have already been added by loadArticle)
+      const alreadyExists = prev.comments?.some(c => c._id === newComment._id);
+      if (alreadyExists) return prev;
+      return { ...prev, comments: [...(prev.comments || []), newComment] };
+    });
+  }, [newComment]);
+
+  // Remove deleted comment in real-time
+  useEffect(() => {
+    if (!deletedCommentId) return;
+    setArticle(prev => {
+      if (!prev) return prev;
+      return { ...prev, comments: (prev.comments || []).filter(c => c._id !== deletedCommentId) };
+    });
+  }, [deletedCommentId]);
+
+  // ─── Content protection ──────────────────────────────────────────────────
+
+  useEffect(() => {
+    if (!article?.preventCopy) return;
+    const block = (e) => e.preventDefault();
+    document.addEventListener('copy', block);
+    document.addEventListener('cut', block);
+    document.addEventListener('contextmenu', block);
+    document.addEventListener('selectstart', block);
+    return () => {
+      document.removeEventListener('copy', block);
+      document.removeEventListener('cut', block);
+      document.removeEventListener('contextmenu', block);
+      document.removeEventListener('selectstart', block);
+    };
+  }, [article?.preventCopy]);
 
   const loadArticle = async () => {
     try {
@@ -128,8 +186,9 @@ const ArticleDetail = () => {
       return;
     }
     try {
-      await newsroomAPI.addComment(articleId, comment);
+      await newsroomAPI.addComment(articleId, { content: comment });
       setComment('');
+      // Real-time socket will push the new comment; also reload as fallback
       loadArticle();
       toast.success('Comment added successfully');
     } catch (error) {
@@ -382,19 +441,51 @@ const ArticleDetail = () => {
             )}
 
             {/* Article Content */}
-            <div className="article-content">
-              {isAuthenticated ? (
-                <div dangerouslySetInnerHTML={{ __html: article.content }} />
-              ) : (
-                <div className="blurred-content">
-                  <div dangerouslySetInnerHTML={{ __html: getBlurredContent() }} />
-                  <div className="login-prompt">
-                    <h3>🔒 Members Only</h3>
-                    <p>Login to read the full article</p>
-                    <button onClick={() => navigate('/login')}>Login / Sign Up</button>
-                  </div>
-                </div>
-              )}
+            <div className={`article-content${article.preventCopy ? ' no-select' : ''}`}>
+              {(() => {
+                const PRIVILEGED = ['admin', 'moderator', 'premium', 'editor', 'chiefeditor'];
+                const isRestricted = article.subscriptionOnly || article.isPremium;
+                const canReadFull = !isRestricted || (isAuthenticated && PRIVILEGED.includes(user?.role));
+
+                if (!isAuthenticated) {
+                  return (
+                    <div className="blurred-content">
+                      <div dangerouslySetInnerHTML={{ __html: getBlurredContent() }} />
+                      <div className="login-prompt">
+                        <h3>🔒 Members Only</h3>
+                        <p>Login to read the full article</p>
+                        <button onClick={() => navigate('/login')}>Login / Sign Up</button>
+                      </div>
+                    </div>
+                  );
+                }
+
+                if (!canReadFull) {
+                  return (
+                    <div className="blurred-content">
+                      <div dangerouslySetInnerHTML={{ __html: getBlurredContent() }} />
+                      <div className="login-prompt premium-gate">
+                        <Lock size={32} />
+                        <h3>Premium Content</h3>
+                        <p>This article is available to Premium members only.</p>
+                        <button onClick={() => navigate('/upgrade')}>Upgrade to Premium</button>
+                      </div>
+                    </div>
+                  );
+                }
+
+                return (
+                  article.preventScreenshot
+                    ? <div className="article-watermark-wrap">
+                        <div
+                          className="article-watermark"
+                          data-watermark={user?.email || 'Planning Insights'}
+                        />
+                        <div dangerouslySetInnerHTML={{ __html: article.content }} />
+                      </div>
+                    : <div dangerouslySetInnerHTML={{ __html: article.content }} />
+                );
+              })()}
             </div>
           </div>
 
@@ -405,7 +496,7 @@ const ArticleDetail = () => {
             onClick={handleLike}
           >
             <ThumbsUp size={20} />
-            <span>{stats?.likes || 0}</span>
+            <span>{stats?.likesCount ?? stats?.likes ?? 0}</span>
           </button>
 
           <button
@@ -413,7 +504,7 @@ const ArticleDetail = () => {
             onClick={handleDislike}
           >
             <ThumbsDown size={20} />
-            <span>{stats?.dislikes || 0}</span>
+            <span>{stats?.dislikesCount ?? stats?.dislikes ?? 0}</span>
           </button>
 
           <button
@@ -449,13 +540,31 @@ const ArticleDetail = () => {
           </button>
           </div>
 
-          {/* Citation Block */}
-          {article.citationText && (
-            <div className="citation-block">
-              <h4>📚 Cite This Article</h4>
-              <p>{article.citationText}</p>
-            </div>
-          )}
+          {/* Citation Block — always shown, auto-generated if not set */}
+          {(() => {
+            const authorName = article.author?.profile?.firstName
+              ? `${article.author.profile.firstName} ${article.author.profile.lastName || ''}`.trim()
+              : article.author?.email?.split('@')[0] || 'Author';
+            const year = new Date(article.publishedAt || article.createdAt).getFullYear();
+            const doi = article.doi ? ` DOI: ${article.doi}` : '';
+            const citation = article.citationText ||
+              `${authorName} (${year}). ${article.title}. Planning Insights. Retrieved from ${window.location.href}${doi}`;
+            return (
+              <div className="citation-block">
+                <h4>📚 Cite This Article</h4>
+                <p className="citation-text">{citation}</p>
+                <button
+                  className="citation-copy-btn"
+                  onClick={() => {
+                    navigator.clipboard.writeText(citation);
+                    toast.success('Citation copied to clipboard');
+                  }}
+                >
+                  📋 Copy Citation
+                </button>
+              </div>
+            );
+          })()}
 
           {/* Author Section - Bottom */}
           <section className="author-section">

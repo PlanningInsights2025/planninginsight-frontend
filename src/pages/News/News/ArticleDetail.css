@@ -393,6 +393,101 @@
   border-radius: var(--pi-radius-sm); border:1px solid var(--pi-border);
   line-height:1.6; margin:0;
 }
+.article-detail-page .citation-text {
+  font-size:.8rem; font-family:'Courier New',monospace;
+  color:var(--pi-muted); background:#fff; padding:10px 14px;
+  border-radius: var(--pi-radius-sm); border:1px solid var(--pi-border);
+  line-height:1.6; margin:0 0 10px; word-break:break-word;
+}
+.article-detail-page .citation-copy-btn {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:7px 16px; background:linear-gradient(135deg,#4a3f8f,#7c3aed);
+  color:#fff; border:none; border-radius: var(--pi-radius-sm);
+  font-size:.78rem; font-weight:600; cursor:pointer; transition:all .2s;
+}
+.article-detail-page .citation-copy-btn:hover { transform:translateY(-1px); box-shadow:0 4px 14px rgba(74,63,143,.35); }
+
+/* ═══════════════════════════════════════════════════════════
+   PREMIUM / SUBSCRIPTION GATE
+   ═══════════════════════════════════════════════════════════ */
+.article-detail-page .premium-gate {
+  background: linear-gradient(135deg, #1e1b4b 0%, #4a3f8f 100%);
+  border-radius: var(--pi-radius-md);
+  padding: 40px 32px;
+  text-align: center;
+  color: #fff;
+  border: none;
+}
+.article-detail-page .premium-gate svg {
+  color: #fbbf24;
+  margin-bottom: 14px;
+}
+.article-detail-page .premium-gate h3 {
+  font-size: 1.3rem; font-weight: 700; margin-bottom: 10px; color: #fff;
+}
+.article-detail-page .premium-gate p {
+  font-size: .9rem; color: rgba(255,255,255,.8); margin-bottom: 22px;
+}
+.article-detail-page .premium-gate button {
+  background: linear-gradient(135deg,#f59e0b,#ef4444);
+  color:#fff; border:none; padding:12px 28px;
+  border-radius: var(--pi-radius-sm); font-weight:700; font-size:.9rem;
+  cursor:pointer; transition:all .2s;
+}
+.article-detail-page .premium-gate button:hover { transform:translateY(-2px); box-shadow:0 6px 18px rgba(0,0,0,.25); }
+
+/* ═══════════════════════════════════════════════════════════
+   CONTENT PROTECTION (copy / screenshot prevention)
+   ═══════════════════════════════════════════════════════════ */
+.article-detail-page .article-content.no-select,
+.article-detail-page .article-content.no-select * {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* Watermark overlay for preventScreenshot articles */
+.article-watermark-wrap {
+  position: relative;
+}
+.article-watermark {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.04;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 120px,
+    rgba(74,63,143,.6) 120px,
+    rgba(74,63,143,.6) 121px
+  );
+}
+.article-watermark::after {
+  content: attr(data-watermark);
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%) rotate(-30deg);
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: rgba(74,63,143,.07);
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 0;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+@media print {
+  .article-detail-page .article-body-card { display: none !important; }
+  .article-detail-page::after {
+    content: 'Printing not permitted — Planning Insights';
+    font-size: 2rem; font-weight: 900; color: #4a3f8f;
+    display: block; text-align: center; padding-top: 40px;
+  }
+}
 
 .article-detail-page .author-section {
   padding: 28px 40px 32px;
