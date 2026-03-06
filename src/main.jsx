@@ -18,21 +18,22 @@ import './index.css'
  * Main Application Entry Point
  * Sets up providers and renders the app
  */
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || ''
+
 const Main = () => {
   return (
     <React.StrictMode>
-      <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || ''}>
-      <BrowserRouter>
-        <ThemeProvider>
-          <NotificationProvider>
-            <AuthProvider>
-              <App />
-            </AuthProvider>
-          </NotificationProvider>
-        </ThemeProvider>
-      </BrowserRouter>
+      <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+        <BrowserRouter>
+          <ThemeProvider>
+            <NotificationProvider>
+              <AuthProvider>
+                <App />
+              </AuthProvider>
+            </NotificationProvider>
+          </ThemeProvider>
+        </BrowserRouter>
       </GoogleOAuthProvider>
-      </BrowserRouter>
     </React.StrictMode>
   )
 }
