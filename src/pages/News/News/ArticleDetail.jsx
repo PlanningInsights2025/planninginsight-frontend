@@ -3,9 +3,23 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../../hooks/useAuth';
 import { newsroomAPI } from '../../../services/api/newsroom';
 import useArticleSocket from '../../../hooks/useArticleSocket';
-import { ThumbsUp, ThumbsDown, MessageCircle, Flag, Share2, Eye, Calendar, User, X, ChevronUp, BookOpen, Clock, Award, Lock } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, MessageCircle, Flag, Share2, Eye, Calendar, User, X, ChevronUp, BookOpen, Clock, Award, Lock, Send, Trash2 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import './ArticleDetail.css';
+
+/** Format a timestamp as relative time (e.g. "2 hours ago") */
+const relativeTime = (dateStr) => {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const s = Math.floor(diff / 1000);
+  if (s < 60) return 'just now';
+  const m = Math.floor(s / 60);
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h ago`;
+  const d = Math.floor(h / 24);
+  if (d < 30) return `${d}d ago`;
+  return new Date(dateStr).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+};
 
 const ArticleDetail = () => {
   const { articleId } = useParams();
@@ -34,6 +48,15 @@ const ArticleDetail = () => {
     loadStats();
   }, [articleId]);
 
+  // Seed userInteractions once article loads — check if current user already liked/disliked
+  useEffect(() => {
+    if (!article || !user) return;
+    const uid = user._id?.toString() || user.id?.toString();
+    const liked = (article.likes || []).some(id => id?.toString() === uid);
+    const disliked = (article.dislikes || []).some(id => id?.toString() === uid);
+    setUserInteractions({ liked, disliked });
+  }, [article?._id, user?._id]);
+
   // Load recommended articles once we have the main article
   useEffect(() => {
     if (article?.category) {
@@ -55,9 +78,9 @@ const ArticleDetail = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // ─── Real-time socket updates ────────────────────────────────────────────
+  // ─── Real-time socket updates ───────────────────────────────────────
 
-  // Sync live like/dislike stats from socket
+  // Sync live like/dislike counts from socket (updates ALL viewers in real-time)
   useEffect(() => {
     if (!liveStats) return;
     setStats(prev => ({
@@ -67,8 +90,6 @@ const ArticleDetail = () => {
       dislikesCount: liveStats.dislikesCount,
       dislikes: liveStats.dislikesCount,
     }));
-    // Update user interaction state if the event came from someone else
-    // (own actions already update via handleLike/handleDislike)
   }, [liveStats]);
 
   // Append incoming comment in real-time
@@ -142,35 +163,46 @@ const ArticleDetail = () => {
   };
 
   const handleLike = async () => {
-    if (!isAuthenticated) {
-      toast.error('Please login to like articles');
-      return;
-    }
+    if (!isAuthenticated) { toast.error('Please login to like articles'); return; }
+    // Optimistic update — instant visual feedback
+    const wasLiked = userInteractions.liked;
+    const wasDisliked = userInteractions.disliked;
+    setUserInteractions({ liked: !wasLiked, disliked: false });
+    setStats(prev => ({
+      ...prev,
+      likesCount: (prev?.likesCount ?? 0) + (wasLiked ? -1 : 1),
+      dislikesCount: wasDisliked ? Math.max(0, (prev?.dislikesCount ?? 0) - 1) : (prev?.dislikesCount ?? 0),
+    }));
     try {
       const response = await newsroomAPI.likeArticle(articleId);
-      setUserInteractions({
-        liked: response.data.userLiked,
-        disliked: response.data.userDisliked
-      });
-      loadStats();
+      // Reconcile with authoritative server state
+      setUserInteractions({ liked: response.data.userLiked, disliked: response.data.userDisliked });
+      setStats(prev => ({ ...prev, likesCount: response.data.likesCount, dislikesCount: response.data.dislikesCount }));
     } catch (error) {
+      // Revert on failure
+      setUserInteractions({ liked: wasLiked, disliked: wasDisliked });
+      loadStats();
       toast.error('Failed to like article');
     }
   };
 
   const handleDislike = async () => {
-    if (!isAuthenticated) {
-      toast.error('Please login to dislike articles');
-      return;
-    }
+    if (!isAuthenticated) { toast.error('Please login to dislike articles'); return; }
+    const wasLiked = userInteractions.liked;
+    const wasDisliked = userInteractions.disliked;
+    setUserInteractions({ liked: false, disliked: !wasDisliked });
+    setStats(prev => ({
+      ...prev,
+      dislikesCount: (prev?.dislikesCount ?? 0) + (wasDisliked ? -1 : 1),
+      likesCount: wasLiked ? Math.max(0, (prev?.likesCount ?? 0) - 1) : (prev?.likesCount ?? 0),
+    }));
     try {
       const response = await newsroomAPI.dislikeArticle(articleId);
-      setUserInteractions({
-        liked: response.data.userLiked,
-        disliked: response.data.userDisliked
-      });
-      loadStats();
+      setUserInteractions({ liked: response.data.userLiked, disliked: response.data.userDisliked });
+      setStats(prev => ({ ...prev, likesCount: response.data.likesCount, dislikesCount: response.data.dislikesCount }));
     } catch (error) {
+      setUserInteractions({ liked: wasLiked, disliked: wasDisliked });
+      loadStats();
       toast.error('Failed to dislike article');
     }
   };
@@ -188,11 +220,25 @@ const ArticleDetail = () => {
     try {
       await newsroomAPI.addComment(articleId, { content: comment });
       setComment('');
-      // Real-time socket will push the new comment; also reload as fallback
-      loadArticle();
-      toast.success('Comment added successfully');
+      // Socket pushes the new comment in real-time — no reload needed
+      toast.success('Comment posted');
     } catch (error) {
       toast.error('Failed to add comment');
+    }
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    if (!window.confirm('Delete this comment?')) return;
+    try {
+      await newsroomAPI.deleteComment(articleId, commentId);
+      // Socket will broadcast deletion; optimistically remove locally too
+      setArticle(prev => ({
+        ...prev,
+        comments: (prev.comments || []).filter(c => c._id !== commentId)
+      }));
+      toast.success('Comment deleted');
+    } catch (error) {
+      toast.error('Failed to delete comment');
     }
   };
 
@@ -509,7 +555,7 @@ const ArticleDetail = () => {
 
           <button
             className="interaction-btn"
-            onClick={() => setShowComments(!showComments)}
+            onClick={() => document.querySelector('.comments-section')?.scrollIntoView({ behavior: 'smooth' })}
           >
             <MessageCircle size={20} />
             <span>{article.comments?.length || 0} Comments</span>
@@ -678,44 +724,103 @@ const ArticleDetail = () => {
           </section>
           )}
 
-          {/* Comments Section */}
-          {showComments && (
+          {/* Comments Section — professional social-media style */}
           <section className="comments-section">
-            <h3>💬 Comments ({article.comments?.length || 0})</h3>
+            {/* Header */}
+            <div className="comments-header">
+              <h3 className="comments-title">
+                <MessageCircle size={20} />
+                <span>Comments</span>
+                <span className="comments-count-badge">{article.comments?.length || 0}</span>
+              </h3>
+            </div>
 
+            {/* Compose box */}
             {isAuthenticated ? (
-              <form className="comment-form" onSubmit={handleAddComment}>
-                <textarea
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
-                  placeholder="Share your thoughts..."
-                  rows="4"
-                />
-                <button type="submit">Post Comment</button>
+              <form className="comment-compose" onSubmit={handleAddComment}>
+                <div className="compose-avatar">
+                  {user?.profile?.profilePicture || user?.profile?.avatar ? (
+                    <img src={user.profile.profilePicture || user.profile.avatar} alt={user.profile?.firstName || 'You'} />
+                  ) : (
+                    <span>{(user?.profile?.firstName?.[0] || user?.email?.[0] || 'U').toUpperCase()}</span>
+                  )}
+                </div>
+                <div className="compose-right">
+                  <textarea
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                    placeholder="Add a comment…"
+                    rows="3"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) handleAddComment(e);
+                    }}
+                  />
+                  <div className="compose-actions">
+                    <span className="compose-hint">Ctrl+Enter to post</span>
+                    <button type="submit" className="compose-submit" disabled={!comment.trim()}>
+                      <Send size={15} /> Post
+                    </button>
+                  </div>
+                </div>
               </form>
             ) : (
-              <div className="login-required">
-                <p>
-                  <Link to="/login">Login</Link> to join the conversation
-                </p>
+              <div className="comments-login-prompt">
+                <MessageCircle size={20} />
+                <span><Link to="/login">Sign in</Link> to join the conversation</span>
               </div>
             )}
 
+            {/* Comments list */}
             <div className="comments-list">
-              {article.comments?.map((comment) => (
-                <div key={comment._id} className="comment fade-in">
-                  <div className="comment-header">
-                    <strong>{comment.user?.profile?.firstName || comment.user?.email}</strong>
-                    <span className="comment-date">
-                      {new Date(comment.createdAt).toLocaleDateString()}
-                    </span>
-                  </div>
-                  <p className="comment-content">{comment.content}</p>
+              {(article.comments?.length || 0) === 0 ? (
+                <div className="comments-empty">
+                  <MessageCircle size={32} />
+                  <p>Be the first to comment</p>
                 </div>
-              ))}
+              ) : (
+                [...(article.comments || [])].reverse().map((c) => {
+                  const commenterName = c.user?.profile?.firstName
+                    ? `${c.user.profile.firstName} ${c.user.profile.lastName || ''}`.trim()
+                    : c.user?.email?.split('@')[0] || 'User';
+                  const commenterInitial = commenterName[0]?.toUpperCase() || 'U';
+                  const avatar = c.user?.profile?.profilePicture || c.user?.profile?.avatar;
+                  const isOwn = c.user?._id?.toString() === (user?._id?.toString() || user?.id?.toString());
+                  const piId = c.user?._id ? `PI-${c.user._id.toString().slice(-6).toUpperCase()}` : null;
+
+                  return (
+                    <div key={c._id} className={`comment-item fade-in${isOwn ? ' comment-own' : ''}`}>
+                      <div className="comment-avatar">
+                        {avatar ? (
+                          <img src={avatar} alt={commenterName} />
+                        ) : (
+                          <span>{commenterInitial}</span>
+                        )}
+                      </div>
+                      <div className="comment-body">
+                        <div className="comment-meta">
+                          <Link to={c.user?._id ? `/profile/${c.user._id}` : '#'} className="comment-author-name">
+                            {commenterName}
+                          </Link>
+                          {piId && <span className="comment-pi-id">{piId}</span>}
+                          <span className="comment-time">{relativeTime(c.createdAt)}</span>
+                          {isOwn && (
+                            <button
+                              className="comment-delete-btn"
+                              onClick={() => handleDeleteComment(c._id)}
+                              title="Delete comment"
+                            >
+                              <Trash2 size={13} />
+                            </button>
+                          )}
+                        </div>
+                        <p className="comment-text">{c.content}</p>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
             </div>
           </section>
-          )}
         </div>{/* end article-body-card */}
       </div>
 

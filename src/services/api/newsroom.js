@@ -215,8 +215,8 @@ export const newsroomAPI = {
   /**
    * Delete comment
    */
-  deleteComment: async (commentId) => {
-    const response = await api.delete(`/newsroom/comments/${commentId}`);
+  deleteComment: async (articleId, commentId) => {
+    const response = await api.delete(`/newsroom/articles/${articleId}/comments/${commentId}`);
     return response.data;
   },
 
