@@ -254,9 +254,9 @@ const ArticleDetail = () => {
               <Link to={`/profile/${article.author._id}`} className="author-link">
                 {article.author.profile?.firstName || article.author.email}
               </Link>
-              {article.coAuthors?.length > 0 && (
+              {article.coAuthors?.filter(ca => ca.user).length > 0 && (
                 <span className="co-authors">
-                  & {article.coAuthors.map(a => a.profile?.firstName || a.email).join(', ')}
+                  & {article.coAuthors.filter(ca => ca.user).map(ca => ca.user?.profile?.firstName ? `${ca.user.profile.firstName} ${ca.user.profile.lastName || ''}`.trim() : ca.email).join(', ')}
                 </span>
               )}
             </div>
@@ -306,10 +306,10 @@ const ArticleDetail = () => {
                   ? `${article.author.profile.firstName} ${article.author.profile.lastName || ''}`
                   : article.author.email}
               </Link>
-              {article.coAuthors?.map(ca => (
-                <span key={ca._id} className="co-author-chip">
-                  &amp; <Link to={`/profile/${ca._id}`}>
-                    {ca.profile?.firstName ? `${ca.profile.firstName} ${ca.profile.lastName || ''}` : ca.email}
+              {article.coAuthors?.filter(ca => ca.user).map(ca => (
+                <span key={ca.user._id} className="co-author-chip">
+                  &amp; <Link to={`/profile/${ca.user._id}`}>
+                    {ca.user.profile?.firstName ? `${ca.user.profile.firstName} ${ca.user.profile.lastName || ''}`.trim() : ca.email}
                   </Link>
                 </span>
               ))}
@@ -444,33 +444,34 @@ const ArticleDetail = () => {
           </div>
 
           {/* Co-Authors */}
-          {article.coAuthors?.length > 0 && (
+          {article.coAuthors?.filter(ca => ca.user).length > 0 && (
             <div className="co-authors-section">
               <h4 className="co-authors-heading">Co-Authors</h4>
-              {article.coAuthors.map(ca => (
-                <div key={ca._id} className="author-card co-author-card">
+              {article.coAuthors.filter(ca => ca.user).map(ca => (
+                <div key={ca.user._id} className="author-card co-author-card">
                   <div className="author-avatar">
-                    {ca.profile?.profilePicture || ca.profile?.avatar ? (
+                    {ca.user.profile?.avatar ? (
                       <img
-                        src={ca.profile.profilePicture || ca.profile.avatar}
-                        alt={ca.profile?.firstName || 'Co-Author'}
+                        src={ca.user.profile.avatar}
+                        alt={ca.user.profile?.firstName || 'Co-Author'}
                       />
                     ) : (
-                      <span>{(ca.profile?.firstName?.[0] || 'C').toUpperCase()}</span>
+                      <span>{(ca.user.profile?.firstName?.[0] || 'C').toUpperCase()}</span>
                     )}
                   </div>
                   <div className="author-details">
                     <h4>
-                      <Link to={`/profile/${ca._id}`} className="author-name-link">
-                        {ca.profile?.firstName
-                          ? `${ca.profile.firstName} ${ca.profile.lastName || ''}`
+                      <Link to={`/profile/${ca.user._id}`} className="author-name-link">
+                        {ca.user.profile?.firstName
+                          ? `${ca.user.profile.firstName} ${ca.user.profile.lastName || ''}`.trim()
                           : ca.email}
                       </Link>
                     </h4>
                     <span className="author-unique-id">
-                      <Award size={13} /> PI‑{ca._id?.slice(-8)?.toUpperCase()}
+                      <Award size={13} /> PI‑{ca.user._id?.toString().slice(-8).toUpperCase()}
                     </span>
-                    <p className="author-bio">{ca.profile?.bio || 'Planning professional contributing to Planning Insights.'}</p>
+                    <p className="author-bio">{ca.user.profile?.bio || 'Planning professional contributing to Planning Insights.'}</p>
+                    <Link to={`/profile/${ca.user._id}`} className="view-profile">View Full Profile →</Link>
                   </div>
                 </div>
               ))}

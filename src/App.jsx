@@ -23,6 +23,7 @@ import ForgotPassword from './pages/Auth/ForgotPassword';
 import MyArticles from './pages/Dashboard/Dashboard/MyArticles';
 import UserDashboard from './pages/Dashboard/Dashboard/UserDashboard';
 import UserProfile from './pages/Dashboard/Dashboard/UserProfile';
+import PublicProfile from './pages/Profile/PublicProfile';
 import EditorDashboard from './pages/Editor/EditorDashboard';
 import Jobs from './pages/Jobs/Jobs';
 import JobPortal from './pages/Jobs/JobPortal';
@@ -112,6 +113,7 @@ function App() {
                   {/* Dashboard */}
                   <Route path="/dashboard" element={<UserDashboard />} />
                   <Route path="/profile" element={<UserProfile />} />
+                  <Route path="/profile/:userId" element={<PublicProfile />} />
                   <Route path="/my-articles" element={<MyArticles />} />
                   
                   {/* Editor Dashboard */}

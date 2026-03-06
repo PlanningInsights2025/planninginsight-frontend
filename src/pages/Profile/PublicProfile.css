@@ -1,0 +1,320 @@
+/* ============================================
+   PUBLIC PROFILE PAGE
+   ============================================ */
+
+.pp-page {
+  min-height: 100vh;
+  background: #f8f9fa;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.pp-container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 24px 16px 60px;
+}
+
+/* --- Loading / Error --- */
+.pp-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  min-height: 60vh;
+  color: #6c757d;
+}
+
+.pp-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #e9ecef;
+  border-top-color: #4a6cf7;
+  border-radius: 50%;
+  animation: ppSpin 0.8s linear infinite;
+}
+
+@keyframes ppSpin { to { transform: rotate(360deg); } }
+
+.pp-error {
+  text-align: center;
+  padding: 80px 24px;
+  color: #495057;
+}
+
+.pp-error h2 { font-size: 1.5rem; margin-bottom: 12px; }
+.pp-error p  { color: #6c757d; margin-bottom: 24px; }
+.pp-error button {
+  background: #4a6cf7;
+  color: #fff;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+.pp-error button:hover { background: #3a5be0; }
+
+/* --- Back Button --- */
+.pp-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 0.875rem;
+  color: #495057;
+  cursor: pointer;
+  margin-bottom: 28px;
+  transition: all 0.2s;
+}
+.pp-back:hover { background: #fff; border-color: #adb5bd; color: #212529; }
+
+/* --- Hero Section --- */
+.pp-hero {
+  display: flex;
+  align-items: flex-start;
+  gap: 28px;
+  background: #fff;
+  border: 1px solid #e9ecef;
+  border-radius: 16px;
+  padding: 32px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+/* Avatar */
+.pp-avatar-wrap { flex-shrink: 0; }
+
+.pp-avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #e9ecef;
+}
+
+.pp-avatar-placeholder {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4a6cf7, #7c3aed);
+  color: #fff;
+  font-size: 2.2rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+
+/* Info */
+.pp-hero-info { flex: 1; min-width: 0; }
+
+.pp-name {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0 0 8px;
+  line-height: 1.2;
+}
+
+.pp-uid {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: linear-gradient(135deg, #4a6cf7, #7c3aed);
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 12px;
+}
+
+.pp-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #6c757d;
+  font-size: 0.875rem;
+  margin-bottom: 6px;
+}
+
+.pp-bio {
+  margin-top: 12px;
+  color: #495057;
+  font-size: 0.925rem;
+  line-height: 1.65;
+  max-width: 640px;
+}
+
+/* --- Stats Bar --- */
+.pp-stats {
+  display: flex;
+  gap: 16px;
+  background: #fff;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  padding: 20px 28px;
+  margin-bottom: 28px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+
+.pp-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  flex: 1;
+  text-align: center;
+}
+
+.pp-stat + .pp-stat {
+  border-left: 1px solid #e9ecef;
+}
+
+.pp-stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+.pp-stat-label {
+  font-size: 0.78rem;
+  color: #adb5bd;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* --- Articles Section --- */
+.pp-articles-section {}
+
+.pp-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 18px;
+}
+
+.pp-no-articles {
+  text-align: center;
+  color: #adb5bd;
+  padding: 40px;
+}
+
+.pp-articles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.pp-article-card {
+  background: #fff;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 0.2s, transform 0.2s;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+
+.pp-article-card:hover {
+  box-shadow: 0 6px 24px rgba(74,108,247,0.12);
+  transform: translateY(-2px);
+}
+
+.pp-article-img {
+  width: 100%;
+  height: 160px;
+  overflow: hidden;
+}
+
+.pp-article-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pp-article-body {
+  padding: 16px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pp-article-category {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #4a6cf7;
+}
+
+.pp-article-title {
+  font-size: 0.975rem;
+  font-weight: 600;
+  color: #1a1a2e;
+  line-height: 1.4;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.pp-article-excerpt {
+  font-size: 0.83rem;
+  color: #6c757d;
+  line-height: 1.55;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.pp-article-meta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: auto;
+  padding-top: 8px;
+  border-top: 1px solid #f1f3f5;
+  font-size: 0.78rem;
+  color: #adb5bd;
+}
+
+.pp-article-meta span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* --- Responsive --- */
+@media (max-width: 640px) {
+  .pp-hero {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 24px 20px;
+  }
+
+  .pp-meta-item { justify-content: center; }
+  .pp-uid       { margin: 0 auto 12px; }
+  .pp-bio       { text-align: left; }
+
+  .pp-stats { flex-direction: row; padding: 16px; }
+
+  .pp-articles-grid { grid-template-columns: 1fr; }
+}
