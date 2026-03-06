@@ -212,10 +212,47 @@ const ArticleDetail = () => {
 
   if (loading) {
     return (
-      <div className="article-detail-container">
-        <div className="loading-spinner">
-          <div className="spinner"></div>
-          <p>Loading article...</p>
+      <div className="article-skeleton-page">
+        <div className="skeleton-reading-bar" />
+        <div className="article-skeleton-container">
+          {/* Breadcrumb skeleton */}
+          <div className="skeleton sk-breadcrumb" />
+          {/* Title skeleton */}
+          <div className="skeleton sk-title" />
+          <div className="skeleton sk-title sk-title-short" />
+          {/* Meta row */}
+          <div className="sk-meta-row">
+            <div className="skeleton sk-meta-chip" />
+            <div className="skeleton sk-meta-chip" />
+            <div className="skeleton sk-meta-chip sk-meta-chip-sm" />
+          </div>
+          {/* Author panel skeleton */}
+          <div className="sk-author-panel">
+            <div className="skeleton sk-avatar" />
+            <div className="sk-author-text">
+              <div className="skeleton sk-author-name" />
+              <div className="skeleton sk-author-id" />
+            </div>
+          </div>
+          {/* Featured image skeleton */}
+          <div className="skeleton sk-featured-img" />
+          {/* Content skeleton */}
+          <div className="sk-content">
+            {[1,2,3].map(i => (
+              <div key={i} className="sk-paragraph">
+                <div className="skeleton sk-line sk-line-full" />
+                <div className="skeleton sk-line sk-line-full" />
+                <div className="skeleton sk-line sk-line-3q" />
+              </div>
+            ))}
+            <div className="skeleton sk-heading" />
+            {[1,2].map(i => (
+              <div key={i} className="sk-paragraph">
+                <div className="skeleton sk-line sk-line-full" />
+                <div className="skeleton sk-line sk-line-half" />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -223,10 +260,12 @@ const ArticleDetail = () => {
 
   if (!article) {
     return (
-      <div className="article-detail-container">
-        <div className="error-message">
+      <div className="article-error-page">
+        <div className="article-error-box">
+          <div className="article-error-icon">📄</div>
           <h2>Article not found</h2>
-          <button onClick={() => navigate('/news')}>Back to Newsroom</button>
+          <p>The article you're looking for doesn't exist or has been removed.</p>
+          <button onClick={() => navigate('/news')}>← Back to Newsroom</button>
         </div>
       </div>
     );
