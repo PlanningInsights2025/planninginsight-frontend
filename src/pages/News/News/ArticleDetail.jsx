@@ -215,16 +215,16 @@ const ArticleDetail = () => {
       <div className="article-skeleton-page">
         <div className="skeleton-reading-bar" />
         <div className="article-skeleton-container">
-          {/* Breadcrumb skeleton */}
-          <div className="skeleton sk-breadcrumb" />
-          {/* Title skeleton */}
-          <div className="skeleton sk-title" />
-          <div className="skeleton sk-title sk-title-short" />
-          {/* Meta row */}
-          <div className="sk-meta-row">
-            <div className="skeleton sk-meta-chip" />
-            <div className="skeleton sk-meta-chip" />
-            <div className="skeleton sk-meta-chip sk-meta-chip-sm" />
+          {/* Header card skeleton */}
+          <div className="sk-header-card">
+            <div className="skeleton sk-breadcrumb" />
+            <div className="skeleton sk-title" />
+            <div className="skeleton sk-title sk-title-short" />
+            <div className="sk-meta-row">
+              <div className="skeleton sk-meta-chip" />
+              <div className="skeleton sk-meta-chip" />
+              <div className="skeleton sk-meta-chip sk-meta-chip-sm" />
+            </div>
           </div>
           {/* Author panel skeleton */}
           <div className="sk-author-panel">
@@ -234,24 +234,25 @@ const ArticleDetail = () => {
               <div className="skeleton sk-author-id" />
             </div>
           </div>
-          {/* Featured image skeleton */}
-          <div className="skeleton sk-featured-img" />
-          {/* Content skeleton */}
-          <div className="sk-content">
-            {[1,2,3].map(i => (
-              <div key={i} className="sk-paragraph">
-                <div className="skeleton sk-line sk-line-full" />
-                <div className="skeleton sk-line sk-line-full" />
-                <div className="skeleton sk-line sk-line-3q" />
-              </div>
-            ))}
-            <div className="skeleton sk-heading" />
-            {[1,2].map(i => (
-              <div key={i} className="sk-paragraph">
-                <div className="skeleton sk-line sk-line-full" />
-                <div className="skeleton sk-line sk-line-half" />
-              </div>
-            ))}
+          {/* Body card skeleton */}
+          <div className="sk-body-card">
+            <div className="skeleton sk-featured-img" />
+            <div className="sk-content">
+              {[1,2,3].map(i => (
+                <div key={i} className="sk-paragraph">
+                  <div className="skeleton sk-line sk-line-full" />
+                  <div className="skeleton sk-line sk-line-full" />
+                  <div className="skeleton sk-line sk-line-3q" />
+                </div>
+              ))}
+              <div className="skeleton sk-heading" />
+              {[1,2].map(i => (
+                <div key={i} className="sk-paragraph">
+                  <div className="skeleton sk-line sk-line-full" />
+                  <div className="skeleton sk-line sk-line-half" />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -359,38 +360,46 @@ const ArticleDetail = () => {
           </div>
         </div>
 
-        {/* Featured Image */}
-        {article.featuredImage && (
-          <div className="featured-image zoom-in">
-            <img src={article.featuredImage} alt={article.title} />
-          </div>
-        )}
-
-        {/* Article Excerpt */}
-        {article.excerpt && (
-          <div className="article-excerpt slide-up">
-            <p>{article.excerpt}</p>
-          </div>
-        )}
-
-        {/* Article Content */}
-        <div className="article-content slide-up">
-          {isAuthenticated ? (
-            <div dangerouslySetInnerHTML={{ __html: article.content }} />
-          ) : (
-            <div className="blurred-content">
-              <div dangerouslySetInnerHTML={{ __html: getBlurredContent() }} />
-              <div className="login-prompt pulse">
-                <h3>🔒 Premium Content</h3>
-                <p>Login to read the full article</p>
-                <button onClick={() => navigate('/login')}>Login / Sign Up</button>
-              </div>
+        {/* Body Card: image + content */}
+        <div className="article-body-card">
+          {/* Featured Image — only render when URL exists */}
+          {article.featuredImage && (
+            <div className="article-featured-image">
+              <img
+                src={article.featuredImage}
+                alt={article.title}
+                onError={e => { e.currentTarget.parentElement.style.display = 'none'; }}
+              />
             </div>
           )}
-        </div>
 
-        {/* Interaction Bar */}
-        <div className="interaction-bar slide-up">
+          <div className="article-inner">
+            {/* Article Excerpt */}
+            {article.excerpt && (
+              <div className="article-excerpt">
+                <p>{article.excerpt}</p>
+              </div>
+            )}
+
+            {/* Article Content */}
+            <div className="article-content">
+              {isAuthenticated ? (
+                <div dangerouslySetInnerHTML={{ __html: article.content }} />
+              ) : (
+                <div className="blurred-content">
+                  <div dangerouslySetInnerHTML={{ __html: getBlurredContent() }} />
+                  <div className="login-prompt">
+                    <h3>🔒 Members Only</h3>
+                    <p>Login to read the full article</p>
+                    <button onClick={() => navigate('/login')}>Login / Sign Up</button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Interaction Bar — inside body card */}
+          <div className="interaction-bar">
           <button
             className={`interaction-btn ${userInteractions.liked ? 'active' : ''}`}
             onClick={handleLike}
@@ -438,18 +447,18 @@ const ArticleDetail = () => {
             <Flag size={20} />
             <span>Report</span>
           </button>
-        </div>
-
-        {/* Citation Block */}
-        {article.citationText && (
-          <div className="citation-block slide-up">
-            <h4>📚 Cite This Article</h4>
-            <p>{article.citationText}</p>
           </div>
-        )}
 
-        {/* Author Section - Bottom */}
-        <section className="author-section slide-up">
+          {/* Citation Block */}
+          {article.citationText && (
+            <div className="citation-block">
+              <h4>📚 Cite This Article</h4>
+              <p>{article.citationText}</p>
+            </div>
+          )}
+
+          {/* Author Section - Bottom */}
+          <section className="author-section">
           <h3>About the Author{article.coAuthors?.length > 0 ? 's' : ''}</h3>
 
           {/* Primary Author */}
@@ -516,11 +525,11 @@ const ArticleDetail = () => {
               ))}
             </div>
           )}
-        </section>
+          </section>
 
-        {/* Recommended Readings */}
-        {recommendedArticles.length > 0 && (
-          <section className="recommended-readings slide-up">
+          {/* Recommended Readings */}
+          {recommendedArticles.length > 0 && (
+          <section className="recommended-readings">
             <h3 className="recommended-heading">
               <BookOpen size={20} /> Recommended Readings
             </h3>
@@ -558,11 +567,11 @@ const ArticleDetail = () => {
               ))}
             </div>
           </section>
-        )}
+          )}
 
-        {/* Comments Section */}
-        {showComments && (
-          <section className="comments-section slide-up">
+          {/* Comments Section */}
+          {showComments && (
+          <section className="comments-section">
             <h3>💬 Comments ({article.comments?.length || 0})</h3>
 
             {isAuthenticated ? (
@@ -597,7 +606,8 @@ const ArticleDetail = () => {
               ))}
             </div>
           </section>
-        )}
+          )}
+        </div>{/* end article-body-card */}
       </div>
 
       {/* Flag Modal */}
