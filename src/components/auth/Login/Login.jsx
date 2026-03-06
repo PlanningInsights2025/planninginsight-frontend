@@ -15,6 +15,10 @@ export default function Login() {
 
   // Google OAuth — fires popup and exchanges access_token with backend
   const googleLogin = useGoogleLogin({
+    onNonOAuthError: () => {
+      // Popup closed or blocked — reset loading
+      setLoading(false)
+    },
     onSuccess: async (tokenResponse) => {
       try {
         const apiUrl = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api'}/auth/google-login`
