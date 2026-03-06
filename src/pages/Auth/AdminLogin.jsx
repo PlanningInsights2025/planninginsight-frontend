@@ -54,7 +54,7 @@ const AdminLogin = () => {
     setIsLoading(true);
 
     try {
-      const apiUrl = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api'}/admin/login`;
+      const apiUrl = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/api/admin/login`;
       console.log('Calling API:', apiUrl);
 
       const response = await fetch(apiUrl, {
