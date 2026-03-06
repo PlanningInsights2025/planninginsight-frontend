@@ -336,9 +336,16 @@ const AnalyticsView = () => {
   } = useRealtimeAnalytics({ stream, refreshIntervalMs: 30000 })
 
   useEffect(() => {
+    // Only fire toast for genuine unexpected errors, not "GA not configured" state
     if (overviewError || realtimeError) {
-      toast.error('Failed to load website analytics')
-      console.error(overviewError || realtimeError)
+      const err = overviewError || realtimeError;
+      const isAuthError = err?.response?.status === 401 || err?.response?.status === 403;
+      if (isAuthError) {
+        toast.error('Analytics: insufficient permissions');
+      } else {
+        toast.error('Failed to load website analytics');
+      }
+      console.error(err);
     }
   }, [overviewError, realtimeError])
 
@@ -506,6 +513,33 @@ const AnalyticsView = () => {
           </div>
         </div>
       </div>
+
+      {/* Google Analytics not configured — info banner */}
+      {!loading && overview?.configured === false && (
+        <div style={{
+          background: 'linear-gradient(135deg, #1e293b, #0f172a)',
+          border: '1px solid #334155',
+          borderRadius: '14px',
+          padding: '20px 24px',
+          marginBottom: '20px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '16px',
+          color: '#94a3b8'
+        }}>
+          <span style={{ fontSize: '28px' }}>📡</span>
+          <div>
+            <div style={{ fontWeight: '700', fontSize: '15px', color: '#e2e8f0', marginBottom: '4px' }}>
+              Google Analytics not connected
+            </div>
+            <div style={{ fontSize: '13px', lineHeight: '1.5' }}>
+              Set <code style={{ background: '#1e293b', padding: '1px 6px', borderRadius: '4px', color: '#67e8f9' }}>GA_PROPERTY_ID</code>,{' '}
+              <code style={{ background: '#1e293b', padding: '1px 6px', borderRadius: '4px', color: '#67e8f9' }}>GA_SERVICE_ACCOUNT_EMAIL</code> and{' '}
+              <code style={{ background: '#1e293b', padding: '1px 6px', borderRadius: '4px', color: '#67e8f9' }}>GA_SERVICE_ACCOUNT_PRIVATE_KEY</code> in your Vercel environment to enable live website analytics.
+            </div>
+          </div>
+        </div>
+      )}
 
       {loading ? (
         <div className="loading-spinner">

@@ -122,24 +122,27 @@ export const adminAPI = {
       });
       return response.data;
     } catch (error) {
-      if (error?.response?.status !== 404) {
-        throw error
+      // For 404, try the combined endpoint as fallback
+      if (error?.response?.status === 404) {
+        try {
+          const fallbackResponse = await api.get('/admin/analytics', {
+            params: { stream }
+          })
+          return {
+            success: true,
+            realtime: fallbackResponse.data?.analytics?.website?.realtime || {
+              configured: false, activeUsers: 0, pageViews: 0, eventCount: 0, devices: [], countries: []
+            }
+          }
+        } catch (_) {
+          // ignore secondary fallback error
+        }
       }
-
-      const fallbackResponse = await api.get('/admin/analytics', {
-        params: { stream }
-      })
-
+      // For any other error (401, 500, network) — return empty not-configured state
+      // so the UI degrades gracefully instead of showing an error toast
       return {
         success: true,
-        realtime: fallbackResponse.data?.analytics?.website?.realtime || {
-          configured: false,
-          activeUsers: 0,
-          pageViews: 0,
-          eventCount: 0,
-          devices: [],
-          countries: []
-        }
+        realtime: { configured: false, activeUsers: 0, pageViews: 0, eventCount: 0, devices: [], countries: [] }
       }
     }
   },
@@ -148,39 +151,38 @@ export const adminAPI = {
    * Get overview website analytics by period
    */
   getAnalyticsOverview: async (period = '7d', stream = 'public') => {
+    const emptyOverview = {
+      configured: false,
+      period,
+      totals: { users: 0, newUsers: 0, sessions: 0, pageViews: 0, eventCount: 0 },
+      trends: [],
+      topPages: [],
+      channels: [],
+      devices: [],
+      countries: []
+    };
     try {
       const response = await api.get('/admin/analytics/overview', {
         params: { period, stream }
       });
       return response.data;
     } catch (error) {
-      if (error?.response?.status !== 404) {
-        throw error
-      }
-
-      const fallbackResponse = await api.get('/admin/analytics', {
-        params: { period, stream }
-      })
-
-      return {
-        success: true,
-        overview: fallbackResponse.data?.analytics?.website?.overview || {
-          configured: false,
-          period,
-          totals: {
-            users: 0,
-            newUsers: 0,
-            sessions: 0,
-            pageViews: 0,
-            eventCount: 0
-          },
-          trends: [],
-          topPages: [],
-          channels: [],
-          devices: [],
-          countries: []
+      if (error?.response?.status === 404) {
+        // Try the combined analytics endpoint as a fallback
+        try {
+          const fallbackResponse = await api.get('/admin/analytics', {
+            params: { period, stream }
+          });
+          return {
+            success: true,
+            overview: fallbackResponse.data?.analytics?.website?.overview || emptyOverview
+          };
+        } catch (_) {
+          // ignore secondary fallback error
         }
       }
+      // For any other error (401, 500, network) — return empty not-configured state
+      return { success: true, overview: emptyOverview };
     }
   },
 
