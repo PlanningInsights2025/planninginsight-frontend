@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useGoogleLogin } from "@react-oauth/google";
+import { GoogleLogin } from "@react-oauth/google";
 import { useAuth } from '../../../hooks/useAuth';
 import { useNotification } from '../../../contexts/NotificationContext';
 
@@ -12,67 +12,33 @@ export default function Login() {
   const { login } = useAuth()
   const { showNotification } = useNotification()
   const [loading, setLoading] = useState(false)
-  const [googleLoading, setGoogleLoading] = useState(false)
 
-  // Google OAuth — separate loading state so form and Google button don't interfere
-  const googleLogin = useGoogleLogin({
-    flow: 'implicit',
-    onNonOAuthError: (err) => {
-      console.log('[Google] popup closed/blocked:', err)
-      setError('Google sign-in popup was closed. Please try again.')
-      setGoogleLoading(false)
-    },
-    onSuccess: async (tokenResponse) => {
-      console.log('[Google] onSuccess fired, access_token present:', !!tokenResponse?.access_token)
-      try {
-        const apiUrl = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api'}/auth/google-login`
-        const response = await fetch(apiUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ access_token: tokenResponse.access_token })
-        })
-        const data = await response.json()
-        console.log('[Google] backend response:', response.status, data)
-        if (response.ok && data.token) {
-          localStorage.removeItem('isAdminSession')
-          localStorage.removeItem('adminToken')
-          localStorage.setItem('authToken', data.token)
-          login(data.data?.user)
-          showNotification('Signed in with Google', 'success')
-          navigate('/dashboard')
-        } else {
-          const msg = data.message || 'Google sign-in failed'
-          setError(msg)
-          showNotification(msg, 'error')
-        }
-      } catch (err) {
-        console.error('[Google] backend fetch error:', err)
-        setError('Could not reach server. Please check your connection.')
-        showNotification('Failed to connect to server. Try again.', 'error')
-      } finally {
-        setGoogleLoading(false)
+  // Google credential flow — GoogleLogin component returns an id_token directly (no popup issues)
+  const handleGoogleCredential = async (credentialResponse) => {
+    try {
+      const apiUrl = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api'}/auth/google-login`
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ credential: credentialResponse.credential })
+      })
+      const data = await response.json()
+      if (response.ok && data.token) {
+        localStorage.removeItem('isAdminSession')
+        localStorage.removeItem('adminToken')
+        localStorage.setItem('authToken', data.token)
+        login(data.data?.user)
+        showNotification('Signed in with Google', 'success')
+        navigate('/dashboard')
+      } else {
+        const msg = data.message || 'Google sign-in failed'
+        setError(msg)
+        showNotification(msg, 'error')
       }
-    },
-    onError: (err) => {
-      console.error('[Google] onError:', err)
-      const msg = err?.error === 'access_denied'
-        ? 'Google sign-in was cancelled'
-        : err?.error === 'origin_mismatch'
-        ? 'Origin not authorized — add https://theplanninginsights.com to Google Cloud Console → Credentials → Authorized JS origins'
-        : err?.error === 'redirect_uri_mismatch'
-        ? 'Redirect URI mismatch in Google Cloud Console'
-        : `Google sign-in failed (${err?.error || 'unknown'})`
-      setError(msg)
-      showNotification(msg, 'error')
-      setGoogleLoading(false)
+    } catch (err) {
+      setError('Could not reach server. Please check your connection.')
+      showNotification('Failed to connect to server. Try again.', 'error')
     }
-  })
-
-  const handleGoogleSignIn = () => {
-    if (googleLoading || loading) return
-    googleLogin() // must be called first — synchronously from click event
-    setGoogleLoading(true)
-    setTimeout(() => setGoogleLoading(false), 60000)
   }
 
   const handleChange = (e) => {
@@ -538,31 +504,21 @@ export default function Login() {
             <p style={styles.subtitle}>Sign in to continue your journey</p>
 
             <div style={styles.socialContainer}>
-              <button 
-                type="button" 
-                className="social-google" 
-                style={{ ...styles.socialBase, ...styles.google }}
-                aria-label="Sign in with Google"
-                onClick={handleGoogleSignIn}
-                disabled={googleLoading || loading}
-              >
-                {googleLoading ? (
-                  <>
-                    <span className="btn-spinner" style={{borderTopColor:'#ea4335',borderColor:'rgba(234,67,53,0.2)',marginRight:'8px'}} aria-hidden></span>
-                    Signing in with Google...
-                  </>
-                ) : (
-                  <>
-                    <svg width="18" height="18" viewBox="0 0 18 18" style={{marginRight: '8px', flexShrink: 0}}>
-                      <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/>
-                      <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/>
-                      <path fill="#FBBC05" d="M3.964 10.707A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.707V4.961H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.039l3.007-2.332z"/>
-                      <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.961L3.964 7.293C4.672 5.163 6.656 3.58 9 3.58z"/>
-                    </svg>
-                    Sign in with Google
-                  </>
-                )}
-              </button>
+              <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
+                <GoogleLogin
+                  onSuccess={handleGoogleCredential}
+                  onError={() => {
+                    setError('Google sign-in failed. Please try again.')
+                    showNotification('Google sign-in failed', 'error')
+                  }}
+                  useOneTap={false}
+                  theme="outline"
+                  size="large"
+                  text="signin_with"
+                  shape="rectangular"
+                  width="300"
+                />
+              </div>
               <button 
                 type="button" 
                 className="social-linkedin" 
