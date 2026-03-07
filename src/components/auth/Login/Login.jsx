@@ -70,9 +70,8 @@ export default function Login() {
 
   const handleGoogleSignIn = () => {
     if (googleLoading || loading) return
+    googleLogin() // must be called first — synchronously from click event
     setGoogleLoading(true)
-    googleLogin()
-    // Safety timeout — reset if Google popup closes without calling back
     setTimeout(() => setGoogleLoading(false), 60000)
   }
 

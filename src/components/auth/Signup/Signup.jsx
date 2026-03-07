@@ -68,8 +68,8 @@ export default function Signup() {
 
   const handleGoogleSignIn = () => {
     if (googleLoading || loading) return
+    googleOAuth() // must be called first — synchronously from click event
     setGoogleLoading(true)
-    googleOAuth()
     setTimeout(() => setGoogleLoading(false), 60000)
   }
 
