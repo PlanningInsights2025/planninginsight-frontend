@@ -16,11 +16,14 @@ export default function Login() {
 
   // Google OAuth — separate loading state so form and Google button don't interfere
   const googleLogin = useGoogleLogin({
+    flow: 'implicit',
     onNonOAuthError: (err) => {
-      // Popup closed, blocked, or dismissed by user
+      console.log('[Google] popup closed/blocked:', err)
+      setError('Google sign-in popup was closed. Please try again.')
       setGoogleLoading(false)
     },
     onSuccess: async (tokenResponse) => {
+      console.log('[Google] onSuccess fired, access_token present:', !!tokenResponse?.access_token)
       try {
         const apiUrl = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api'}/auth/google-login`
         const response = await fetch(apiUrl, {
@@ -29,6 +32,7 @@ export default function Login() {
           body: JSON.stringify({ access_token: tokenResponse.access_token })
         })
         const data = await response.json()
+        console.log('[Google] backend response:', response.status, data)
         if (response.ok && data.token) {
           localStorage.removeItem('isAdminSession')
           localStorage.removeItem('adminToken')
@@ -37,20 +41,28 @@ export default function Login() {
           showNotification('Signed in with Google', 'success')
           navigate('/dashboard')
         } else {
-          showNotification(data.message || 'Google sign-in failed', 'error')
+          const msg = data.message || 'Google sign-in failed'
+          setError(msg)
+          showNotification(msg, 'error')
         }
       } catch (err) {
+        console.error('[Google] backend fetch error:', err)
+        setError('Could not reach server. Please check your connection.')
         showNotification('Failed to connect to server. Try again.', 'error')
       } finally {
         setGoogleLoading(false)
       }
     },
     onError: (err) => {
+      console.error('[Google] onError:', err)
       const msg = err?.error === 'access_denied'
         ? 'Google sign-in was cancelled'
-        : err?.error === 'origin_mismatch' || err?.error === 'redirect_uri_mismatch'
-        ? 'Google sign-in not configured for this domain. Please use email login.'
-        : 'Google sign-in failed. Please try again.'
+        : err?.error === 'origin_mismatch'
+        ? 'Origin not authorized — add https://theplanninginsights.com to Google Cloud Console → Credentials → Authorized JS origins'
+        : err?.error === 'redirect_uri_mismatch'
+        ? 'Redirect URI mismatch in Google Cloud Console'
+        : `Google sign-in failed (${err?.error || 'unknown'})`
+      setError(msg)
       showNotification(msg, 'error')
       setGoogleLoading(false)
     }
