@@ -60,6 +60,8 @@ export default function Login() {
     if (googleLoading || loading) return
     setGoogleLoading(true)
     googleLogin()
+    // Safety timeout — reset if Google popup closes without calling back
+    setTimeout(() => setGoogleLoading(false), 60000)
   }
 
   const handleChange = (e) => {

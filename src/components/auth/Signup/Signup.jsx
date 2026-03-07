@@ -70,6 +70,7 @@ export default function Signup() {
     if (googleLoading || loading) return
     setGoogleLoading(true)
     googleOAuth()
+    setTimeout(() => setGoogleLoading(false), 60000)
   }
 
   const handleChange = (e) => {
