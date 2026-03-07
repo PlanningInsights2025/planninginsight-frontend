@@ -9,6 +9,7 @@ export default function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false)
+  const [googleLoading, setGoogleLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [showOTPScreen, setShowOTPScreen] = useState(false)
   const [otpError, setOtpError] = useState('')
@@ -31,6 +32,7 @@ export default function Signup() {
 
   // Google OAuth via @react-oauth/google
   const googleOAuth = useGoogleLogin({
+    onNonOAuthError: () => setGoogleLoading(false),
     onSuccess: async (tokenResponse) => {
       try {
         const apiUrl = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api'}/auth/google-login`
@@ -49,13 +51,26 @@ export default function Signup() {
           showNotification(data.message || 'Google sign-in failed', 'error')
         }
       } catch {
-        showNotification('Failed to authenticate with Google', 'error')
+        showNotification('Failed to connect to server. Try again.', 'error')
+      } finally {
+        setGoogleLoading(false)
       }
     },
-    onError: () => showNotification('Google sign-in failed', 'error')
+    onError: (err) => {
+      const msg = err?.error === 'access_denied' ? 'Google sign-in was cancelled'
+        : err?.error === 'origin_mismatch' || err?.error === 'redirect_uri_mismatch'
+        ? 'Google sign-in not configured for this domain. Please use email sign-up.'
+        : 'Google sign-in failed. Please try again.'
+      showNotification(msg, 'error')
+      setGoogleLoading(false)
+    }
   })
 
-  const handleGoogleSignIn = () => googleOAuth()
+  const handleGoogleSignIn = () => {
+    if (googleLoading || loading) return
+    setGoogleLoading(true)
+    googleOAuth()
+  }
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
