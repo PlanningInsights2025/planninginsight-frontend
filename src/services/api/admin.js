@@ -522,6 +522,14 @@ export const adminAPI = {
     return response.data;
   },
 
+  /**
+   * Run real plagiarism check on an article (admin only)
+   */
+  checkArticlePlagiarism: async (articleId) => {
+    const response = await api.post(`/admin/articles/${articleId}/check-plagiarism`);
+    return response.data;
+  },
+
   // ==================== JOB PORTAL MANAGEMENT ====================
 
   /**

@@ -15,6 +15,8 @@ const NewsroomManagement = () => {
   const [modificationNotes, setModificationNotes] = useState('')
   const [modalType, setModalType] = useState('') // 'reject' or 'modify'
   const [searchQuery, setSearchQuery] = useState('')
+  const [plagiarismChecking, setPlagiarismChecking] = useState(false)
+  const [plagiarismReport, setPlagiarismReport] = useState(null)
 
   useEffect(() => {
     loadArticles()
@@ -119,6 +121,22 @@ const NewsroomManagement = () => {
     setSelectedArticle(article)
     setModificationNotes('')
     setModalType('modify')
+  }
+
+  const handleCheckPlagiarism = async (articleId) => {
+    setPlagiarismChecking(true)
+    setPlagiarismReport(null)
+    try {
+      const response = await adminAPI.checkArticlePlagiarism(articleId)
+      setPlagiarismReport(response.data)
+      // Refresh the article list so the badge updates
+      loadArticles()
+      toast.success(`Plagiarism check complete: ${response.data.score}% similarity`)
+    } catch (error) {
+      toast.error('Plagiarism check failed: ' + (error.response?.data?.message || error.message))
+    } finally {
+      setPlagiarismChecking(false)
+    }
   }
 
   const getStats = () => {
@@ -610,7 +628,7 @@ const NewsroomManagement = () => {
                 )}
                 
                 <button
-                  onClick={() => setSelectedArticle(article)}
+                  onClick={() => { setSelectedArticle(article); setPlagiarismReport(null) }}
                   style={{
                     padding: '10px 16px',
                     background: '#f3f4f6',
@@ -982,7 +1000,7 @@ const NewsroomManagement = () => {
       {/* Detail View Modal */}
       {selectedArticle && !modalType && (
         <div
-          onClick={() => setSelectedArticle(null)}
+          onClick={() => { setSelectedArticle(null); setPlagiarismReport(null) }}
           style={{
             position: 'fixed',
             top: 0,
@@ -1023,7 +1041,7 @@ const NewsroomManagement = () => {
                 </h3>
               </div>
               <button
-                onClick={() => setSelectedArticle(null)}
+                onClick={() => { setSelectedArticle(null); setPlagiarismReport(null) }}
                 style={{
                   background: '#f3f4f6',
                   border: 'none',
@@ -1095,6 +1113,151 @@ const NewsroomManagement = () => {
                 </div>
               </div>
             </div>
+
+            {/* ── PLAGIARISM ANALYSIS SECTION (admin-only) ─────────────────── */}
+            {(() => {
+              const report = plagiarismReport
+              const storedScore = selectedArticle.plagiarismReport?.score ?? selectedArticle.plagiarismScore
+              const storedChecked = selectedArticle.plagiarismReport?.checked
+              const displayScore = report ? report.score : storedScore
+              const scoreColor = displayScore === undefined ? '#6b7280'
+                : displayScore < 15 ? '#059669'
+                : displayScore < 30 ? '#d97706' : '#dc2626'
+              const scoreBg = displayScore === undefined ? '#f3f4f6'
+                : displayScore < 15 ? '#d1fae5'
+                : displayScore < 30 ? '#fef3c7' : '#fee2e2'
+              const recommendation = report?.recommendation
+              const sources = report?.matchedSources || (storedChecked ? (selectedArticle.plagiarismReport?.matchedSources || []) : [])
+              return (
+                <div style={{
+                  background: '#f8faff',
+                  border: '1.5px solid #e0e7ff',
+                  borderRadius: '14px',
+                  padding: '20px',
+                  marginBottom: '20px'
+                }}>
+                  {/* Header row */}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '18px' }}>🔍</span>
+                      <span style={{ fontSize: '16px', fontWeight: '700', color: '#1e1b4b' }}>Plagiarism Analysis</span>
+                      <span style={{ fontSize: '11px', background: '#e0e7ff', color: '#4338ca', padding: '2px 8px', borderRadius: '20px', fontWeight: '600' }}>ADMIN ONLY</span>
+                    </div>
+                    <button
+                      onClick={() => handleCheckPlagiarism(selectedArticle._id)}
+                      disabled={plagiarismChecking}
+                      style={{
+                        padding: '8px 16px',
+                        background: plagiarismChecking ? '#e5e7eb' : 'linear-gradient(135deg, #4338ca 0%, #6366f1 100%)',
+                        color: plagiarismChecking ? '#9ca3af' : 'white',
+                        border: 'none',
+                        borderRadius: '8px',
+                        fontSize: '13px',
+                        fontWeight: '600',
+                        cursor: plagiarismChecking ? 'not-allowed' : 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px'
+                      }}
+                    >
+                      {plagiarismChecking ? '⏳ Checking…' : (storedChecked || report ? '🔄 Re-check' : '▶ Run Check')}
+                    </button>
+                  </div>
+
+                  {plagiarismChecking && (
+                    <div style={{ textAlign: 'center', padding: '20px 0', color: '#6b7280', fontSize: '14px' }}>
+                      <div style={{ fontSize: '28px', marginBottom: '8px' }}>⏳</div>
+                      Comparing against all articles in the database…
+                    </div>
+                  )}
+
+                  {!plagiarismChecking && (report || storedChecked) && displayScore !== undefined && (
+                    <>
+                      {/* Score bar */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px' }}>
+                        <div style={{
+                          width: '72px', height: '72px', borderRadius: '50%',
+                          background: scoreBg, border: `3px solid ${scoreColor}`,
+                          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+                        }}>
+                          <span style={{ fontSize: '20px', fontWeight: '800', color: scoreColor, lineHeight: 1 }}>{displayScore}%</span>
+                          <span style={{ fontSize: '10px', color: scoreColor, fontWeight: '600' }}>similar</span>
+                        </div>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+                            <span style={{ fontSize: '12px', color: '#6b7280' }}>Similarity</span>
+                            <span style={{ fontSize: '12px', color: '#6b7280' }}>Originality</span>
+                          </div>
+                          <div style={{ height: '10px', background: '#e5e7eb', borderRadius: '99px', overflow: 'hidden', marginBottom: '6px' }}>
+                            <div style={{ height: '100%', width: `${displayScore}%`, background: scoreColor, borderRadius: '99px', transition: 'width 0.6s ease' }} />
+                          </div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <span style={{ fontSize: '13px', fontWeight: '700', color: scoreColor }}>{displayScore}% similar</span>
+                            <span style={{ fontSize: '13px', fontWeight: '700', color: '#059669' }}>{Math.round(100 - displayScore)}% original</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Recommendation chip */}
+                      {recommendation && (
+                        <div style={{
+                          background: scoreBg, border: `1px solid ${scoreColor}`,
+                          borderRadius: '8px', padding: '10px 14px', marginBottom: '14px',
+                          fontSize: '13px', color: scoreColor, fontWeight: '500'
+                        }}>
+                          {recommendation.message}
+                        </div>
+                      )}
+
+                      {/* Provider + timestamp */}
+                      {report && (
+                        <div style={{ fontSize: '11px', color: '#9ca3af', marginBottom: '10px' }}>
+                          Engine: {report.provider} · {report.details?.articlesChecked} articles checked · {new Date(report.checkedAt).toLocaleString()}
+                        </div>
+                      )}
+
+                      {/* Matched sources */}
+                      {sources.length > 0 && (
+                        <div>
+                          <div style={{ fontSize: '13px', fontWeight: '700', color: '#374151', marginBottom: '8px' }}>
+                            Matched Sources ({sources.length})
+                          </div>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '180px', overflow: 'auto' }}>
+                            {sources.map((src, i) => (
+                              <div key={i} style={{
+                                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                                background: 'white', border: '1px solid #e5e7eb', borderRadius: '8px',
+                                padding: '8px 12px', fontSize: '13px'
+                              }}>
+                                <div style={{ flex: 1, overflow: 'hidden' }}>
+                                  <div style={{ fontWeight: '600', color: '#1f2937', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{src.title || src.url}</div>
+                                  {src.textSnippet && <div style={{ fontSize: '11px', color: '#9ca3af', marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>"{src.textSnippet}"</div>}
+                                </div>
+                                <span style={{
+                                  marginLeft: '12px', fontWeight: '700', flexShrink: 0,
+                                  color: src.matchPercentage < 15 ? '#059669' : src.matchPercentage < 30 ? '#d97706' : '#dc2626'
+                                }}>{src.matchPercentage}%</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {sources.length === 0 && (
+                        <div style={{ fontSize: '13px', color: '#059669', fontWeight: '500', textAlign: 'center' }}>
+                          ✅ No matching sources found — content appears original
+                        </div>
+                      )}
+                    </>
+                  )}
+
+                  {!plagiarismChecking && !report && !storedChecked && (
+                    <div style={{ textAlign: 'center', padding: '12px 0', fontSize: '13px', color: '#9ca3af' }}>
+                      Click <strong>Run Check</strong> to analyse this article for similarities against all existing content.
+                    </div>
+                  )}
+                </div>
+              )
+            })()}
 
             {selectedArticle.approvalStatus === 'pending' && (
               <div style={{ display: 'flex', gap: '12px' }}>
