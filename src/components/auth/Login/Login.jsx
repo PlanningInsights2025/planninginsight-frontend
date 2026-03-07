@@ -533,14 +533,6 @@ export default function Login() {
                   Sign in with Google
                 </span>
               </button>
-              <button 
-                type="button" 
-                className="social-linkedin" 
-                style={{ ...styles.socialBase, ...styles.linkedin }}
-                aria-label="Sign in with LinkedIn"
-              >
-                in
-              </button>
             </div>
 
             <div style={styles.divider}>
