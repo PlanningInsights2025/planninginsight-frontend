@@ -17,6 +17,7 @@ const NewsroomManagement = () => {
   const [searchQuery, setSearchQuery] = useState('')
   const [plagiarismChecking, setPlagiarismChecking] = useState(false)
   const [plagiarismReport, setPlagiarismReport] = useState(null)
+  const [bulkPlagiarismChecking, setBulkPlagiarismChecking] = useState(false)
 
   useEffect(() => {
     loadArticles()
@@ -136,6 +137,23 @@ const NewsroomManagement = () => {
       toast.error('Plagiarism check failed: ' + (error.response?.data?.message || error.message))
     } finally {
       setPlagiarismChecking(false)
+    }
+  }
+
+  const handleBulkCheckPlagiarism = async () => {
+    setBulkPlagiarismChecking(true)
+    try {
+      const response = await adminAPI.bulkCheckPlagiarism()
+      toast.success(response.message || 'Bulk plagiarism check started')
+      // Give it a moment then refresh
+      setTimeout(() => {
+        loadArticles()
+        toast.info('Articles list refreshed. Plagiarism checks may still be processing.')
+      }, 3000)
+    } catch (error) {
+      toast.error('Bulk check failed: ' + (error.response?.data?.message || error.message))
+    } finally {
+      setBulkPlagiarismChecking(false)
     }
   }
 
@@ -328,6 +346,29 @@ const NewsroomManagement = () => {
             <option value="pending">⏳ Pending</option>
             <option value="archived">📦 Archived</option>
           </select>
+
+          <button
+            onClick={handleBulkCheckPlagiarism}
+            disabled={bulkPlagiarismChecking}
+            style={{
+              padding: '8px 16px',
+              borderRadius: '8px',
+              border: '1px solid #e5e7eb',
+              fontSize: '14px',
+              fontWeight: '600',
+              cursor: bulkPlagiarismChecking ? 'not-allowed' : 'pointer',
+              background: bulkPlagiarismChecking ? '#f3f4f6' : '#4f46e5',
+              color: bulkPlagiarismChecking ? '#9ca3af' : 'white',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              transition: 'all 0.2s',
+              opacity: bulkPlagiarismChecking ? 0.6 : 1
+            }}
+            title="Check plagiarism for all unchecked articles"
+          >
+            🔍 {bulkPlagiarismChecking ? 'Checking...' : 'Bulk Check Plagiarism'}
+          </button>
         </div>
 
         <div style={{ 

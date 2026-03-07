@@ -530,6 +530,14 @@ export const adminAPI = {
     return response.data;
   },
 
+  /**
+   * Run bulk plagiarism check on all unchecked articles (admin only)
+   */
+  bulkCheckPlagiarism: async () => {
+    const response = await api.post('/admin/articles/bulk-check-plagiarism');
+    return response.data;
+  },
+
   // ==================== JOB PORTAL MANAGEMENT ====================
 
   /**
