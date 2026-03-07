@@ -20,7 +20,7 @@ import Login from './pages/Auth/Login';
 import AdminLogin from './pages/Auth/AdminLogin';
 import Signup from './pages/Auth/Signup';
 import ForgotPassword from './pages/Auth/ForgotPassword';
-import AuthCallback from './pages/auth/AuthCallback';
+import AuthCallback from './pages/Auth/AuthCallback';
 import MyArticles from './pages/Dashboard/Dashboard/MyArticles';
 import UserDashboard from './pages/Dashboard/Dashboard/UserDashboard';
 import UserProfile from './pages/Dashboard/Dashboard/UserProfile';
