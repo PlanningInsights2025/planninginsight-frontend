@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { GoogleLogin } from "@react-oauth/google";
 import { useAuth } from '../../../hooks/useAuth';
 import { useNotification } from '../../../contexts/NotificationContext';
+
+const GOOGLE_AUTH_URL = `${ (import.meta.env.VITE_API_BASE_URL || 'https://planninginsight-backend.vercel.app/api')}/auth/google`
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -12,34 +13,6 @@ export default function Login() {
   const { login } = useAuth()
   const { showNotification } = useNotification()
   const [loading, setLoading] = useState(false)
-
-  // Google credential flow — GoogleLogin component returns an id_token directly (no popup issues)
-  const handleGoogleCredential = async (credentialResponse) => {
-    try {
-      const apiUrl = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api'}/auth/google-login`
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ credential: credentialResponse.credential })
-      })
-      const data = await response.json()
-      if (response.ok && data.token) {
-        localStorage.removeItem('isAdminSession')
-        localStorage.removeItem('adminToken')
-        localStorage.setItem('authToken', data.token)
-        login(data.data?.user)
-        showNotification('Signed in with Google', 'success')
-        navigate('/dashboard')
-      } else {
-        const msg = data.message || 'Google sign-in failed'
-        setError(msg)
-        showNotification(msg, 'error')
-      }
-    } catch (err) {
-      setError('Could not reach server. Please check your connection.')
-      showNotification('Failed to connect to server. Try again.', 'error')
-    }
-  }
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
@@ -504,21 +477,20 @@ export default function Login() {
             <p style={styles.subtitle}>Sign in to continue your journey</p>
 
             <div style={styles.socialContainer}>
-              <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
-                <GoogleLogin
-                  onSuccess={handleGoogleCredential}
-                  onError={() => {
-                    setError('Google sign-in failed. Please try again.')
-                    showNotification('Google sign-in failed', 'error')
-                  }}
-                  useOneTap={false}
-                  theme="outline"
-                  size="large"
-                  text="signin_with"
-                  shape="rectangular"
-                  width="300"
-                />
-              </div>
+              <button
+                type="button"
+                onClick={() => { window.location.href = GOOGLE_AUTH_URL }}
+                style={{ ...styles.socialBase, ...styles.google }}
+                aria-label="Sign in with Google"
+              >
+                <svg width="18" height="18" viewBox="0 0 18 18" style={{marginRight: '8px', flexShrink: 0}}>
+                  <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/>
+                  <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/>
+                  <path fill="#FBBC05" d="M3.964 10.707A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.707V4.961H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.039l3.007-2.332z"/>
+                  <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.961L3.964 7.293C4.672 5.163 6.656 3.58 9 3.58z"/>
+                </svg>
+                Sign in with Google
+              </button>
               <button 
                 type="button" 
                 className="social-linkedin" 

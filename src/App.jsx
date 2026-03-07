@@ -20,6 +20,7 @@ import Login from './pages/Auth/Login';
 import AdminLogin from './pages/Auth/AdminLogin';
 import Signup from './pages/Auth/Signup';
 import ForgotPassword from './pages/Auth/ForgotPassword';
+import AuthCallback from './pages/auth/AuthCallback';
 import MyArticles from './pages/Dashboard/Dashboard/MyArticles';
 import UserDashboard from './pages/Dashboard/Dashboard/UserDashboard';
 import UserProfile from './pages/Dashboard/Dashboard/UserProfile';
@@ -88,6 +89,7 @@ function App() {
                   <Route path="/login" element={<Login />} />
                   <Route path="/signup" element={<Signup />} />
                   <Route path="/auth/forgot-password" element={<ForgotPassword />} />
+                  <Route path="/auth/callback" element={<AuthCallback />} />
 
                   {/* Admin Login - Separate Route */}
                   <Route path="/admin/login" element={<AdminLogin />} />
